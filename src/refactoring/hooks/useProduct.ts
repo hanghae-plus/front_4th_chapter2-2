@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Product } from '../../types.ts';
 
+// 1-1. 상품 목록 나타내기
 export const useProducts = (initialProducts: Product[]) => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const updateProduct = (updateProduct: Product) => {
     setProducts((prevProducts) =>
