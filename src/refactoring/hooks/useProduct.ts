@@ -1,6 +1,27 @@
-import { useState } from 'react';
-import { Product } from '../../types.ts';
+import { useState } from "react";
+import { Product } from "../../types.ts";
 
+/**
+ * 상품 관리 훅
+ * @param initialProducts 초기 상품 목록
+ * @returns 상품 목록, 상품 업데이트 함수, 상품 추가 함수
+ */
 export const useProducts = (initialProducts: Product[]) => {
-  return { products: [], updateProduct: () => undefined, addProduct: () => undefined };
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+
+  const updateProduct = (updatedProduct: Product) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+    );
+  };
+
+  const addProduct = (newProduct: Product) => {
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
+  };
+
+  return {
+    products,
+    updateProduct,
+    addProduct,
+  };
 };
