@@ -12,7 +12,9 @@
     "test:advanced": "vitest src/advanced",
     "test:ui": "vitest --ui",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --fix --report-unused-disable-directives --max-warnings 0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
