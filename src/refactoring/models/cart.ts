@@ -75,6 +75,29 @@ export const calculateCartTotal = (cart: CartItem[], coupon?: Coupon) => {
   };
 };
 
+/**
+ * 장바구니 상품의 수량을 업데이트하거나 제거합니다.
+ *
+ * @description
+ * - 수량이 0이면 해당 상품을 장바구니에서 제거
+ * - 수량이 1 이상이면 해당 수량으로 업데이트 (단, 재고 한도 내에서)
+ * - 재고 초과 수량이 입력되면 최대 재고량으로 설정
+ *
+ * @param cart - 현재 장바구니
+ * @param productId - 수량을 변경할 상품 ID
+ * @param newQuantity - 새로운 수량
+ * @returns 업데이트된 장바구니
+ */
 export const updateCartItemQuantity = (cart: CartItem[], productId: string, newQuantity: number): CartItem[] => {
-  return [];
+  if (newQuantity === 0) {
+    return cart.filter((item) => item.product.id !== productId);
+  }
+
+  return cart.map((item) => {
+    if (item.product.id === productId) {
+      const validQuantity = Math.min(newQuantity, item.product.stock);
+      return { ...item, quantity: validQuantity };
+    }
+    return item;
+  });
 };
