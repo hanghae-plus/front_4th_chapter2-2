@@ -8,7 +8,11 @@ interface Props {
   onProductUpdate: (updatedProduct: Product) => void;
 }
 
-export const ProductCard = ({ index, product, onProductUpdate }: Props) => {
+export const AdminProductCard = ({
+  index,
+  product,
+  onProductUpdate,
+}: Props) => {
   const [isProductOpen, setIsProductOpen] = useState(false);
 
   const {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Coupon, Product } from "../../../types.ts";
 import { NewProduct, NewProductCard } from "./NewProductCard.tsx";
-import { ProductCard } from "./ProductCard.tsx";
+import { AdminProductCard } from "./AdminProductCard.tsx";
 
 interface Props {
   products: Product[];
@@ -59,7 +59,7 @@ export const AdminPage = ({
           )}
           <div className="space-y-2">
             {products.map((product, index) => (
-              <ProductCard
+              <AdminProductCard
                 index={index}
                 key={product.id}
                 product={product}
