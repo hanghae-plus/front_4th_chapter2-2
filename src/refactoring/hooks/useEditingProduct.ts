@@ -1,9 +1,83 @@
-import { useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { Discount, Product } from "../../types";
 import { ValueOf } from "next/dist/shared/lib/constants";
 
+type ProductInputData = {
+  label: string;
+  type: "text" | "number";
+  value: string | number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+};
+
+type DiscountInputData = {
+  placeholder: string;
+  value: number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+};
+
 export const useEditingProduct = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [newDiscount, setNewDiscount] = useState<Discount>({
+    quantity: 0,
+    rate: 0,
+  });
+
+  const productInputDataList: ProductInputData[] = useMemo(() => {
+    if (!editingProduct) return [];
+
+    return [
+      {
+        label: "상품명: ",
+        type: "text",
+        value: editingProduct.name,
+        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+          updateProduct(editingProduct.id, "name", e.target.value);
+        },
+      },
+      {
+        label: "가격: ",
+        type: "number",
+        value: editingProduct.price,
+        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+          updateProduct(editingProduct.id, "price", parseInt(e.target.value));
+        },
+      },
+      {
+        label: "재고: ",
+        type: "number",
+        value: editingProduct.stock,
+        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+          updateProduct(editingProduct.id, "stock", parseInt(e.target.value));
+        },
+      },
+    ];
+  }, [editingProduct]);
+
+  const dicountInputDataList: DiscountInputData[] = useMemo(
+    () => [
+      {
+        placeholder: "수량",
+        value: newDiscount.quantity,
+        onChange: (e) => {
+          setNewDiscount({
+            ...newDiscount,
+            quantity: parseInt(e.target.value),
+          });
+        },
+      },
+      {
+        placeholder: "할인율 (%)",
+        value: newDiscount.rate * 100,
+        onChange: (e) => {
+          setNewDiscount({
+            ...newDiscount,
+            rate: parseInt(e.target.value) / 100,
+          });
+        },
+      },
+    ],
+    [newDiscount],
+  );
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct({ ...product });
@@ -33,20 +107,12 @@ export const useEditingProduct = () => {
     setEditingProduct(updatedProduct);
   };
 
-  const handleProductNameUpdate = (productId: string, newName: string) =>
-    updateProduct(productId, "name", newName);
-
-  const handlePriceUpdate = (productId: string, newPrice: number) =>
-    updateProduct(productId, "price", newPrice);
-
-  const handleStockUpdate = (productId: string, newStock: number) =>
-    updateProduct(productId, "stock", newStock);
-
   const handleAddDiscount = (productId: string, newDiscount: Discount) => {
     const prevDiscounts = getEditingProduct(productId)?.discounts;
     if (!prevDiscounts) return;
 
     updateProduct(productId, "discounts", [...prevDiscounts, newDiscount]);
+    setNewDiscount({ quantity: 0, rate: 0 });
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
@@ -66,10 +132,10 @@ export const useEditingProduct = () => {
 
   return {
     editingProduct,
+    productInputDataList,
+    dicountInputDataList,
+    newDiscount,
     handleEditProduct,
-    handleProductNameUpdate,
-    handlePriceUpdate,
-    handleStockUpdate,
     handleAddDiscount,
     handleRemoveDiscount,
     clearEditingProduct,

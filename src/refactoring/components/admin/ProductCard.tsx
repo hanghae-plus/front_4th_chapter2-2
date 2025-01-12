@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Discount, Product } from "../../../types";
+import { Product } from "../../../types";
 import { useEditingProduct } from "../../hooks";
 
 interface Props {
@@ -10,17 +10,13 @@ interface Props {
 
 export const ProductCard = ({ index, product, onProductUpdate }: Props) => {
   const [isProductOpen, setIsProductOpen] = useState(false);
-  const [newDiscount, setNewDiscount] = useState<Discount>({
-    quantity: 0,
-    rate: 0,
-  });
 
   const {
     editingProduct,
+    productInputDataList,
+    dicountInputDataList,
+    newDiscount,
     handleEditProduct,
-    handleProductNameUpdate,
-    handlePriceUpdate,
-    handleStockUpdate,
     handleAddDiscount,
     handleRemoveDiscount,
     clearEditingProduct,
@@ -49,39 +45,17 @@ export const ProductCard = ({ index, product, onProductUpdate }: Props) => {
         <div className="mt-2">
           {editingProduct && editingProduct.id === product.id ? (
             <div>
-              <div className="mb-4">
-                <label className="block mb-1">상품명: </label>
-                <input
-                  type="text"
-                  value={editingProduct.name}
-                  onChange={(e) =>
-                    handleProductNameUpdate(product.id, e.target.value)
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">가격: </label>
-                <input
-                  type="number"
-                  value={editingProduct.price}
-                  onChange={(e) =>
-                    handlePriceUpdate(product.id, parseInt(e.target.value))
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">재고: </label>
-                <input
-                  type="number"
-                  value={editingProduct.stock}
-                  onChange={(e) =>
-                    handleStockUpdate(product.id, parseInt(e.target.value))
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+              {productInputDataList?.map((data) => (
+                <div className="mb-4">
+                  <label className="block mb-1">{data.label}</label>
+                  <input
+                    type={data.type}
+                    value={data.value}
+                    onChange={data.onChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+              ))}
               {/* 할인 정보 수정 부분 */}
               <div>
                 <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
@@ -103,34 +77,18 @@ export const ProductCard = ({ index, product, onProductUpdate }: Props) => {
                   </div>
                 ))}
                 <div className="flex space-x-2">
-                  <input
-                    type="number"
-                    placeholder="수량"
-                    value={newDiscount.quantity}
-                    onChange={(e) =>
-                      setNewDiscount({
-                        ...newDiscount,
-                        quantity: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-1/3 p-2 border rounded"
-                  />
-                  <input
-                    type="number"
-                    placeholder="할인율 (%)"
-                    value={newDiscount.rate * 100}
-                    onChange={(e) =>
-                      setNewDiscount({
-                        ...newDiscount,
-                        rate: parseInt(e.target.value) / 100,
-                      })
-                    }
-                    className="w-1/3 p-2 border rounded"
-                  />
+                  {dicountInputDataList?.map((data) => (
+                    <input
+                      type="number"
+                      placeholder={data.placeholder}
+                      value={data.value}
+                      onChange={data.onChange}
+                      className="w-1/3 p-2 border rounded"
+                    />
+                  ))}
                   <button
                     onClick={() => {
                       handleAddDiscount(product.id, newDiscount);
-                      setNewDiscount({ quantity: 0, rate: 0 });
                     }}
                     className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                   >
