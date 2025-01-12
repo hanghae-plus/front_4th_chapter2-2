@@ -1,7 +1,9 @@
 // useCart.ts
-import { useState } from "react";
-import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { useState } from 'react';
+
+import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
+
+import type { CartItem, Coupon, Product } from '../../types';
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
