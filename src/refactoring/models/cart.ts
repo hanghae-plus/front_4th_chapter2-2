@@ -46,7 +46,7 @@ export const getMaxApplicableDiscount = (item: CartItem): number => {
  * @param coupon - 적용할 쿠폰 (옵션)
  * @returns 할인 적용 전/후 금액과 할인 금액을 포함한 계산 결과
  */
-export const calculateCartTotal = (cart: CartItem[], coupon?: Coupon) => {
+export const calculateCartTotal = (cart: CartItem[], coupon: Coupon | null) => {
   const totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   const totalAfterDiscount = cart.reduce((sum, item) => sum + calculateItemTotal(item), 0);
