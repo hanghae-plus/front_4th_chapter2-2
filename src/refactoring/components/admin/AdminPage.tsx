@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Coupon, Discount, Product } from "../../types.ts";
-import { useEditingProduct } from "../hooks/useEditingProduct.ts";
+import { Coupon, Discount, Product } from "../../../types.ts";
+import { useEditingProduct } from "../../hooks/useEditingProduct.ts";
 
 interface Props {
   products: Product[];
