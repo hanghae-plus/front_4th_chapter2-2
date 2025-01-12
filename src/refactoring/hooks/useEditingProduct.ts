@@ -1,60 +1,67 @@
 import { useState } from "react";
 import { Discount, Product } from "../../types";
+import { ValueOf } from "next/dist/shared/lib/constants";
 
 export const useEditingProduct = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
     setEditingProduct({ ...product });
   };
 
-  // 새로운 핸들러 함수 추가
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
+  const getEditingProduct = (productId: string): Product | null =>
+    editingProduct?.id === productId ? editingProduct : null;
+
+  // 계산(순수함수) 추출
+  const getUpdatedProduct = <K extends keyof Product>(
+    product: Product,
+    key: K,
+    newValue: Product[K],
+  ): Product => {
+    return { ...product, [key]: newValue };
   };
 
-  // 새로운 핸들러 함수 추가
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
+  // 액션 공통화
+  const updateProduct = (
+    productId: string,
+    key: keyof Product,
+    newValue: ValueOf<Product>,
+  ) => {
+    const product = getEditingProduct(productId);
+    if (!product) return;
+    const updatedProduct = getUpdatedProduct(product, key, newValue);
+    setEditingProduct(updatedProduct);
   };
 
-  // 수정 완료 핸들러 함수 추가
-  const clearEditingProduct = () => {
-    setEditingProduct(null);
-  };
+  const handleProductNameUpdate = (productId: string, newName: string) =>
+    updateProduct(productId, "name", newName);
 
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, stock: newStock };
-      setEditingProduct(updatedProduct);
-    }
-  };
+  const handlePriceUpdate = (productId: string, newPrice: number) =>
+    updateProduct(productId, "price", newPrice);
+
+  const handleStockUpdate = (productId: string, newStock: number) =>
+    updateProduct(productId, "stock", newStock);
 
   const handleAddDiscount = (productId: string, newDiscount: Discount) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = {
-        ...editingProduct,
-        discounts: [...editingProduct.discounts, newDiscount],
-      };
-      setEditingProduct(updatedProduct);
-    }
+    const prevDiscounts = getEditingProduct(productId)?.discounts;
+    if (!prevDiscounts) return;
+
+    updateProduct(productId, "discounts", [...prevDiscounts, newDiscount]);
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = {
-        ...editingProduct,
-        discounts: editingProduct.discounts.filter((_, i) => i !== index),
-      };
-      setEditingProduct(updatedProduct);
-    }
+    const prevDiscounts = getEditingProduct(productId)?.discounts;
+    if (!prevDiscounts) return;
+
+    updateProduct(
+      productId,
+      "discounts",
+      prevDiscounts.filter((_, i) => i !== index),
+    );
+  };
+
+  const clearEditingProduct = () => {
+    setEditingProduct(null);
   };
 
   return {
