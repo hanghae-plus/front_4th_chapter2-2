@@ -3,14 +3,18 @@ import { CartItem, Coupon } from "../../types";
 // 할인 없이 총액을 계산
 export const calculateItemTotal = (item: CartItem) => {
 	// 할인율  적용
-	const discountRate = item.product.discounts.filter((prod) => prod.quantity <= item.quantity).sort((a, b) => b.rate - a.rate)[0]?.rate ?? 0;
+	const discountRate = getMaxApplicableDiscount(item);
 
 	return item.quantity * item.product.price * (1 - discountRate);
 };
 
 // 적용 가능한 가장 높은 할인율
 export const getMaxApplicableDiscount = (item: CartItem) => {
-	return 0;
+	const { quantity } = item;
+
+	return item.product.discounts.reduce((maxDiscount, d) => {
+		return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
+	}, 0);
 };
 
 // 쿠폰 없이 총액 계산
