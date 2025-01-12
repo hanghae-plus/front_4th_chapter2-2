@@ -1,10 +1,23 @@
-import { useState } from 'react';
-import { Product } from '../models/types/Product';
+import { useCallback, useState } from 'react';
+import { Product } from '../models/types/Product.ts';
 
 export const useProducts = (initialProducts: Product[]) => {
+  const [products, setProducts] = useState(initialProducts);
+
+  const updateProduct = useCallback((updatedProduct: Product) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product,
+      ),
+    );
+  }, []);
+
+  const addProduct = useCallback((newProduct: Product) => {
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
+  }, []);
   return {
-    products: [],
-    updateProduct: () => undefined,
-    addProduct: () => undefined,
+    products,
+    updateProduct,
+    addProduct,
   };
 };
