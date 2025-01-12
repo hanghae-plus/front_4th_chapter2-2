@@ -56,31 +56,25 @@ export const calculateCartTotal = (
   };
 };
 
-/**
- * newQuantity로 수량이 업데이트된 cart를 반환하길 원함
- * 만약 cart에 없는
- * 1. newQuantity가 0인 경우
- * - 해당 아이템을 제거한다.
- * 2. 기존 아이템이 있는 경우(이건 cart에 추가해서 오기에 신경 쓰지 않아도 된다)
- * 3.
- */
 export const updateCartItemQuantity = (
   cart: CartItem[],
   productId: string,
   newQuantity: number
 ): CartItem[] => {
-  const cartCopy = [...cart];
   if (newQuantity === 0) {
-    return cartCopy.filter((item) => item.product.id !== productId);
-  }
-  const findItem = cartCopy.find((item) => item.product.id === productId);
-  if (!findItem) return cartCopy;
-
-  if (newQuantity > findItem.product.stock) {
-    findItem.quantity = findItem.product.stock;
-  } else {
-    findItem.quantity = newQuantity;
+    return cart.filter((item) => item.product.id !== productId);
   }
 
-  return cartCopy;
+  const itemIndex = cart.findIndex((item) => item.product.id === productId);
+  if (itemIndex === -1) return cart;
+
+  return cart.map((item, index) => {
+    if (index !== itemIndex) return item;
+
+    const validQuantity = Math.min(newQuantity, item.product.stock);
+    return {
+      ...item,
+      quantity: validQuantity,
+    };
+  });
 };
