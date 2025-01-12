@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Product } from '../models/types/Product';
 import { Coupon } from '../models/types/Coupon';
 import { Discount } from '../models/types/Discount';
@@ -11,13 +11,13 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export const AdminPage = ({
+function AdminPage({
   products,
   coupons,
   onProductUpdate,
   onProductAdd,
   onCouponAdd,
-}: Props) => {
+}: Props) {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({
@@ -241,7 +241,7 @@ export const AdminPage = ({
                             onChange={(e) =>
                               handleProductNameUpdate(
                                 product.id,
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="w-full p-2 border rounded"
@@ -255,7 +255,7 @@ export const AdminPage = ({
                             onChange={(e) =>
                               handlePriceUpdate(
                                 product.id,
-                                parseInt(e.target.value)
+                                parseInt(e.target.value),
                               )
                             }
                             className="w-full p-2 border rounded"
@@ -269,7 +269,7 @@ export const AdminPage = ({
                             onChange={(e) =>
                               handleStockUpdate(
                                 product.id,
-                                parseInt(e.target.value)
+                                parseInt(e.target.value),
                               )
                             }
                             className="w-full p-2 border rounded"
@@ -443,4 +443,6 @@ export const AdminPage = ({
       </div>
     </div>
   );
-};
+}
+
+export default AdminPage;

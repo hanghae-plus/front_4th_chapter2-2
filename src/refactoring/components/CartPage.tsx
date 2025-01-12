@@ -8,7 +8,7 @@ interface Props {
   coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+function CartPage({ products, coupons }: Props) {
   const {
     cart,
     addToCart,
@@ -201,4 +201,6 @@ export const CartPage = ({ products, coupons }: Props) => {
       </div>
     </div>
   );
-};
+}
+
+export default CartPage;
