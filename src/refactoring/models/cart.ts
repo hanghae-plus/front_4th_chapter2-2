@@ -1,7 +1,7 @@
 import { CartItem, Coupon } from '../../types';
 
 export const calculateItemTotal = (item: CartItem) => {
-  return 0;
+  return item.product.price * item.quantity;
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
