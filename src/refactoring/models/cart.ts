@@ -61,5 +61,25 @@ export const updateCartItemQuantity = (
   productId: string,
   newQuantity: number
 ): CartItem[] => {
-  return [];
+  const cartCopy = [...cart];
+  const existingItem = cartCopy.find((item) => item.product.id === productId);
+  if (newQuantity === 0) {
+    return cartCopy.filter((item) => item.product.id !== productId);
+  }
+  if (
+    existingItem &&
+    existingItem.product.stock + existingItem.quantity >= newQuantity
+  ) {
+    existingItem.product.stock -= newQuantity - existingItem.quantity;
+    existingItem.quantity = newQuantity;
+    return cartCopy;
+  }
+
+  if (existingItem && existingItem.product.stock < newQuantity) {
+    existingItem.quantity = existingItem.product.stock;
+    existingItem.product.stock = 0;
+    return cartCopy;
+  }
+
+  return cartCopy;
 };
