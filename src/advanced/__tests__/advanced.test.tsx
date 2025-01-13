@@ -1,9 +1,19 @@
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeAll, describe, expect, test, vi } from "vitest";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from "@testing-library/react";
 import { CartPage } from "../../refactoring/components";
 import { AdminPage } from "../../refactoring/components";
 import { Coupon, Product } from "../../types";
+import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
+import { beforeEach } from "node:test";
+import { localStorageUtil } from "../../refactoring/utils";
 
 const mockProducts: Product[] = [
   {
@@ -263,13 +273,134 @@ describe("advanced > ", () => {
     });
   });
 
-  describe("자유롭게 작성해보세요.", () => {
-    test("새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+  describe("localStorageUtil 테스트", () => {
+    beforeAll(() => {
+      localStorage.clear();
     });
 
-    test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+    const mockData = { id: 1, value: "data" };
+
+    test("localStorage에 데이터를 추가할 수 있다.", () => {
+      vi.spyOn(Storage.prototype, "setItem");
+
+      localStorageUtil.set("test_key", mockData);
+
+      expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(localStorage.getItem("test_key")).toEqual(
+        JSON.stringify(mockData),
+      );
+    });
+
+    test("localStorage에서 데이터를 읽어올 수 있다.", () => {
+      vi.spyOn(Storage.prototype, "getItem");
+
+      const data = localStorageUtil.get("test_key");
+
+      expect(localStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(data).toEqual(mockData);
+    });
+
+    test("localStorage에서 데이터를 삭제할 수 있다.", () => {
+      vi.spyOn(Storage.prototype, "removeItem");
+
+      const data = localStorageUtil.remove("test_key");
+
+      expect(localStorage.removeItem).toHaveBeenCalledTimes(1);
+      expect(data).toEqual(undefined);
+    });
+  });
+
+  describe("LOCAL_STORAGE 모드 테스트", () => {
+    process.env.REACT_APP_MODE = "LOCAL_STORAGE";
+
+    beforeAll(() => {
+      localStorage.clear();
+    });
+
+    test("제품을 업데이트하면 로컬스토리지에 반영된다.", () => {
+      const { result } = renderHook(() => useProducts(mockProducts));
+
+      localStorage.setItem("product_key", JSON.stringify(mockProducts));
+
+      vi.spyOn(Storage.prototype, "setItem");
+
+      const updatedProduct = { ...mockProducts[0], name: "Updated Product" };
+
+      act(() => {
+        result.current.updateProduct(updatedProduct);
+      });
+
+      expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(localStorage.getItem("product_key")!)?.[0]).toEqual({
+        id: "p1",
+        name: "Updated Product",
+        price: 10000,
+        stock: 20,
+        discounts: [{ quantity: 10, rate: 0.1 }],
+      });
+    });
+
+    test("쿠폰을 추가하면 로컬스토리지에 반영된다.", () => {
+      const { result } = renderHook(() => useCoupons(mockCoupons));
+
+      localStorage.setItem("coupon_key", JSON.stringify(mockCoupons));
+
+      vi.spyOn(Storage.prototype, "setItem");
+
+      const newCoupon: Coupon = {
+        name: "New Coupon",
+        code: "NEWCODE",
+        discountType: "amount",
+        discountValue: 5000,
+      };
+
+      act(() => {
+        result.current.addCoupon(newCoupon);
+      });
+
+      expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(localStorage.getItem("coupon_key")!)?.pop()).toEqual(
+        newCoupon,
+      );
+    });
+
+    const testProduct: Product = {
+      id: "1",
+      name: "Test Product",
+      price: 100,
+      stock: 10,
+      discounts: [],
+    };
+
+    test("장바구니에 제품을 추가하면 로컬스토리지에 반영된다.", () => {
+      const { result } = renderHook(() => useCart());
+
+      vi.spyOn(Storage.prototype, "setItem");
+
+      act(() => {
+        result.current.addToCart(testProduct);
+      });
+
+      expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(localStorage.getItem("cart_item_key")!)?.pop()).toEqual(
+        { product: testProduct, quantity: 1 },
+      );
+    });
+
+    test("장바구니 내 제품 수량을 수정하면 로컬스토리지에 반영된다.", () => {
+      const { result } = renderHook(() => useCart());
+
+      vi.spyOn(Storage.prototype, "setItem");
+
+      act(() => {
+        result.current.updateQuantity(testProduct.id, 3);
+      });
+      console.log(localStorage.getItem("cart_item_key"));
+
+      expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(
+        JSON.parse(localStorage.getItem("cart_item_key")!)?.pop().quantity,
+      ).toBe(3);
     });
   });
 });
