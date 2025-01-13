@@ -2,7 +2,21 @@
 import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 
-export const useCart = () => {
+interface CartState {
+  cart: CartItem[];
+  selectedCoupon: Coupon | null;
+  addToCart: (product: Product) => void;
+  applyCoupon: (coupon: Coupon) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, newQuantity: number) => void;
+  calculateTotal: () => {
+    totalBeforeDiscount: number;
+    totalAfterDiscount: number;
+    totalDiscount: number;
+  };
+}
+
+export const useCart = (): CartState => {
   const [cart, setCart] = useState<Array<CartItem>>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
