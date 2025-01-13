@@ -28,27 +28,19 @@ export const calculateCartTotal = (
   const itemTotals = cart.map((item) => {
     const { product, quantity } = item;
     const { price } = product;
-    const total = price * quantity;
-
-    const discount = item.product.discounts.reduce((maxDiscount, d) => {
-      return quantity >= d.quantity && d.rate > maxDiscount
-        ? d.rate
-        : maxDiscount;
-    }, 0);
 
     return {
-      totalBeforeDiscount: total,
-      totalAfterDiscount: total * (1 - discount),
+      totalBeforeDiscount: price * quantity,
+      totalAfterDiscount: calculateItemTotal(item),
     };
   });
 
-  const totalBeforeDiscount = itemTotals.reduce(
-    (sum, item) => sum + item.totalBeforeDiscount,
-    0,
-  );
-  let totalAfterDiscount = itemTotals.reduce(
-    (sum, item) => sum + item.totalAfterDiscount,
-    0,
+  let { totalBeforeDiscount, totalAfterDiscount } = itemTotals.reduce(
+    (acc, item) => ({
+      totalBeforeDiscount: acc.totalBeforeDiscount + item.totalBeforeDiscount,
+      totalAfterDiscount: acc.totalAfterDiscount + item.totalAfterDiscount,
+    }),
+    { totalBeforeDiscount: 0, totalAfterDiscount: 0 },
   );
 
   if (selectedCoupon) {
@@ -76,9 +68,13 @@ export const updateCartItemQuantity = (
 ): CartItem[] => {
   return cart
     .map((item) => {
-      if (item.product.id === productId) {
-        const maxQuantity = item.product.stock;
+      const { product } = item;
+      const { stock, id } = product;
+
+      if (id === productId) {
+        const maxQuantity = stock;
         const updatedQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
+
         return updatedQuantity > 0
           ? { ...item, quantity: updatedQuantity }
           : null;
