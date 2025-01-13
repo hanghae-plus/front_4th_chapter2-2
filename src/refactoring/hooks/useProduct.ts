@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Product } from "../../types.ts";
 
 interface ProductsState {
@@ -10,15 +10,15 @@ interface ProductsState {
 export const useProducts = (initialProducts: Array<Product>): ProductsState => {
   const [products, setProducts] = useState<Array<Product>>(initialProducts);
 
-  const addProduct = (newProduct: Product) => {
+  const addProduct = useCallback((newProduct: Product) => {
     setProducts((prevProducts) => [...prevProducts, newProduct]);
-  };
+  }, []);
 
-  const updateProduct = (updatedProduct: Product) => {
+  const updateProduct = useCallback((updatedProduct: Product) => {
     setProducts((prevProducts) =>
       prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
     );
-  };
+  }, []);
 
   return { products, updateProduct, addProduct };
 };

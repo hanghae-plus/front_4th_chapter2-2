@@ -1,5 +1,5 @@
 // useCart.ts
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 
 interface CartState {
@@ -20,89 +20,104 @@ export const useCart = (): CartState => {
   const [cart, setCart] = useState<Array<CartItem>>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
+  const getRemainingStock = useCallback(
+    (product: Product) => {
+      const cartItem = cart.find((item) => item.product.id === product.id);
+      return product.stock - (cartItem?.quantity || 0);
+    },
+    [cart]
+  );
 
-  const addToCart = (product: Product) => {
-    const remainingStock = getRemainingStock(product);
-    if (remainingStock <= 0) return;
+  const addToCart = useCallback(
+    (product: Product) => {
+      const remainingStock = getRemainingStock(product);
+      if (remainingStock <= 0) return;
 
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(
-        (item) => item.product.id === product.id
-      );
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-            : item
+      setCart((prevCart) => {
+        const existingItem = prevCart.find(
+          (item) => item.product.id === product.id
         );
-      }
-      return [...prevCart, { product, quantity: 1 }];
-    });
-  };
+        if (existingItem) {
+          return prevCart.map((item) =>
+            item.product.id === product.id
+              ? {
+                  ...item,
+                  quantity: Math.min(item.quantity + 1, product.stock),
+                }
+              : item
+          );
+        }
+        return [...prevCart, { product, quantity: 1 }];
+      });
+    },
+    [getRemainingStock]
+  );
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = useCallback((productId: string) => {
     setCart((prevCart) =>
       prevCart.filter((item) => item.product.id !== productId)
     );
-  };
+  }, []);
 
-  const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) => {
-          if (item.product.id === productId) {
-            const maxQuantity = item.product.stock;
-            const updatedQuantity = Math.max(
-              0,
-              Math.min(newQuantity, maxQuantity)
-            );
-            return updatedQuantity > 0
-              ? { ...item, quantity: updatedQuantity }
-              : null;
-          }
-          return item;
-        })
-        .filter((item): item is CartItem => item !== null)
-    );
-  };
-
-  const applyCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
-  };
-
-  const applyCouponDiscount = (
-    totalBeforeDiscount: number,
-    totalAfterDiscount: number,
-    selectedCoupon: Coupon | null
-  ) => {
-    if (!selectedCoupon) {
-      return {
-        finalAfterDiscount: totalAfterDiscount,
-        totalDiscount: totalBeforeDiscount - totalAfterDiscount,
-      };
-    }
-
-    let finalAfterDiscount = totalAfterDiscount;
-    if (selectedCoupon.discountType === "amount") {
-      finalAfterDiscount = Math.max(
-        0,
-        totalAfterDiscount - selectedCoupon.discountValue
+  const updateQuantity = useCallback(
+    (productId: string, newQuantity: number) => {
+      setCart((prevCart) =>
+        prevCart
+          .map((item) => {
+            if (item.product.id === productId) {
+              const maxQuantity = item.product.stock;
+              const updatedQuantity = Math.max(
+                0,
+                Math.min(newQuantity, maxQuantity)
+              );
+              return updatedQuantity > 0
+                ? { ...item, quantity: updatedQuantity }
+                : null;
+            }
+            return item;
+          })
+          .filter((item): item is CartItem => item !== null)
       );
-    } else {
-      finalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
-    }
+    },
+    []
+  );
 
-    return {
-      finalAfterDiscount,
-      totalDiscount: totalBeforeDiscount - finalAfterDiscount,
-    };
-  };
+  const applyCoupon = useCallback((coupon: Coupon) => {
+    setSelectedCoupon(coupon);
+  }, []);
 
-  const calculateTotal = () => {
+  const applyCouponDiscount = useCallback(
+    (
+      totalBeforeDiscount: number,
+      totalAfterDiscount: number,
+      selectedCoupon: Coupon | null
+    ) => {
+      if (!selectedCoupon) {
+        return {
+          finalAfterDiscount: totalAfterDiscount,
+          totalDiscount: totalBeforeDiscount - totalAfterDiscount,
+        };
+      }
+
+      let finalAfterDiscount = totalAfterDiscount;
+      if (selectedCoupon.discountType === "amount") {
+        finalAfterDiscount = Math.max(
+          0,
+          totalAfterDiscount - selectedCoupon.discountValue
+        );
+      } else {
+        finalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
+      }
+
+      return {
+        finalAfterDiscount,
+        totalDiscount: totalBeforeDiscount - finalAfterDiscount,
+      };
+    },
+    []
+  );
+
+  const calculateTotal = useCallback(() => {
     const { totalBeforeDiscount, totalAfterDiscount } = cart.reduce(
       (totals, item) => {
         const { price } = item.product;
@@ -133,7 +148,7 @@ export const useCart = (): CartState => {
       totalAfterDiscount: Math.round(finalAfterDiscount),
       totalDiscount: Math.round(totalDiscount),
     };
-  };
+  }, [applyCouponDiscount, cart, selectedCoupon]);
 
   return {
     cart,

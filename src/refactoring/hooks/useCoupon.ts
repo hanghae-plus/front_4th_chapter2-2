@@ -1,5 +1,5 @@
 import { Coupon } from "../../types.ts";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface CouponsState {
   coupons: Array<Coupon>;
@@ -9,9 +9,9 @@ interface CouponsState {
 export const useCoupons = (initialCoupons: Array<Coupon>): CouponsState => {
   const [coupons, setCoupons] = useState<Array<Coupon>>(initialCoupons);
 
-  const addCoupon = (newCoupon: Coupon) => {
+  const addCoupon = useCallback((newCoupon: Coupon) => {
     setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
-  };
+  }, []);
 
   return {
     coupons,
