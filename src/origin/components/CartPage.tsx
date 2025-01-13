@@ -8,9 +8,13 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
+  /** INFO: State  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
   const [cart, setCart] = useState<CartItem[]>([]);
+  // useCoupon으로 분리
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
+  /** INFO: 함수  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+  // useCart로 분리
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(product);
     if (remainingStock <= 0) return;
@@ -30,6 +34,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
   };
 
+  // model/cart.ts 파일로 분리
   const updateQuantity = (productId: string, newQuantity: number) => {
     setCart((prevCart) =>
       prevCart
@@ -45,6 +50,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     );
   };
 
+  // model/cart.ts 파일로 분리
   const calculateTotal = () => {
     let totalBeforeDiscount = 0;
     let totalAfterDiscount = 0;
@@ -80,10 +86,13 @@ export const CartPage = ({ products, coupons }: Props) => {
     };
   };
 
+  // useCart로 분리
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
   };
 
+  // 어디로 분리해야 하지 (cart, product 혼재)
+  // 느낌상 Cart가 맞을듯 왜냐면 카트에서 데이터를 뽑아내기 때문에
   const getRemainingStock = (product: Product) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
     return product.stock - (cartItem?.quantity || 0);
@@ -91,6 +100,7 @@ export const CartPage = ({ products, coupons }: Props) => {
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
+  // useCart로 분리
   const getAppliedDiscount = (item: CartItem) => {
     const { discounts } = item.product;
     const { quantity } = item;
@@ -103,6 +113,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     return appliedDiscount;
   };
 
+  // useCoupon로 분리
   const applyCoupon = (coupon: Coupon) => {
     setSelectedCoupon(coupon);
   };

@@ -11,16 +11,29 @@ interface Props {
 }
 
 export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
+  /** INFO: State  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+
+  // 있어야함, (상품 수정 toggle)
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+
+  // 현재 선택된 프로덕트인듯. 있어야할듯
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // 상태 필요없음 엔티티 로직도 다 props로 받게 변경예정
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
+
+  // 필요없음
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
     discountType: 'percentage',
     discountValue: 0,
   });
+
+  // 상품 추가 토글 (있어야함)
   const [showNewProductForm, setShowNewProductForm] = useState(false);
+
+  // 상태 필요없음
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     price: 0,
@@ -28,6 +41,8 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     discounts: [],
   });
 
+  /** INFO: 함수  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+  // 유지 or 분리?
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds((prev) => {
       const newSet = new Set(prev);
@@ -41,11 +56,14 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   };
 
   // handleEditProduct 함수 수정
+  // [핸들러만 남겨놓고 수정 로직은 분리]
   const handleEditProduct = (product: Product) => {
     setEditingProduct({ ...product });
   };
 
   // 새로운 핸들러 함수 추가
+  //  핸들러는 냅두고 엔티티 로직만 props로 받게 변경
+  // 근데 각 Input마다 state를 두지말고 Form으로 변경해야할듯
   const handleProductNameUpdate = (productId: string, newName: string) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, name: newName };
@@ -54,6 +72,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   };
 
   // 새로운 핸들러 함수 추가
+  // 핸들러는 냅두고 엔티티 로직만 props로 받게 변경
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, price: newPrice };
@@ -62,6 +81,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   };
 
   // 수정 완료 핸들러 함수 추가
+  // 핸들러는 냅두고 엔티티 로직만 props로 받게 변경
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
@@ -69,6 +89,8 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     }
   };
 
+  // useProduct로 이동
+  // 핸들러는 냅둠
   const handleStockUpdate = (productId: string, newStock: number) => {
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
@@ -78,6 +100,8 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     }
   };
 
+  // useProduct로 이동
+  // 핸들러는 냅둠
   const handleAddDiscount = (productId: string) => {
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct && editingProduct) {
@@ -91,6 +115,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     }
   };
 
+  // useProduct로 이동
   const handleRemoveDiscount = (productId: string, index: number) => {
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
@@ -103,6 +128,8 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     }
   };
 
+  // setNewCoupon 상태 제거하고 Form으로 변경 후 각 상태를 한번만 수정하도록 변경
+  // 핸들러는 남겨놓고 엔티티 로직만 props로 받게 변경
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
     setNewCoupon({
@@ -113,6 +140,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     });
   };
 
+  // 핸들러는 놔두고 엔티티 로직만 Product로 분리
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
     onProductAdd(productWithId);
