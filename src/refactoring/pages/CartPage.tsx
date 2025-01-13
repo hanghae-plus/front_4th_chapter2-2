@@ -39,16 +39,23 @@ export const CartPage = ({ products, coupons }: Props) => {
     return product.stock - (cartItem?.quantity || 0);
   };
 
+  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
+    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
+  };
+
   return (
     <Container title="장바구니">
       <ContentSection subTitle="상품 목록">
         <div className="space-y-2">
           {products.map((product) => {
             const remainingStock = getRemainingStock(product);
+            const maxDiscount = getMaxDiscount(product.discounts);
+
             return (
               <ProductCard
                 product={product}
                 remainingStock={remainingStock}
+                maxDiscount={maxDiscount}
                 addToCart={addToCart}
               />
             );
