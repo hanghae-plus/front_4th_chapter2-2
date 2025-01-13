@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 
 interface CartState {
-  cart: CartItem[];
+  cart: Array<CartItem>;
   selectedCoupon: Coupon | null;
   addToCart: (product: Product) => void;
   applyCoupon: (coupon: Coupon) => void;

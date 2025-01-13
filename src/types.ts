@@ -3,7 +3,7 @@ export interface Product {
   name: string;
   price: number;
   stock: number;
-  discounts: Discount[];
+  discounts: Array<Discount>;
 }
 
 export interface Discount {
@@ -19,6 +19,6 @@ export interface CartItem {
 export interface Coupon {
   name: string;
   code: string;
-  discountType: 'amount' | 'percentage';
+  discountType: "amount" | "percentage";
   discountValue: number;
 }

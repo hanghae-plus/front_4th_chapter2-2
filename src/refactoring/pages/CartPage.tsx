@@ -7,8 +7,8 @@ import CartProductCard from "../components/cart/CartProductCard.tsx";
 import OrderSummary from "../components/cart/OrderSummary.tsx";
 
 interface Props {
-  products: Product[];
-  coupons: Coupon[];
+  products: Array<Product>;
+  coupons: Array<Coupon>;
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
@@ -39,7 +39,9 @@ export const CartPage = ({ products, coupons }: Props) => {
     return product.stock - (cartItem?.quantity || 0);
   };
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
+  const getMaxDiscount = (
+    discounts: Array<{ quantity: number; rate: number }>
+  ) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
   };
 

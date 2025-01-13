@@ -30,7 +30,7 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
 };
 
 export const calculateCartTotal = (
-  cart: CartItem[],
+  cart: Array<CartItem>,
   selectedCoupon: Coupon | null
 ) => {
   let totalBeforeDiscount = 0;
@@ -73,10 +73,10 @@ export const calculateCartTotal = (
 };
 
 export const updateCartItemQuantity = (
-  cart: CartItem[],
+  cart: Array<CartItem>,
   productId: string,
   newQuantity: number
-): CartItem[] => {
+): Array<CartItem> => {
   return cart
     .map((item) => {
       if (item.product.id === productId) {

@@ -4,8 +4,8 @@ import Container from "../components/layout/Container.tsx";
 import ContentSection from "../components/layout/ContentSection.tsx";
 
 interface Props {
-  products: Product[];
-  coupons: Coupon[];
+  products: Array<Product>;
+  coupons: Array<Coupon>;
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
   onCouponAdd: (newCoupon: Coupon) => void;
