@@ -52,10 +52,28 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
   };
 };
 
+//수량을 올바르게 업데이트해야 한다.
+//수량이 0으로 설정된 경우 항목을 제거해야 한다.
+//재고 한도를 초과해서는 안 된다.
 export const updateCartItemQuantity = (
   cart: CartItem[],
   productId: string,
   newQuantity: number,
 ): CartItem[] => {
-  return [];
+  const item = cart.find((item) => item.product.id === productId);
+  if (!item) return cart;
+
+  if (newQuantity <= 0) {
+    return cart.filter((item) => item.product.id !== productId);
+  }
+
+  if (newQuantity > item.product.stock) {
+    return cart.map((item) =>
+      item.product.id === productId ? { ...item, quantity: item.product.stock } : item,
+    );
+  }
+
+  return cart.map((item) =>
+    item.product.id === productId ? { ...item, quantity: newQuantity } : item,
+  );
 };
