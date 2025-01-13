@@ -20,15 +20,30 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
 //금액쿠폰을 올바르게 적용해야 한다.
 //퍼센트 쿠폰을 올바르게 적용해야 한다.
 export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
-  const totalBeforeDiscount = cart.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+  const totalBeforeDiscount = cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
 
-  const totalDiscount = selectedCoupon
+  // 수량 할인 계산
+  const quantityDiscount = cart.reduce((sum, item) => {
+    const maxDiscount = getMaxApplicableDiscount(item);
+    return sum + item.product.price * item.quantity * maxDiscount;
+  }, 0);
+
+  const totalAfterQuantityDiscount = totalBeforeDiscount - quantityDiscount;
+
+  // 쿠폰 할인 계산
+  const couponDiscount = selectedCoupon
     ? Math.min(
         selectedCoupon.discountType === 'percentage'
-          ? totalBeforeDiscount * (selectedCoupon.discountValue / 100)
+          ? (selectedCoupon.discountValue / 100) * totalAfterQuantityDiscount // 수량 할인 후 금액에 대해 계산
           : selectedCoupon.discountValue,
+        totalAfterQuantityDiscount, // 최대 할인은 수량 할인 후 총액을 넘을 수 없음
       )
     : 0;
+
+  const totalDiscount = couponDiscount + quantityDiscount;
 
   return {
     totalBeforeDiscount,
