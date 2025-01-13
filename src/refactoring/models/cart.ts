@@ -72,5 +72,17 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
 };
 
 export const updateCartItemQuantity = (cart: CartItem[], productId: string, newQuantity: number): CartItem[] => {
-  return [];
+  return cart
+    .map((item) => {
+      const {
+        product: { id, stock },
+      } = item;
+
+      if (id !== productId) return item;
+
+      const validQuantity = Math.min(newQuantity, stock);
+
+      return validQuantity > 0 ? { ...item, quantity: validQuantity } : null;
+    })
+    .filter((item) => item !== null);
 };
