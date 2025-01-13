@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Coupon } from '../../../../types.ts';
+import { SectionTitle } from '../../../shared/ui/typography/SectionTitle.tsx';
 
 interface CouponManagementProps {
   coupons: Coupon[];
@@ -26,7 +27,7 @@ export function CouponManagement({ coupons, onCouponAdd }: CouponManagementProps
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
+      <SectionTitle title={'쿠폰 관리'} />
       <div className="bg-white p-4 rounded shadow">
         <div className="space-y-2 mb-4">
           <input
