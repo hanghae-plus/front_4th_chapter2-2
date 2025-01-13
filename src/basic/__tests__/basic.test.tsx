@@ -7,7 +7,7 @@ import { CartItem, Coupon, Product } from '../../types';
 import { useCart, useCoupons, useProducts } from '../../refactoring/hooks';
 import * as cartUtils from '../../refactoring/models/cart';
 
-const mockProducts: Product[] = [
+const mockProductList: Product[] = [
   {
     id: 'p1',
     name: '상품1',
@@ -46,7 +46,7 @@ const mockCoupons: Coupon[] = [
 ];
 
 const TestAdminPage = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [productList, setProducts] = useState<Product[]>(mockProductList);
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
 
   const handleProductUpdate = (updatedProduct: Product) => {
@@ -65,7 +65,7 @@ const TestAdminPage = () => {
 
   return (
     <AdminPage
-      products={products}
+      productList={productList}
       coupons={coupons}
       onProductUpdate={handleProductUpdate}
       onProductAdd={handleProductAdd}
@@ -77,7 +77,7 @@ const TestAdminPage = () => {
 describe('basic > ', () => {
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
-      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+      render(<CartPage productList={mockProductList} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -257,7 +257,7 @@ describe('basic > ', () => {
 
     test('특정 제품으로 초기화할 수 있다.', () => {
       const { result } = renderHook(() => useProducts(initialProducts));
-      expect(result.current.products).toEqual(initialProducts);
+      expect(result.current.productList).toEqual(initialProducts);
     });
 
     test('제품을 업데이트할 수 있다.', () => {
@@ -268,7 +268,7 @@ describe('basic > ', () => {
         result.current.updateProduct(updatedProduct);
       });
 
-      expect(result.current.products[0]).toEqual({
+      expect(result.current.productList[0]).toEqual({
         discounts: [],
         id: '1',
         name: 'Updated Product',
@@ -291,8 +291,8 @@ describe('basic > ', () => {
         result.current.addProduct(newProduct);
       });
 
-      expect(result.current.products).toHaveLength(2);
-      expect(result.current.products[1]).toEqual(newProduct);
+      expect(result.current.productList).toHaveLength(2);
+      expect(result.current.productList[1]).toEqual(newProduct);
     });
   });
 

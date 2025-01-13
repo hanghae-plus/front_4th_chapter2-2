@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { CartPage } from './components/CartPage.tsx';
-import { AdminPage } from './components/AdminPage.tsx';
-import { Coupon, Product } from '../types.ts';
+import { CartPage } from './components/CartPage';
+import { AdminPage } from './components/AdminPage';
+import { Coupon, Product } from '../types';
 import { useCoupons, useProducts } from './hooks';
 
-const initialProducts: Product[] = [
+const initialProductList: Product[] = [
   {
     id: 'p1',
     name: '상품1',
@@ -47,7 +47,7 @@ const initialCoupons: Coupon[] = [
 ];
 
 const App = () => {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
+  const { productList, updateProduct, addProduct } = useProducts(initialProductList);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -67,14 +67,14 @@ const App = () => {
       <main className='container mx-auto mt-6'>
         {isAdmin ? (
           <AdminPage
-            products={products}
+            productList={productList}
             coupons={coupons}
             onProductUpdate={updateProduct}
             onProductAdd={addProduct}
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons} />
+          <CartPage productList={productList} coupons={coupons} />
         )}
       </main>
     </div>
