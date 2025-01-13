@@ -22,6 +22,17 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
     selectedCoupon,
   } = useCart();
 
+  const getRemainingStock = (product: Product) => {
+    const cartItem = cart.find((item) => item.product.id === product.id);
+    return product.stock - (cartItem?.quantity || 0);
+  };
+
+  const getMaxDiscount = (
+    discounts: Array<{ quantity: number; rate: number }>
+  ) => {
+    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
+  };
+
   const getAppliedDiscount = (item: CartItem) => {
     const { discounts } = item.product;
     const { quantity } = item;
@@ -32,17 +43,6 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
       }
     }
     return appliedDiscount;
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
-  const getMaxDiscount = (
-    discounts: Array<{ quantity: number; rate: number }>
-  ) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
   };
 
   return (
@@ -96,6 +96,7 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
               </option>
             ))}
           </select>
+
           {selectedCoupon && (
             <p className="text-green-600">
               적용된 쿠폰: {selectedCoupon.name}(

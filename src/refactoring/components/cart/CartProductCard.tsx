@@ -30,6 +30,7 @@ const CartProductCard = ({
           )}
         </span>
       </div>
+
       <div>
         <button
           onClick={() => updateQuantity(item.product.id, item.quantity - 1)}

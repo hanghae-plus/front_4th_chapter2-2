@@ -6,9 +6,10 @@ import { initialCoupons, initialProducts } from "./constants/initialValues";
 import PageLayout from "./components/layout/PageLayout";
 
 const App = () => {
+  const [isViewingAdminPage, setIsViewingAdminPage] = useState(false);
+
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
-  const [isViewingAdminPage, setIsViewingAdminPage] = useState(false);
 
   const toggleAdminPage = () => {
     setIsViewingAdminPage((prevState) => !prevState);

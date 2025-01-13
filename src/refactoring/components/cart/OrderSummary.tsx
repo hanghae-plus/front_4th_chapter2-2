@@ -13,6 +13,7 @@ const OrderSummary = ({ calculateTotal }: OrderSummaryProps) => {
   return (
     <div className="mt-6 bg-white p-4 rounded shadow">
       <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
+
       <div className="space-y-1">
         <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
         <p className="text-green-600">

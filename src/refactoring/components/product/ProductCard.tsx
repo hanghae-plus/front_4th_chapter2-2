@@ -25,6 +25,7 @@ const ProductCard = ({
           {product.price.toLocaleString()}원
         </span>
       </div>
+
       <div className="text-sm text-gray-500 mb-2">
         <span
           className={`font-medium ${
@@ -39,6 +40,7 @@ const ProductCard = ({
           </span>
         )}
       </div>
+
       {product.discounts.length > 0 && (
         <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
           {product.discounts.map((discount, index) => (
@@ -49,6 +51,7 @@ const ProductCard = ({
           ))}
         </ul>
       )}
+
       <button
         onClick={() => addToCart(product)}
         className={`w-full px-3 py-1 rounded ${
