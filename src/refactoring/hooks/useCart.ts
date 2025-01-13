@@ -1,10 +1,14 @@
-// useCart.ts
 import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { useStateByMode } from "./useStateByMode";
+import { LOCAL_KEYS } from "../utils";
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useStateByMode<CartItem[]>(
+    LOCAL_KEYS.CART_ITEM_KEY,
+    [],
+  );
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const addToCart = (product: Product) => {

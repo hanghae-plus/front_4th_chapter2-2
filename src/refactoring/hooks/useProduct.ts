@@ -1,8 +1,12 @@
-import { useState } from "react";
 import { Product } from "../../types.ts";
+import { useStateByMode } from "./useStateByMode.ts";
+import { LOCAL_KEYS } from "../utils/localStorageUtil.ts";
 
 export const useProducts = (initialProducts: Product[]) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useStateByMode<Product[]>(
+    LOCAL_KEYS.PRODUCT_KEY,
+    initialProducts,
+  );
 
   const updateProduct = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
