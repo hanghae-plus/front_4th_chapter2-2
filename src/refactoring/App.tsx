@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AdminPage } from './components/AdminPage.tsx';
 import { CartPage } from './components/CartPage.tsx';
 import { useCoupons, useProducts } from './hooks';
+import { calculateItemTotal } from './models/cart.ts';
 
 import type { Coupon, Product } from '../types.ts';
 
