@@ -3,7 +3,6 @@ import { Product } from "../../types.ts";
 
 export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useState(initialProducts);
-  console.log(initialProducts);
 
   const updateProduct = useCallback((updatedProduct: Product) => {
     setProducts((prevProducts) =>
