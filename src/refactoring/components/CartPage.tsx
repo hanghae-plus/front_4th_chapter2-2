@@ -26,7 +26,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     return product.stock - (cartItem?.quantity || 0);
   };
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal
 
   const getAppliedDiscount = (item: CartItem) => {
     const { discounts } = item.product;

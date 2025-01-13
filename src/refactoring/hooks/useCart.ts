@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { updateCartItemQuantity } from "../models/cart";
+import { useDiscountCalculator } from "./useDiscountCalculator";
 
 interface UseCartOptions {
   useLocalStorage?: boolean; // 로컬 스토리지 사용 여부
@@ -57,16 +58,7 @@ export const useCart = ({ useLocalStorage = false }: UseCartOptions = {}) => {
     setSelectedCoupon(coupon);
   };
 
-  const calculateTotal = () => {
-    const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
-      calculateCartTotal(cart, selectedCoupon);
-
-    return {
-      totalBeforeDiscount,
-      totalAfterDiscount,
-      totalDiscount,
-    };
-  };
+  const calculateTotal = useDiscountCalculator(cart, selectedCoupon);
 
   return {
     cart,
