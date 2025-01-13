@@ -51,7 +51,11 @@ const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const handleProductUpdate = (updatedProduct: Product) => {
-    setProducts((prevProducts) => prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)));
+    setProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.id === updatedProduct.id ? updatedProduct : p,
+      ),
+    );
   };
 
   const handleProductAdd = (newProduct: Product) => {
