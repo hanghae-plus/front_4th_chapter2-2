@@ -5,6 +5,7 @@ import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
 import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
+import { debounce } from '../../refactoring/utils/debounce';
 
 const mockProducts: Product[] = [
   {
@@ -223,105 +224,214 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('useLocalStorage', () => {
+  describe('Hook Test', () => {
     beforeEach(() => {
       window.localStorage.clear();
     });
 
-    describe('초기 상태 설정', () => {
-      it('localStorage가 비어있을 때는 초기값을 사용해야 한다', () => {
-        // given
-        const key = 'testKey';
-        const initialValue = 'initialValue';
+    describe('useLocalStorage', () => {
+      describe('초기 상태 설정', () => {
+        it('localStorage가 비어있을 때는 초기값을 사용해야 한다', () => {
+          // given
+          const key = 'testKey';
+          const initialValue = 'initialValue';
 
-        // when
-        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+          // when
+          const { result } = renderHook(() => useLocalStorage(key, initialValue));
 
-        // then
-        expect(result.current[0]).toBe(initialValue);
+          // then
+          expect(result.current[0]).toBe(initialValue);
+        });
+
+        it('localStorage에 저장된 값이 있을 때는 저장된 값을 사용해야 한다', () => {
+          // given
+          const key = 'testKey';
+          const initialValue = 'initialValue';
+          const savedValue = 'savedValue';
+          localStorage.setItem(key, JSON.stringify(savedValue));
+
+          // when
+          const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+          // then
+          expect(result.current[0]).toBe(savedValue);
+        });
       });
 
-      it('localStorage에 저장된 값이 있을 때는 저장된 값을 사용해야 한다', () => {
-        // given
-        const key = 'testKey';
-        const initialValue = 'initialValue';
-        const savedValue = 'savedValue';
-        localStorage.setItem(key, JSON.stringify(savedValue));
+      describe('값 업데이트', () => {
+        it('새로운 값으로 직접 업데이트할 수 있어야 한다', () => {
+          // given
+          const key = 'testKey';
+          const { result } = renderHook(() => useLocalStorage(key, 'initialValue'));
 
-        // when
-        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+          // when
+          act(() => {
+            result.current[1]('newValue');
+          });
 
-        // then
-        expect(result.current[0]).toBe(savedValue);
+          // then
+          expect(result.current[0]).toBe('newValue');
+          expect(JSON.parse(localStorage.getItem(key)!)).toBe('newValue');
+        });
+
+        it('함수를 사용하여 이전 값을 기반으로 업데이트할 수 있어야 한다', () => {
+          // given
+          const key = 'testKey';
+          const { result } = renderHook(() => useLocalStorage(key, 'initialValue'));
+
+          // when
+          act(() => {
+            result.current[1]((prev) => prev + '_updated');
+          });
+
+          // then
+          expect(result.current[0]).toBe('initialValue_updated');
+          expect(JSON.parse(localStorage.getItem(key)!)).toBe('initialValue_updated');
+        });
+      });
+
+      describe('에러 처리', () => {
+        it('잘못된 JSON 형식이 저장되어 있을 때 초기값을 사용해야 한다', () => {
+          // given
+          const key = 'testKey';
+          const initialValue = 'initialValue';
+          localStorage.setItem(key, 'invalid-json');
+          const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+          // when
+          const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+          // then
+          expect(result.current[0]).toBe(initialValue);
+          expect(consoleSpy).toHaveBeenCalled();
+          consoleSpy.mockRestore();
+        });
+
+        it('localStorage 접근이 불가능할 때 초기값을 사용해야 한다', () => {
+          // given
+          const key = 'testKey';
+          const initialValue = 'initialValue';
+          const mockError = new Error('localStorage is not available');
+          const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+          vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+            throw mockError;
+          });
+
+          // when
+          const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+          // then
+          expect(result.current[0]).toBe(initialValue);
+          expect(consoleSpy).toHaveBeenCalled();
+          consoleSpy.mockRestore();
+        });
       });
     });
+  });
 
-    describe('값 업데이트', () => {
-      it('새로운 값으로 직접 업데이트할 수 있어야 한다', () => {
-        // given
-        const key = 'testKey';
-        const { result } = renderHook(() => useLocalStorage(key, 'initialValue'));
-
-        // when
-        act(() => {
-          result.current[1]('newValue');
-        });
-
-        // then
-        expect(result.current[0]).toBe('newValue');
-        expect(JSON.parse(localStorage.getItem(key)!)).toBe('newValue');
-      });
-
-      it('함수를 사용하여 이전 값을 기반으로 업데이트할 수 있어야 한다', () => {
-        // given
-        const key = 'testKey';
-        const { result } = renderHook(() => useLocalStorage(key, 'initialValue'));
-
-        // when
-        act(() => {
-          result.current[1]((prev) => prev + '_updated');
-        });
-
-        // then
-        expect(result.current[0]).toBe('initialValue_updated');
-        expect(JSON.parse(localStorage.getItem(key)!)).toBe('initialValue_updated');
-      });
+  describe('Util Test', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
     });
 
-    describe('에러 처리', () => {
-      it('잘못된 JSON 형식이 저장되어 있을 때 초기값을 사용해야 한다', () => {
-        // given
-        const key = 'testKey';
-        const initialValue = 'initialValue';
-        localStorage.setItem(key, 'invalid-json');
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    describe('debounce', () => {
+      describe('기본 동작 테스트', () => {
+        it('연속된 호출에서 마지막 호출만 실행되어야 한다', () => {
+          // given
+          const mockFn = vi.fn();
+          const debouncedFn = debounce(mockFn, 100);
 
-        // when
-        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+          // when
+          debouncedFn('first');
+          debouncedFn('second');
+          debouncedFn('third');
 
-        // then
-        expect(result.current[0]).toBe(initialValue);
-        expect(consoleSpy).toHaveBeenCalled();
-        consoleSpy.mockRestore();
+          // then
+          expect(mockFn).not.toHaveBeenCalled();
+
+          // when
+          vi.runAllTimers();
+
+          // then
+          expect(mockFn).toHaveBeenCalledTimes(1);
+          expect(mockFn).toHaveBeenCalledWith('third');
+        });
       });
 
-      it('localStorage 접근이 불가능할 때 초기값을 사용해야 한다', () => {
-        // given
-        const key = 'testKey';
-        const initialValue = 'initialValue';
-        const mockError = new Error('localStorage is not available');
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-          throw mockError;
+      describe('타이밍 테스트', () => {
+        it('지정된 시간이 지나기 전에 호출되면 이전 타이머를 취소해야 한다', () => {
+          // given
+          const mockFn = vi.fn();
+          const debouncedFn = debounce(mockFn, 100);
+
+          // when
+          debouncedFn('test');
+          vi.advanceTimersByTime(50);
+          debouncedFn('test2');
+
+          // then
+          expect(mockFn).not.toHaveBeenCalled();
+
+          // when
+          vi.advanceTimersByTime(100);
+
+          // then
+          expect(mockFn).toHaveBeenCalledTimes(1);
+          expect(mockFn).toHaveBeenCalledWith('test2');
         });
 
-        // when
-        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+        it('지정된 시간이 지나면 함수가 실행되어야 한다', () => {
+          // given
+          const mockFn = vi.fn();
+          const debouncedFn = debounce(mockFn, 100);
 
-        // then
-        expect(result.current[0]).toBe(initialValue);
-        expect(consoleSpy).toHaveBeenCalled();
-        consoleSpy.mockRestore();
+          // when
+          debouncedFn('test');
+          vi.advanceTimersByTime(100);
+
+          // then
+          expect(mockFn).toHaveBeenCalledTimes(1);
+          expect(mockFn).toHaveBeenCalledWith('test');
+        });
+      });
+
+      describe('매개변수 전달 테스트', () => {
+        it('올바른 매개변수가 전달되어야 한다', () => {
+          // given
+          const mockFn = vi.fn();
+          const debouncedFn = debounce(mockFn, 100);
+
+          // when
+          debouncedFn('test', 123, { key: 'value' });
+          vi.runAllTimers();
+
+          // then
+          expect(mockFn).toHaveBeenCalledWith('test', 123, { key: 'value' });
+        });
+      });
+
+      describe('에러 처리 테스트', () => {
+        it('콜백 함수에서 에러가 발생해도 다음 호출이 가능해야 한다', () => {
+          // given
+          const mockFn = vi.fn().mockImplementationOnce(() => {
+            throw new Error('Test Error');
+          });
+          const debouncedFn = debounce(mockFn, 100);
+
+          // when & then
+          expect(() => {
+            debouncedFn('test');
+            vi.runAllTimers();
+          }).toThrow('Test Error');
+
+          // when
+          debouncedFn('retry');
+          vi.runAllTimers();
+
+          // then
+          expect(mockFn).toHaveBeenCalledTimes(2);
+          expect(mockFn).toHaveBeenLastCalledWith('retry');
+        });
       });
     });
   });
