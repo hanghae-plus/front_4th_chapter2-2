@@ -71,3 +71,8 @@ export const addCartItemToCart = (product: Product, cart: CartItem[]) => {
   }
   return [...cart, { product, quantity: 1 }];
 };
+
+export const getAppliedDiscount = (item: CartItem) =>
+  item.product.discounts
+    .filter((discount) => item.quantity >= discount.quantity)
+    .reduce((max, discount) => Math.max(max, discount.rate), 0);
