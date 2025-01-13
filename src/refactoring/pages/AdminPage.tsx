@@ -3,7 +3,7 @@ import { Coupon, Discount, Product } from "../../types.ts";
 import Container from "../components/layout/Container.tsx";
 import ContentSection from "../components/layout/ContentSection.tsx";
 
-interface Props {
+interface AdminPageProps {
   products: Array<Product>;
   coupons: Array<Coupon>;
   onProductUpdate: (updatedProduct: Product) => void;
@@ -17,7 +17,7 @@ export const AdminPage = ({
   onProductUpdate,
   onProductAdd,
   onCouponAdd,
-}: Props) => {
+}: AdminPageProps) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({

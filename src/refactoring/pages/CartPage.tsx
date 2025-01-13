@@ -6,12 +6,12 @@ import ProductCard from "../components/product/ProductCard.tsx";
 import CartProductCard from "../components/cart/CartProductCard.tsx";
 import OrderSummary from "../components/cart/OrderSummary.tsx";
 
-interface Props {
+interface CartPageProps {
   products: Array<Product>;
   coupons: Array<Coupon>;
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({ products, coupons }: CartPageProps) => {
   const {
     cart,
     addToCart,
