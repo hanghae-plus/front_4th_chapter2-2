@@ -4,6 +4,7 @@ import { AdminPage } from './components/AdminPage';
 import { Coupon, Product } from '../types';
 import { useCoupons, useProducts } from './hooks';
 
+// 데이터 : 상테에 대한 값을 담고 있다.
 const initialProducts: Product[] = [
   {
     id: 'p1',
@@ -31,6 +32,7 @@ const initialProducts: Product[] = [
   },
 ];
 
+// 쿠폰 값에 대한 정보를 담고 있다.
 const initialCoupons: Coupon[] = [
   {
     name: '5000원 할인 쿠폰',
@@ -49,10 +51,14 @@ const initialCoupons: Coupon[] = [
 function App() {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
+
+  // 어드민일때랑 아닐 때 상태 분류
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
+    // 전체에 대한 래퍼라고 보면 된다.
     <div className="min-h-screen bg-gray-100">
+      {/* 네비 바가 하나로 분리 된다. */}
       <nav className="bg-blue-600 text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">쇼핑몰 관리 시스템</h1>
@@ -64,6 +70,7 @@ function App() {
           </button>
         </div>
       </nav>
+      {/* 메인 로직이 따로 분리 된다. */}
       <main className="container mx-auto mt-6">
         {isAdmin ? (
           <AdminPage

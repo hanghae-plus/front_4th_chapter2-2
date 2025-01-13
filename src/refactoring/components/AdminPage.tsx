@@ -9,13 +9,8 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export function AdminPage({
-  products,
-  coupons,
-  onProductUpdate,
-  onProductAdd,
-  onCouponAdd,
-}: Props) {
+export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) {
+  // 항상 state가 많으면 의심하게 되는 부분이 굳이 이런 자료가 필요한가이다.
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({
@@ -36,6 +31,7 @@ export function AdminPage({
     discounts: [],
   });
 
+  // 토글 이벤트. 여기에 필요한가? 따로 뺄 수 없을까?
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds((prev) => {
       const newSet = new Set(prev);
@@ -135,8 +131,12 @@ export function AdminPage({
 
   return (
     <div className="container mx-auto p-4">
+      {/* 헤더 따로 분리하기 */}
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
+
+      {/* 내부 그리드는 2개의 큰 범주로 나뉜다.*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* 그리드 범주 1 */}
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
           <button
@@ -149,27 +149,19 @@ export function AdminPage({
             <div className="bg-white p-4 rounded shadow mb-4">
               <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
               <div className="mb-2">
-                <label
-                  htmlFor="productName"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
                   상품명
                 </label>
                 <input
                   id="productName"
                   type="text"
                   value={newProduct.name}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, name: e.target.value })
-                  }
+                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                   className="w-full p-2 border rounded"
                 />
               </div>
               <div className="mb-2">
-                <label
-                  htmlFor="productPrice"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">
                   가격
                 </label>
                 <input
@@ -186,10 +178,7 @@ export function AdminPage({
                 />
               </div>
               <div className="mb-2">
-                <label
-                  htmlFor="productStock"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">
                   재고
                 </label>
                 <input
@@ -215,11 +204,7 @@ export function AdminPage({
           )}
           <div className="space-y-2">
             {products.map((product, index) => (
-              <div
-                key={product.id}
-                data-testid={`product-${index + 1}`}
-                className="bg-white p-4 rounded shadow"
-              >
+              <div key={product.id} data-testid={`product-${index + 1}`} className="bg-white p-4 rounded shadow">
                 <button
                   data-testid="toggle-button"
                   onClick={() => toggleProductAccordion(product.id)}
@@ -236,12 +221,7 @@ export function AdminPage({
                           <input
                             type="text"
                             value={editingProduct.name}
-                            onChange={(e) =>
-                              handleProductNameUpdate(
-                                product.id,
-                                e.target.value,
-                              )
-                            }
+                            onChange={(e) => handleProductNameUpdate(product.id, e.target.value)}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -250,12 +230,7 @@ export function AdminPage({
                           <input
                             type="number"
                             value={editingProduct.price}
-                            onChange={(e) =>
-                              handlePriceUpdate(
-                                product.id,
-                                parseInt(e.target.value),
-                              )
-                            }
+                            onChange={(e) => handlePriceUpdate(product.id, parseInt(e.target.value))}
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -264,33 +239,20 @@ export function AdminPage({
                           <input
                             type="number"
                             value={editingProduct.stock}
-                            onChange={(e) =>
-                              handleStockUpdate(
-                                product.id,
-                                parseInt(e.target.value),
-                              )
-                            }
+                            onChange={(e) => handleStockUpdate(product.id, parseInt(e.target.value))}
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         {/* 할인 정보 수정 부분 */}
                         <div>
-                          <h4 className="text-lg font-semibold mb-2">
-                            할인 정보
-                          </h4>
+                          <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
                           {editingProduct.discounts.map((discount, index) => (
-                            <div
-                              key={index}
-                              className="flex justify-between items-center mb-2"
-                            >
+                            <div key={index} className="flex justify-between items-center mb-2">
                               <span>
-                                {discount.quantity}개 이상 구매 시{' '}
-                                {discount.rate * 100}% 할인
+                                {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
                               </span>
                               <button
-                                onClick={() =>
-                                  handleRemoveDiscount(product.id, index)
-                                }
+                                onClick={() => handleRemoveDiscount(product.id, index)}
                                 className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                               >
                                 삭제
@@ -342,8 +304,7 @@ export function AdminPage({
                         {product.discounts.map((discount, index) => (
                           <div key={index} className="mb-2">
                             <span>
-                              {discount.quantity}개 이상 구매 시{' '}
-                              {discount.rate * 100}% 할인
+                              {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
                             </span>
                           </div>
                         ))}
@@ -362,6 +323,7 @@ export function AdminPage({
             ))}
           </div>
         </div>
+        {/*그리드 범주 2*/}
         <div>
           <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
           <div className="bg-white p-4 rounded shadow">
@@ -370,18 +332,14 @@ export function AdminPage({
                 type="text"
                 placeholder="쿠폰 이름"
                 value={newCoupon.name}
-                onChange={(e) =>
-                  setNewCoupon({ ...newCoupon, name: e.target.value })
-                }
+                onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
                 className="w-full p-2 border rounded"
               />
               <input
                 type="text"
                 placeholder="쿠폰 코드"
                 value={newCoupon.code}
-                onChange={(e) =>
-                  setNewCoupon({ ...newCoupon, code: e.target.value })
-                }
+                onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
                 className="w-full p-2 border rounded"
               />
               <div className="flex gap-2">
@@ -422,16 +380,9 @@ export function AdminPage({
               <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>
               <div className="space-y-2">
                 {coupons.map((coupon, index) => (
-                  <div
-                    key={index}
-                    data-testid={`coupon-${index + 1}`}
-                    className="bg-gray-100 p-2 rounded"
-                  >
+                  <div key={index} data-testid={`coupon-${index + 1}`} className="bg-gray-100 p-2 rounded">
                     {coupon.name} ({coupon.code}):
-                    {coupon.discountType === 'amount'
-                      ? `${coupon.discountValue}원`
-                      : `${coupon.discountValue}%`}{' '}
-                    할인
+                    {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`} 할인
                   </div>
                 ))}
               </div>
