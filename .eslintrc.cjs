@@ -52,7 +52,6 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/advanced/**/*.ts', 'src/advanced/**/*.tsx'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint'],
       extends: ['plugin:@typescript-eslint/recommended'],
