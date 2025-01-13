@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
+import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
 
 const mockProducts: Product[] = [
   {
@@ -222,13 +223,106 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+  describe('useLocalStorage', () => {
+    beforeEach(() => {
+      window.localStorage.clear();
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    describe('초기 상태 설정', () => {
+      it('localStorage가 비어있을 때는 초기값을 사용해야 한다', () => {
+        // given
+        const key = 'testKey';
+        const initialValue = 'initialValue';
+
+        // when
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        // then
+        expect(result.current[0]).toBe(initialValue);
+      });
+
+      it('localStorage에 저장된 값이 있을 때는 저장된 값을 사용해야 한다', () => {
+        // given
+        const key = 'testKey';
+        const initialValue = 'initialValue';
+        const savedValue = 'savedValue';
+        localStorage.setItem(key, JSON.stringify(savedValue));
+
+        // when
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        // then
+        expect(result.current[0]).toBe(savedValue);
+      });
+    });
+
+    describe('값 업데이트', () => {
+      it('새로운 값으로 직접 업데이트할 수 있어야 한다', () => {
+        // given
+        const key = 'testKey';
+        const { result } = renderHook(() => useLocalStorage(key, 'initialValue'));
+
+        // when
+        act(() => {
+          result.current[1]('newValue');
+        });
+
+        // then
+        expect(result.current[0]).toBe('newValue');
+        expect(JSON.parse(localStorage.getItem(key)!)).toBe('newValue');
+      });
+
+      it('함수를 사용하여 이전 값을 기반으로 업데이트할 수 있어야 한다', () => {
+        // given
+        const key = 'testKey';
+        const { result } = renderHook(() => useLocalStorage(key, 'initialValue'));
+
+        // when
+        act(() => {
+          result.current[1]((prev) => prev + '_updated');
+        });
+
+        // then
+        expect(result.current[0]).toBe('initialValue_updated');
+        expect(JSON.parse(localStorage.getItem(key)!)).toBe('initialValue_updated');
+      });
+    });
+
+    describe('에러 처리', () => {
+      it('잘못된 JSON 형식이 저장되어 있을 때 초기값을 사용해야 한다', () => {
+        // given
+        const key = 'testKey';
+        const initialValue = 'initialValue';
+        localStorage.setItem(key, 'invalid-json');
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        // when
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        // then
+        expect(result.current[0]).toBe(initialValue);
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
+      });
+
+      it('localStorage 접근이 불가능할 때 초기값을 사용해야 한다', () => {
+        // given
+        const key = 'testKey';
+        const initialValue = 'initialValue';
+        const mockError = new Error('localStorage is not available');
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+          throw mockError;
+        });
+
+        // when
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        // then
+        expect(result.current[0]).toBe(initialValue);
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
+      });
     });
   });
 });
