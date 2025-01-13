@@ -48,7 +48,7 @@ const initialCoupons: Coupon[] = [
 ];
 
 function App() {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
+  const { products } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 

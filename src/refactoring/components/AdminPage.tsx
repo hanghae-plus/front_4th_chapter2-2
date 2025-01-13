@@ -1,41 +1,44 @@
 import React, { useState } from 'react';
 import { Product } from '../models/types/Product';
 import { Coupon } from '../models/types/Coupon';
-import { Discount } from '../models/types/Discount';
+import { useProducts } from '../hooks';
 
 interface Props {
   products: Product[];
   coupons: Coupon[];
-  onProductUpdate: (updatedProduct: Product) => void;
-  onProductAdd: (newProduct: Product) => void;
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-function AdminPage({
-  products,
-  coupons,
-  onProductUpdate,
-  onProductAdd,
-  onCouponAdd,
-}: Props) {
+function AdminPage({ products, coupons, onCouponAdd }: Props) {
+  const {
+    newProduct,
+    showNewProductForm,
+    editingProduct,
+    newDiscount,
+    handlers: {
+      handleAddNewProduct,
+      handleEditProduct,
+      handleProductNameUpdate,
+      handlePriceUpdate,
+      handleStockUpdate,
+      handleAddDiscount,
+      handleRemoveDiscount,
+      handleEditComplete,
+      handleShowNewProductForm,
+      handleUpdateNewProductName,
+      handleUpdateNewProductPrice,
+      handleUpdateNewProductStock,
+      handleUpdateNewDiscountQuantity,
+      handleUpdateNewDiscountRate,
+    },
+  } = useProducts(products);
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({
-    quantity: 0,
-    rate: 0,
-  });
+
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
     discountType: 'percentage',
     discountValue: 0,
-  });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
   });
 
   const toggleProductAccordion = (productId: string) => {
@@ -50,69 +53,6 @@ function AdminPage({
     });
   };
 
-  // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({ ...product });
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 수정 완료 핸들러 함수 추가
-  const handleEditComplete = () => {
-    if (editingProduct) {
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-    }
-  };
-
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
-    }
-  };
-
-  const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
     setNewCoupon({
@@ -123,18 +63,6 @@ function AdminPage({
     });
   };
 
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
-  };
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
@@ -142,7 +70,8 @@ function AdminPage({
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
           <button
-            onClick={() => setShowNewProductForm(!showNewProductForm)}
+            type="button"
+            onClick={handleShowNewProductForm}
             className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
           >
             {showNewProductForm ? '취소' : '새 상품 추가'}
@@ -156,16 +85,14 @@ function AdminPage({
                   className="block text-sm font-medium text-gray-700"
                 >
                   상품명
+                  <input
+                    id="productName"
+                    type="text"
+                    value={newProduct.name}
+                    onChange={(e) => handleUpdateNewProductName(e.target.value)}
+                    className="w-full p-2 border rounded"
+                  />
                 </label>
-                <input
-                  id="productName"
-                  type="text"
-                  value={newProduct.name}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, name: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                />
               </div>
               <div className="mb-2">
                 <label
@@ -173,19 +100,16 @@ function AdminPage({
                   className="block text-sm font-medium text-gray-700"
                 >
                   가격
+                  <input
+                    id="productPrice"
+                    type="number"
+                    value={newProduct.price}
+                    onChange={(e) =>
+                      handleUpdateNewProductPrice(Number(e.target.value))
+                    }
+                    className="w-full p-2 border rounded"
+                  />
                 </label>
-                <input
-                  id="productPrice"
-                  type="number"
-                  value={newProduct.price}
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      price: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                />
               </div>
               <div className="mb-2">
                 <label
@@ -193,21 +117,19 @@ function AdminPage({
                   className="block text-sm font-medium text-gray-700"
                 >
                   재고
+                  <input
+                    id="productStock"
+                    type="number"
+                    value={newProduct.stock}
+                    onChange={(e) =>
+                      handleUpdateNewProductStock(Number(e.target.value))
+                    }
+                    className="w-full p-2 border rounded"
+                  />
                 </label>
-                <input
-                  id="productStock"
-                  type="number"
-                  value={newProduct.stock}
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      stock: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                />
               </div>
               <button
+                type="button"
                 onClick={handleAddNewProduct}
                 className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
               >
@@ -223,6 +145,7 @@ function AdminPage({
                 className="bg-white p-4 rounded shadow"
               >
                 <button
+                  type="button"
                   data-testid="toggle-button"
                   onClick={() => toggleProductAccordion(product.id)}
                   className="w-full text-left font-semibold"
@@ -234,7 +157,7 @@ function AdminPage({
                     {editingProduct && editingProduct.id === product.id ? (
                       <div>
                         <div className="mb-4">
-                          <label className="block mb-1">상품명: </label>
+                          <span className="block mb-1">상품명: </span>
                           <input
                             type="text"
                             value={editingProduct.name}
@@ -248,28 +171,28 @@ function AdminPage({
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block mb-1">가격: </label>
+                          <span className="block mb-1">가격: </span>
                           <input
                             type="number"
                             value={editingProduct.price}
                             onChange={(e) =>
                               handlePriceUpdate(
                                 product.id,
-                                parseInt(e.target.value),
+                                Number(e.target.value),
                               )
                             }
                             className="w-full p-2 border rounded"
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block mb-1">재고: </label>
+                          <span className="block mb-1">재고: </span>
                           <input
                             type="number"
                             value={editingProduct.stock}
                             onChange={(e) =>
                               handleStockUpdate(
                                 product.id,
-                                parseInt(e.target.value),
+                                Number(e.target.value),
                               )
                             }
                             className="w-full p-2 border rounded"
@@ -280,9 +203,9 @@ function AdminPage({
                           <h4 className="text-lg font-semibold mb-2">
                             할인 정보
                           </h4>
-                          {editingProduct.discounts.map((discount, index) => (
+                          {editingProduct.discounts.map((discount) => (
                             <div
-                              key={index}
+                              key={discount.rate}
                               className="flex justify-between items-center mb-2"
                             >
                               <span>
@@ -290,6 +213,7 @@ function AdminPage({
                                 {discount.rate * 100}% 할인
                               </span>
                               <button
+                                type="button"
                                 onClick={() =>
                                   handleRemoveDiscount(product.id, index)
                                 }
@@ -305,10 +229,9 @@ function AdminPage({
                               placeholder="수량"
                               value={newDiscount.quantity}
                               onChange={(e) =>
-                                setNewDiscount({
-                                  ...newDiscount,
-                                  quantity: parseInt(e.target.value),
-                                })
+                                handleUpdateNewDiscountQuantity(
+                                  Number(e.target.value),
+                                )
                               }
                               className="w-1/3 p-2 border rounded"
                             />
@@ -317,14 +240,14 @@ function AdminPage({
                               placeholder="할인율 (%)"
                               value={newDiscount.rate * 100}
                               onChange={(e) =>
-                                setNewDiscount({
-                                  ...newDiscount,
-                                  rate: parseInt(e.target.value) / 100,
-                                })
+                                handleUpdateNewDiscountRate(
+                                  Number(e.target.value),
+                                )
                               }
                               className="w-1/3 p-2 border rounded"
                             />
                             <button
+                              type="button"
                               onClick={() => handleAddDiscount(product.id)}
                               className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                             >
@@ -333,6 +256,7 @@ function AdminPage({
                           </div>
                         </div>
                         <button
+                          type="button"
                           onClick={handleEditComplete}
                           className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
                         >
@@ -341,8 +265,8 @@ function AdminPage({
                       </div>
                     ) : (
                       <div>
-                        {product.discounts.map((discount, index) => (
-                          <div key={index} className="mb-2">
+                        {product.discounts.map((discount) => (
+                          <div key={discount.rate} className="mb-2">
                             <span>
                               {discount.quantity}개 이상 구매 시{' '}
                               {discount.rate * 100}% 할인
@@ -350,6 +274,7 @@ function AdminPage({
                           </div>
                         ))}
                         <button
+                          type="button"
                           data-testid="modify-button"
                           onClick={() => handleEditProduct(product)}
                           className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
@@ -407,13 +332,14 @@ function AdminPage({
                   onChange={(e) =>
                     setNewCoupon({
                       ...newCoupon,
-                      discountValue: parseInt(e.target.value),
+                      discountValue: Number(e.target.value),
                     })
                   }
                   className="w-full p-2 border rounded"
                 />
               </div>
               <button
+                type="button"
                 onClick={handleAddCoupon}
                 className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
               >
@@ -425,7 +351,7 @@ function AdminPage({
               <div className="space-y-2">
                 {coupons.map((coupon, index) => (
                   <div
-                    key={index}
+                    key={coupon.code}
                     data-testid={`coupon-${index + 1}`}
                     className="bg-gray-100 p-2 rounded"
                   >
