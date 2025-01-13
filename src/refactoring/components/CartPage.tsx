@@ -1,7 +1,7 @@
 import { Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
-import ProductCard from './ProductCard.tsx';
 import CartItemCardWrapper from './CartItemCardWrapper.tsx';
+import ProductCardWrapper from './ProductCardWrapper.tsx';
 
 interface Props {
   products: Product[];
@@ -29,7 +29,7 @@ export const CartPage = ({ products, coupons }: Props) => {
           <h2 className='text-2xl font-semibold mb-4'>상품 목록</h2>
           <div className='space-y-2'>
             {products.map((product) => (
-              <ProductCard cart={cart} product={product} addToCart={addToCart} />
+              <ProductCardWrapper cart={cart} product={product} addToCart={addToCart} />
             ))}
           </div>
         </div>

@@ -68,6 +68,3 @@ export const addCartItemToCart = (product: Product, cart: CartItem[]) => {
   }
   return [...cart, { product, quantity: 1 }];
 };
-
-export const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) =>
-  discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
