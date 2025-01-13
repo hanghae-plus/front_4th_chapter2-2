@@ -29,7 +29,7 @@ export const useCart = () => {
     return product.stock - (cartItem?.quantity || 0);
   };
 
-  const removeFromCart = (productId: string) => {};
+  const removeFromCart = (productId: string) => { setCart(prevCart => prevCart.filter(item => item.product.id !== productId));};
 
   const updateQuantity = (productId: string, newQuantity: number) => {};
 
