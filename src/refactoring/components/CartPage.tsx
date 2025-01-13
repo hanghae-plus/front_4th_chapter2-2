@@ -15,16 +15,17 @@ export const CartPage = ({ products = [], coupons = [] }: Props) => {
     addToCart,
     removeFromCart,
     updateQuantity,
-    calculateCartTotal,
+    calculateTotal,
     getRemainingStock,
     getAppliedDiscount,
   } = useCart();
 
-  const { selectedCoupon, applyCoupon, calculateCouponDiscount } = useCoupons();
+  const { selectedCoupon, applyCoupon } = useCoupons();
   const { getMaxDiscount } = useProducts(products);
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateCartTotal(cart, selectedCoupon);
-  const couponDiscount = calculateCouponDiscount(totalAfterDiscount);
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+
+  console.log("총 금액:", { totalBeforeDiscount, totalAfterDiscount, totalDiscount });
 
   return (
     <div className="container mx-auto p-4">
@@ -159,5 +160,6 @@ export const CartPage = ({ products = [], coupons = [] }: Props) => {
         </div>
       </div>
     </div>
+    
   );
 };

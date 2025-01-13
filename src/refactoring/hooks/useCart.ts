@@ -60,31 +60,25 @@ export const useCart = () => {
       (sum, item) => sum + item.product.price * item.quantity,
       0
     );
-    let totalAfterDiscount = cart.reduce(
+
+    const totalAfterItemDiscount = cart.reduce(
       (sum, item) => sum + calculateItemTotal(item),
       0
     );
-  
-    let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
-  
-    // 쿠폰이 있을 경우, 쿠폰 타입에 맞게 할인 적용
-    if (!selectedCoupon) return { totalBeforeDiscount, totalAfterDiscount, totalDiscount };
-  
-    if (selectedCoupon.discountType === "amount") {
-      // amount 방식: discountValue는 금액
-      totalAfterDiscount -= selectedCoupon.discountValue;
-      totalDiscount += selectedCoupon.discountValue;
-      return { totalBeforeDiscount, totalAfterDiscount, totalDiscount };
-    }
-  
-    if (selectedCoupon.discountType === "percentage") {
-      // percentage 방식: discountValue는 백분율 (예: 10은 10% 할인)
-      const couponDiscount = totalBeforeDiscount * (selectedCoupon.discountValue / 100);
-      totalAfterDiscount -= couponDiscount;
-      totalDiscount += couponDiscount;
-      return { totalBeforeDiscount, totalAfterDiscount, totalDiscount };
+
+    let couponDiscount = 0;
+
+    if (selectedCoupon) {
+      if (selectedCoupon.discountType === "percentage") {
+        couponDiscount = Math.round(totalAfterItemDiscount * (selectedCoupon.discountValue / 100));
+      } else if (selectedCoupon.discountType === "amount") {
+        couponDiscount = selectedCoupon.discountValue;
+      }
     }
 
+    const totalAfterDiscount = Math.max(totalAfterItemDiscount - couponDiscount, 0);
+    const totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+  
     return { totalBeforeDiscount, totalAfterDiscount, totalDiscount };
   };
 
