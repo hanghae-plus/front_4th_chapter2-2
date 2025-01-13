@@ -42,10 +42,10 @@ export const useCart = () => {
     addToCart,
     removeFromCart,
     updateQuantity: (productId: string, newQuantity: number) => {
-      setCart(cart =>  updateCartItemQuantity({ cart, productId, newQuantity }))
+      setCart(cart =>  updateCartItemQuantity(cart, productId, newQuantity))
     },
     applyCoupon,
-    calculateTotal: () => calculateCartTotal({ cart, selectedCoupon }),
+    calculateTotal: () => calculateCartTotal(cart, selectedCoupon),
     selectedCoupon,
   };
 };
