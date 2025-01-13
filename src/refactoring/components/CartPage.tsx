@@ -1,7 +1,7 @@
 import { Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
-import CartItemCard from './CartItemCard.tsx';
 import ProductCard from './ProductCard.tsx';
+import CartItemCardWrapper from './CartItemCardWrapper.tsx';
 
 interface Props {
   products: Product[];
@@ -38,7 +38,7 @@ export const CartPage = ({ products, coupons }: Props) => {
 
           <div className='space-y-2'>
             {cart.map((item) => (
-              <CartItemCard
+              <CartItemCardWrapper
                 item={item}
                 removeFromCart={removeFromCart}
                 updateQuantity={updateQuantity}

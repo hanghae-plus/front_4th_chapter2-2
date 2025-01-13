@@ -50,7 +50,7 @@ export const updateCartItemQuantity = (
     )
     .filter((item) => item.quantity > 0);
 
-export const getCartItem = (product: Product, cart: CartItem[]) =>
+const getCartItem = (product: Product, cart: CartItem[]) =>
   cart.find((item) => item.product.id === product.id);
 
 export const getRemainingStock = (product: Product, cart: CartItem[]) => {
@@ -58,24 +58,16 @@ export const getRemainingStock = (product: Product, cart: CartItem[]) => {
   return product.stock - (cartItem?.quantity || 0);
 };
 
-export const updateCartItem = (product: Product, cart: CartItem[]) =>
-  cart.map((item) =>
-    item.product.id === product.id
-      ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-      : item,
-  );
-
 export const addCartItemToCart = (product: Product, cart: CartItem[]) => {
   if (getCartItem(product, cart)) {
-    return updateCartItem(product, cart);
+    return cart.map((item) =>
+      item.product.id === product.id
+        ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
+        : item,
+    );
   }
   return [...cart, { product, quantity: 1 }];
 };
-
-export const getAppliedDiscount = (item: CartItem) =>
-  item.product.discounts
-    .filter((discount) => item.quantity >= discount.quantity)
-    .reduce((max, discount) => Math.max(max, discount.rate), 0);
 
 export const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) =>
   discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
