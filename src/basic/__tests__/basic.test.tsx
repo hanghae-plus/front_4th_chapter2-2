@@ -338,9 +338,13 @@ describe('basic > ', () => {
         expect(cartUtils.calculateItemTotal(item)).toBe(100);
       });
 
-      test('수량에 따라 올바른 할인을 적용해야 합니다.', () => {
-        const item: CartItem = { product: testProduct, quantity: 5 };
-        expect(cartUtils.calculateItemTotal(item)).toBe(400); // 500 * 0.8
+      test.each([
+        { quantity: 2, price: 180 },
+        { quantity: 3, price: 270 },
+        { quantity: 5, price: 400 },
+      ])('수량에 따라 올바른 할인을 적용해야 합니다.', ({ quantity, price }) => {
+        const item: CartItem = { product: testProduct, quantity };
+        expect(cartUtils.calculateItemTotal(item)).toBe(price); // 500 * 0.8
       });
     });
 
