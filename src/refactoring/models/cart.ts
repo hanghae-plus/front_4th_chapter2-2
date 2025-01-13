@@ -31,11 +31,7 @@ const calculateTotalDiscount = (cart: CartItem[]) => {
 
     totalBeforeDiscount += price * quantity;
 
-    const discount = item.product.discounts.reduce((maxDiscount, d) => {
-      return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-    }, 0);
-
-    totalAfterDiscount += price * quantity * (1 - discount);
+    totalAfterDiscount += calculateItemTotal(item);
   });
 
   return { totalDiscount: totalBeforeDiscount - totalAfterDiscount, totalBeforeDiscount, totalAfterDiscount };
@@ -80,7 +76,8 @@ export const updateCartItemQuantity = (cart: CartItem[], productId: string, newQ
 
       if (id !== productId) return item;
 
-      const validQuantity = Math.min(newQuantity, stock);
+      const maxQuantity = stock;
+      const validQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
 
       return validQuantity > 0 ? { ...item, quantity: validQuantity } : null;
     })
