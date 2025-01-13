@@ -1,13 +1,13 @@
 import CartItemCard from './CartItemCard.tsx';
 import { CartItem } from '../../types.ts';
 
-interface CartItemCardProps {
+interface CartItemCardWrapperProps {
   item: CartItem;
   updateQuantity: (productId: string, newQuantity: number) => void;
   removeFromCart: (productId: string) => void;
 }
 
-const CartItemCardWrapper = (props: CartItemCardProps) => {
+const CartItemCardWrapper = (props: CartItemCardWrapperProps) => {
   const getAppliedDiscount = (item: CartItem) =>
     item.product.discounts
       .filter((discount) => item.quantity >= discount.quantity)
