@@ -1,11 +1,29 @@
-// useCart.ts
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
 
-export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+interface UseCartOptions {
+  useLocalStorage?: boolean; // 로컬 스토리지 사용 여부
+}
+
+export const useCart = ({ useLocalStorage = false }: UseCartOptions = {}) => {
+  const CART_KEY = "cart";
+
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (useLocalStorage) {
+      const storedCart = localStorage.getItem(CART_KEY);
+      return storedCart ? JSON.parse(storedCart) : [];
+    }
+    return [];
+  });
+
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+
+  useEffect(() => {
+    if (useLocalStorage) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+  }, [cart, useLocalStorage]);
 
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
