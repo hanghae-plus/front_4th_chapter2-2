@@ -23,6 +23,7 @@ export const CartPage = ({ products, coupons }: Props) => {
 
   const getRemainingStock = (product: Product) => {
     const cartItem = cart.find(item => item.product.id === product.id);
+
     return product.stock - (cartItem?.quantity || 0);
   };
 
@@ -32,11 +33,13 @@ export const CartPage = ({ products, coupons }: Props) => {
     const { discounts } = item.product;
     const { quantity } = item;
     let appliedDiscount = 0;
+
     for (const discount of discounts) {
       if (quantity >= discount.quantity) {
         appliedDiscount = Math.max(appliedDiscount, discount.rate);
       }
     }
+
     return appliedDiscount;
   };
 
@@ -49,6 +52,7 @@ export const CartPage = ({ products, coupons }: Props) => {
           <div className="space-y-2">
             {products.map(product => {
               const remainingStock = getRemainingStock(product);
+
               return (
                 <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
                   <div className="flex justify-between items-center mb-2">
@@ -96,6 +100,7 @@ export const CartPage = ({ products, coupons }: Props) => {
           <div className="space-y-2">
             {cart.map(item => {
               const appliedDiscount = getAppliedDiscount(item);
+
               return (
                 <div key={item.product.id} className="flex justify-between items-center bg-white p-3 rounded shadow">
                   <div>

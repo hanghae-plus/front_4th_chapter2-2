@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { Coupon, Discount, Product } from '../../types.ts';
 
 interface Props {
@@ -30,11 +31,13 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds(prev => {
       const newSet = new Set(prev);
+
       if (newSet.has(productId)) {
         newSet.delete(productId);
       } else {
         newSet.add(productId);
       }
+
       return newSet;
     });
   };
@@ -48,6 +51,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   const handleProductNameUpdate = (productId: string, newName: string) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, name: newName };
+
       setEditingProduct(updatedProduct);
     }
   };
@@ -56,6 +60,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, price: newPrice };
+
       setEditingProduct(updatedProduct);
     }
   };
@@ -70,8 +75,10 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleStockUpdate = (productId: string, newStock: number) => {
     const updatedProduct = products.find(p => p.id === productId);
+
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
+
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
@@ -79,11 +86,13 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleAddDiscount = (productId: string) => {
     const updatedProduct = products.find(p => p.id === productId);
+
     if (updatedProduct && editingProduct) {
       const newProduct = {
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount]
       };
+
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
@@ -92,11 +101,13 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleRemoveDiscount = (productId: string, index: number) => {
     const updatedProduct = products.find(p => p.id === productId);
+
     if (updatedProduct) {
       const newProduct = {
         ...updatedProduct,
         discounts: updatedProduct.discounts.filter((_, i) => i !== index)
       };
+
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
@@ -114,6 +125,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
+
     onProductAdd(productWithId);
     setNewProduct({
       name: '',
