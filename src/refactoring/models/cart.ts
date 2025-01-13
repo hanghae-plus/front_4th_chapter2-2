@@ -4,7 +4,6 @@ import { CartItem, Coupon } from '../../types';
 //수량에 따라 올바른 할인을 적용해야 한다.
 export const calculateItemTotal = (item: CartItem) => {
   const maxDiscount = getMaxApplicableDiscount(item);
-  console.log('333', maxDiscount);
   return item.product.price * item.quantity - item.product.price * item.quantity * maxDiscount;
 };
 
@@ -17,11 +16,24 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
   return applicableDiscounts.length > 0 ? applicableDiscounts[0].rate : 0;
 };
 
+//쿠폰 없이 총액을 올바르게 계산해야 한다.
+//금액쿠폰을 올바르게 적용해야 한다.
+//퍼센트 쿠폰을 올바르게 적용해야 한다.
 export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
+  const totalBeforeDiscount = cart.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+
+  const totalDiscount = selectedCoupon
+    ? Math.min(
+        selectedCoupon.discountType === 'percentage'
+          ? totalBeforeDiscount * (selectedCoupon.discountValue / 100)
+          : selectedCoupon.discountValue,
+      )
+    : 0;
+
   return {
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
+    totalBeforeDiscount,
+    totalAfterDiscount: totalBeforeDiscount - totalDiscount,
+    totalDiscount,
   };
 };
 
