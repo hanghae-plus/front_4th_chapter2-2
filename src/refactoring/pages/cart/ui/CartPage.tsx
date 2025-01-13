@@ -1,5 +1,5 @@
 import { CartItem, Coupon, Product } from '../../../../types.ts';
-import { useCart } from '../../../hooks';
+import { useCart } from '../model/useCart.ts';
 
 interface Props {
   products: Product[];

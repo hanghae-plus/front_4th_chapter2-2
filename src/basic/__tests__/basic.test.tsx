@@ -4,8 +4,10 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 import { CartPage } from '../../refactoring/pages/cart/ui/CartPage.tsx';
 import { AdminPage } from '../../refactoring/pages/admin/ui/AdminPage.tsx';
 import { CartItem, Coupon, Product } from '../../types';
-import { useCart, useCoupons, useProducts } from '../../refactoring/hooks';
 import * as cartUtils from '../../refactoring/pages/cart/lib/cart.ts';
+import { useCoupons } from '../../refactoring/features/coupon/model/useCoupon.ts';
+import { useProducts } from '../../refactoring/features/product/model/useProduct.ts';
+import { useCart } from '../../refactoring/pages/cart/model/useCart.ts';
 
 const mockProducts: Product[] = [
   {
