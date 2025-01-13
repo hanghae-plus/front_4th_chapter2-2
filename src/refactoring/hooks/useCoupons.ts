@@ -2,30 +2,39 @@ import { useState } from "react";
 import { Coupon } from "../../types";
 
 
-export const useCoupons = () => {
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+export const useCoupons = (initialCoupons: Coupon[] = []) => {
+  const [coupons, setCoupons] = useState<Coupon[]>(initialCoupons);
+
+  const addCoupon = (coupon: Coupon) => {
+    setCoupons(prevCoupons => [...prevCoupons, coupon]);
+  };
 
   const applyCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
+    setCoupons(prevCoupons => [...prevCoupons, coupon]);
   };
 
   const calculateCouponDiscount = (total:number): number => {
-    if (!selectedCoupon) return 0;
+    if (!coupons) return 0;
 
-    if (selectedCoupon.discountType === "amount") {
-      return Math.min(total, selectedCoupon.discountValue)
-    }
+    return coupons.reduce((acc, coupon) => {
+      if (coupon.discountType === "amount") {
+        return acc + Math.min(total, coupon.discountValue);
+      }
 
-    if (selectedCoupon.discountType === "percentage") {
-      return total * (selectedCoupon.discountValue / 100);
-    }
+      if (coupon.discountType === "percentage") {
+        return acc + total * (coupon.discountValue / 100);
+      }
+
+      return acc;
+    }, 0);
 
     return 0;
   };
 
   return {
-    selectedCoupon,
+    coupons,
     applyCoupon,
     calculateCouponDiscount,
+    addCoupon,
   };
 };
