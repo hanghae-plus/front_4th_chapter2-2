@@ -7,11 +7,11 @@ import {
 import { useCart } from '../hooks';
 
 interface Props {
-  products: Product[];
+  productList: Product[];
   coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({ productList, coupons }: Props) => {
   const {
     cart,
     addToCart,
@@ -31,7 +31,7 @@ export const CartPage = ({ products, coupons }: Props) => {
         <div>
           <h2 className='text-2xl font-semibold mb-4'>상품 목록</h2>
           <div className='space-y-2'>
-            {products.map((product) => {
+            {productList.map((product) => {
               const remainingStock = calculateRemainingStock(product, cart);
               return (
                 <div

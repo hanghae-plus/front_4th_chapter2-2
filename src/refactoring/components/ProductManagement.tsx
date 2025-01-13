@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Discount, Product } from '../../types';
 
 interface Props {
-  products: Product[];
+  productList: Product[];
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
 }
-export default function ProductManagement({ products, onProductUpdate, onProductAdd }: Props) {
+export default function ProductManagement({ productList, onProductUpdate, onProductAdd }: Props) {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
@@ -18,6 +18,7 @@ export default function ProductManagement({ products, onProductUpdate, onProduct
     stock: 0,
     discounts: [],
   });
+  // const [newProduct, setNewProduct] = useProduct({});
 
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds((prev) => {
@@ -61,7 +62,7 @@ export default function ProductManagement({ products, onProductUpdate, onProduct
   };
 
   const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
       onProductUpdate(newProduct);
@@ -70,7 +71,7 @@ export default function ProductManagement({ products, onProductUpdate, onProduct
   };
 
   const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct && editingProduct) {
       const newProduct = {
         ...updatedProduct,
@@ -83,7 +84,7 @@ export default function ProductManagement({ products, onProductUpdate, onProduct
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = {
         ...updatedProduct,
@@ -163,7 +164,7 @@ export default function ProductManagement({ products, onProductUpdate, onProduct
         </div>
       )}
       <div className='space-y-2'>
-        {products.map((product, index) => (
+        {productList.map((product, index) => (
           <div
             key={product.id}
             data-testid={`product-${index + 1}`}

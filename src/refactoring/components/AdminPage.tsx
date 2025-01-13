@@ -3,7 +3,7 @@ import CouponManagement from './CouponManagement';
 import ProductManagement from './ProductManagement';
 
 interface Props {
-  products: Product[];
+  productList: Product[];
   coupons: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const AdminPage = ({
-  products,
+  productList,
   coupons,
   onProductUpdate,
   onProductAdd,
@@ -21,7 +21,7 @@ export const AdminPage = ({
     <h1 className='text-3xl font-bold mb-6'>관리자 페이지</h1>
     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
       <ProductManagement
-        products={products}
+        productList={productList}
         onProductUpdate={onProductUpdate}
         onProductAdd={onProductAdd}
       />
