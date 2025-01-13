@@ -10,7 +10,7 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
 
 export const calculateCartTotal = (
   cart: CartItem[],
-  selectedCoupon: Coupon | null
+  selectedCoupon: Coupon | null,
 ) => {
   return {
     totalBeforeDiscount: 0,
@@ -22,7 +22,7 @@ export const calculateCartTotal = (
 export const updateCartItemQuantity = (
   cart: CartItem[],
   productId: string,
-  newQuantity: number
+  newQuantity: number,
 ): CartItem[] => {
   return [];
 };
