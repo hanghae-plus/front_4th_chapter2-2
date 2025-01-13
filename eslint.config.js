@@ -6,6 +6,8 @@ import a11y from 'eslint-plugin-jsx-a11y';
 import vitest from 'eslint-plugin-vitest';
 import prettier from 'eslint-plugin-prettier';
 import airbnb from 'eslint-config-airbnb-typescript';
+import boundaries from 'eslint-plugin-boundaries';
+import importPlugin from 'eslint-plugin-import';
 
 export default [
   {
@@ -27,7 +29,20 @@ export default [
       'jsx-a11y': a11y,
       vitest,
       prettier,
+      import: importPlugin,
+      boundaries,
     },
+    settings: {
+      'boundaries/elements': [
+        { type: 'app', pattern: './src/refactoring/app/*' },
+        { type: 'pages', pattern: './src/refactoring/pages/*' },
+        { type: 'widgets', pattern: './src/refactoring/widgets/*' },
+        { type: 'features', pattern: './src/refactoring/features/*' },
+        { type: 'entities', pattern: './src/refactoring/entities/*' },
+        { type: 'shared', pattern: './src/refactoring/shared/*' },
+      ],
+    },
+
     rules: {
       ...airbnb.rules,
       'prettier/prettier': 'error',
@@ -42,10 +57,24 @@ export default [
       ],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
-      'import/prefer-default-export': 'off', // 유틸 함수 내보내기 규칙 맞춤
+      'import/prefer-default-export': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      'jsx-a11y/anchor-is-valid': 'off', // Next.js의 <Link> 지원
+      'jsx-a11y/anchor-is-valid': 'off',
+      'boundaries/element-types': [
+        'error',
+        {
+          default: 'disallow',
+          rules: [
+            { from: 'app', allow: ['pages', 'widgets', 'features', 'entities', 'shared'] },
+            { from: 'pages', allow: ['widgets', 'features', 'entities', 'shared'] },
+            { from: 'widgets', allow: ['features', 'entities', 'shared'] },
+            { from: 'features', allow: ['entities', 'shared'] },
+            { from: 'entities', allow: ['shared'] },
+            { from: 'shared', allow: ['shared'] },
+          ],
+        },
+      ],
     },
   },
   {
