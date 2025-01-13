@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Coupon } from "../../types";
 
 
-export const useCoupon = () => {
+export const useCoupons = () => {
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const applyCoupon = (coupon: Coupon) => {

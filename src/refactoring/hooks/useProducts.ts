@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Product } from "../../types";
 
-export const useProduct = (initialProducts: Product[]) => {
+export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const updateProduct = (updatedProduct: Product) => {
@@ -18,10 +18,15 @@ export const useProduct = (initialProducts: Product[]) => {
     setProducts((prev) => prev.filter((product) => product.id !== productId));
   };
 
+  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]): number => {
+    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
+  };
+
   return {
     products,
     updateProduct,
     addProduct,
     removeProduct,
+    getMaxDiscount,
   };
 };

@@ -1,44 +1,30 @@
-import { CartItem, Coupon, Product } from '../../types.ts';
-import { useCart } from "../hooks";
+import { useCart } from "../hooks/useCart.ts";
+import { useCoupons } from "../hooks/useCoupons.ts";
+import { useProducts } from "../hooks/useProducts.ts";
+import { Coupon, Product } from "../../types.ts";
 
 interface Props {
   products: Product[];
   coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
-  const {
+export const CartPage = ({ products = [], coupons = [] }: Props) => {
+
+  const { 
     cart,
     addToCart,
     removeFromCart,
     updateQuantity,
-    applyCoupon,
-    calculateTotal,
-    selectedCoupon
+    calculateCartTotal,
+    getRemainingStock,
+    getAppliedDiscount,
   } = useCart();
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
+  const { selectedCoupon, applyCoupon, calculateCouponDiscount } = useCoupons();
+  const { getMaxDiscount } = useProducts(products);
 
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find(item => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
-
-  const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateCartTotal(cart, selectedCoupon);
+  const couponDiscount = calculateCouponDiscount(totalAfterDiscount);
 
   return (
     <div className="container mx-auto p-4">
@@ -47,47 +33,51 @@ export const CartPage = ({ products, coupons }: Props) => {
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
           <div className="space-y-2">
-            {products.map(product => {
-              const remainingStock = getRemainingStock(product);
-              return (
-                <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">{product.name}</span>
-                    <span className="text-gray-600">{product.price.toLocaleString()}원</span>
-                  </div>
-                  <div className="text-sm text-gray-500 mb-2">
-                    <span className={`font-medium ${remainingStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      재고: {remainingStock}개
-                    </span>
-                    {product.discounts.length > 0 && (
-                      <span className="ml-2 font-medium text-blue-600">
-                        최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
+            {products.length > 0 ? (
+              products.map((product) => {
+                const remainingStock = getRemainingStock(product);
+                return (
+                  <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">{product.name}</span>
+                      <span className="text-gray-600">{product.price.toLocaleString()}원</span>
+                    </div>
+                    <div className="text-sm text-gray-500 mb-2">
+                      <span className={`font-medium ${remainingStock > 0 ? "text-green-600" : "text-red-600"}`}>
+                        재고: {remainingStock}개
                       </span>
+                      {product.discounts.length > 0 && (
+                        <span className="ml-2 font-medium text-blue-600">
+                          최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
+                        </span>
+                      )}
+                    </div>
+                    {product.discounts.length > 0 && (
+                      <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
+                        {product.discounts.map((discount, index) => (
+                          <li key={index}>
+                            {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}% 할인
+                          </li>
+                        ))}
+                      </ul>
                     )}
+                    <button
+                      onClick={() => addToCart(product)}
+                      className={`w-full px-3 py-1 rounded ${
+                        remainingStock > 0
+                          ? "bg-blue-500 text-white hover:bg-blue-600"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
+                      disabled={remainingStock <= 0}
+                    >
+                      {remainingStock > 0 ? "장바구니에 추가" : "품절"}
+                    </button>
                   </div>
-                  {product.discounts.length > 0 && (
-                    <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
-                      {product.discounts.map((discount, index) => (
-                        <li key={index}>
-                          {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}% 할인
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <button
-                    onClick={() => addToCart(product)}
-                    className={`w-full px-3 py-1 rounded ${
-                      remainingStock > 0
-                        ? 'bg-blue-500 text-white hover:bg-blue-600'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                    disabled={remainingStock <= 0}
-                  >
-                    {remainingStock > 0 ? '장바구니에 추가' : '품절'}
-                  </button>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p className="text-gray-500">표시할 상품이 없습니다.</p>
+            )}
           </div>
         </div>
         <div>
@@ -144,14 +134,14 @@ export const CartPage = ({ products, coupons }: Props) => {
               <option value="">쿠폰 선택</option>
               {coupons.map((coupon, index) => (
                 <option key={coupon.code} value={index}>
-                  {coupon.name} - {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
+                  {coupon.name} - {coupon.discountType === "amount" ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
                 </option>
               ))}
             </select>
             {selectedCoupon && (
               <p className="text-green-600">
                 적용된 쿠폰: {selectedCoupon.name}
-                ({selectedCoupon.discountType === 'amount' ? `${selectedCoupon.discountValue}원` : `${selectedCoupon.discountValue}%`} 할인)
+                ({selectedCoupon.discountType === "amount" ? `${selectedCoupon.discountValue}원` : `${selectedCoupon.discountValue}%`} 할인)
               </p>
             )}
           </div>
