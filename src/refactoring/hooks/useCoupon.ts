@@ -4,5 +4,13 @@ import {useState} from "react";
 export const useCoupons = (initialCoupons: Coupon[]) => {
     const [coupons, setCoupons] = useState(initialCoupons);
 
-    return {coupons: coupons, addCoupon: () => undefined};
+    const _calculateNewCoupon = (coupon: Coupon) => {
+        return [...coupons, coupon];
+    }
+
+    const addCoupon = (coupon: Coupon) => {
+        setCoupons(_calculateNewCoupon(coupon))
+    }
+
+    return {coupons: coupons, addCoupon: addCoupon,};
 };
