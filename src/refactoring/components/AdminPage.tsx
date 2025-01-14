@@ -1,5 +1,8 @@
 import { Coupon, Product } from '../../types.ts';
 import useAdmin from '../hooks/useAdmin.ts';
+import useNewCoupon from '../hooks/useNewCoupon.ts';
+import useProductSet from '../hooks/useProductSet.ts';
+import useNewProduct from '../hooks/useNewProduct.ts';
 
 interface Props {
   products: Product[];
@@ -17,27 +20,39 @@ export const AdminPage = ({
   onCouponAdd,
 }: Props) => {
   const {
-    openProductIds,
     editingProduct,
     newDiscount,
-    newCoupon,
-    showNewProductForm,
-    newProduct,
-    setNewDiscount,
-    setNewCoupon,
-    setShowNewProductForm,
-    setNewProduct,
-    toggleProductAccordion,
+    handleChangeRate,
+    handleChangeQuantity,
     handleEditProduct,
     handleProductNameUpdate,
     handlePriceUpdate,
-    handleAddNewProduct,
     handleEditComplete,
     handleStockUpdate,
-    handleAddCoupon,
     handleAddDiscount,
     handleRemoveDiscount,
-  } = useAdmin({ products, onProductUpdate, onProductAdd, onCouponAdd });
+  } = useAdmin({ products, onProductUpdate });
+
+  const {
+    newCoupon,
+    handleAddCoupon,
+    handleChangeName,
+    handleChangeCode,
+    handleChangeDiscountType,
+    handleChangeDiscountValue,
+  } = useNewCoupon({ onCouponAdd });
+
+  const { openProductIds, toggleProductAccordion } = useProductSet();
+
+  const {
+    showNewProductForm,
+    newProduct,
+    handleChangeProductStock,
+    handleChangeProductPrice,
+    handleChangeProductName,
+    toggleShowNewProductForm,
+    handleAddNewProduct,
+  } = useNewProduct({ onProductAdd });
 
   return (
     <div className='container mx-auto p-4'>
@@ -46,7 +61,7 @@ export const AdminPage = ({
         <div>
           <h2 className='text-2xl font-semibold mb-4'>상품 관리</h2>
           <button
-            onClick={() => setShowNewProductForm(!showNewProductForm)}
+            onClick={toggleShowNewProductForm}
             className='bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600'
           >
             {showNewProductForm ? '취소' : '새 상품 추가'}
@@ -62,7 +77,7 @@ export const AdminPage = ({
                   id='productName'
                   type='text'
                   value={newProduct.name}
-                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                  onChange={handleChangeProductName}
                   className='w-full p-2 border rounded'
                 />
               </div>
@@ -74,9 +89,7 @@ export const AdminPage = ({
                   id='productPrice'
                   type='number'
                   value={newProduct.price}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, price: parseInt(e.target.value) })
-                  }
+                  onChange={handleChangeProductPrice}
                   className='w-full p-2 border rounded'
                 />
               </div>
@@ -88,9 +101,7 @@ export const AdminPage = ({
                   id='productStock'
                   type='number'
                   value={newProduct.stock}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })
-                  }
+                  onChange={handleChangeProductStock}
                   className='w-full p-2 border rounded'
                 />
               </div>
@@ -172,24 +183,14 @@ export const AdminPage = ({
                               type='number'
                               placeholder='수량'
                               value={newDiscount.quantity}
-                              onChange={(e) =>
-                                setNewDiscount({
-                                  ...newDiscount,
-                                  quantity: parseInt(e.target.value),
-                                })
-                              }
+                              onChange={handleChangeQuantity}
                               className='w-1/3 p-2 border rounded'
                             />
                             <input
                               type='number'
                               placeholder='할인율 (%)'
                               value={newDiscount.rate * 100}
-                              onChange={(e) =>
-                                setNewDiscount({
-                                  ...newDiscount,
-                                  rate: parseInt(e.target.value) / 100,
-                                })
-                              }
+                              onChange={handleChangeRate}
                               className='w-1/3 p-2 border rounded'
                             />
                             <button
@@ -239,25 +240,20 @@ export const AdminPage = ({
                 type='text'
                 placeholder='쿠폰 이름'
                 value={newCoupon.name}
-                onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
+                onChange={handleChangeName}
                 className='w-full p-2 border rounded'
               />
               <input
                 type='text'
                 placeholder='쿠폰 코드'
                 value={newCoupon.code}
-                onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
+                onChange={handleChangeCode}
                 className='w-full p-2 border rounded'
               />
               <div className='flex gap-2'>
                 <select
                   value={newCoupon.discountType}
-                  onChange={(e) =>
-                    setNewCoupon({
-                      ...newCoupon,
-                      discountType: e.target.value as 'amount' | 'percentage',
-                    })
-                  }
+                  onChange={handleChangeDiscountType}
                   className='w-full p-2 border rounded'
                 >
                   <option value='amount'>금액(원)</option>
@@ -267,12 +263,7 @@ export const AdminPage = ({
                   type='number'
                   placeholder='할인 값'
                   value={newCoupon.discountValue}
-                  onChange={(e) =>
-                    setNewCoupon({
-                      ...newCoupon,
-                      discountValue: parseInt(e.target.value),
-                    })
-                  }
+                  onChange={handleChangeDiscountValue}
                   className='w-full p-2 border rounded'
                 />
               </div>

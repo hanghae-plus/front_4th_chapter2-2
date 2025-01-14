@@ -22,3 +22,5 @@ export interface Coupon {
   discountType: 'amount' | 'percentage';
   discountValue: number;
 }
+
+export type FormElementType = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

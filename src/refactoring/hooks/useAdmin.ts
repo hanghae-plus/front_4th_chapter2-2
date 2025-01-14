@@ -1,42 +1,14 @@
-import { useState } from 'react';
-import { Coupon, Discount, Product } from '../../types.ts';
+import { ChangeEvent, useState } from 'react';
+import { Discount, Product } from '../../types.ts';
 
 interface UseAdminProps {
   products: Product[];
   onProductUpdate: (product: Product) => void;
-  onProductAdd: (product: Product) => void;
-  onCouponAdd: (coupon: Coupon) => void;
 }
 
-const useAdmin = ({ products, onProductUpdate, onProductAdd, onCouponAdd }: UseAdminProps) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
@@ -101,40 +73,23 @@ const useAdmin = ({ products, onProductUpdate, onProductAdd, onCouponAdd }: UseA
     }
   };
 
-  const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
-  };
+  const handleChangeQuantity = (e: ChangeEvent<HTMLInputElement>) =>
+    setNewDiscount((prev) => ({
+      ...prev,
+      quantity: parseInt(e.target.value),
+    }));
 
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
-  };
+  const handleChangeRate = (e: ChangeEvent<HTMLInputElement>) =>
+    setNewDiscount((prev) => ({
+      ...prev,
+      rate: parseInt(e.target.value) / 100,
+    }));
 
   return {
-    openProductIds,
     editingProduct,
     newDiscount,
-    newCoupon,
-    showNewProductForm,
-    newProduct,
-    setNewProduct,
-    setNewCoupon,
-    setNewDiscount,
-    setShowNewProductForm,
-    toggleProductAccordion,
+    handleChangeQuantity,
+    handleChangeRate,
     handleEditProduct,
     handleProductNameUpdate,
     handlePriceUpdate,
@@ -142,8 +97,6 @@ const useAdmin = ({ products, onProductUpdate, onProductAdd, onCouponAdd }: UseA
     handleStockUpdate,
     handleAddDiscount,
     handleRemoveDiscount,
-    handleAddCoupon,
-    handleAddNewProduct,
   };
 };
 
