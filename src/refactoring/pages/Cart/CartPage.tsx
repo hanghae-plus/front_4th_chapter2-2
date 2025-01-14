@@ -1,5 +1,5 @@
-import { useCart } from '@/refactoring/hooks';
-import { getMaxApplicableDiscount } from '@/refactoring/models/cart';
+import { useCart } from '@/refactoring/pages/Cart/hooks/useCart';
+import { getMaxApplicableDiscount } from '@/refactoring/pages/Cart/models/cart';
 import type { CartItem, Coupon, Product } from '@/types';
 
 interface Props {

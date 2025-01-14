@@ -1,7 +1,7 @@
 // useCart.ts
 import { useState } from 'react';
 
-import { calculateCartTotal, updateCartItemQuantity } from '@/refactoring/models/cart';
+import { calculateCartTotal, updateCartItemQuantity } from '@/refactoring/pages/Cart/models/cart';
 import type { CartItem, Coupon, Product } from '@/types';
 
 export const useCart = () => {
