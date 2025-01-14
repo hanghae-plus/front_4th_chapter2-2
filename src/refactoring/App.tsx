@@ -32,7 +32,7 @@ const App = () => {
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons}/>
+          <CartPage products={products} coupons={coupons} />
         )}
       </main>
     </div>
