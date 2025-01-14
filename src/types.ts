@@ -22,3 +22,5 @@ export interface Coupon {
   discountType: 'amount' | 'percentage';
   discountValue: number;
 }
+
+export type PickPartial<T, K extends keyof T> = Partial<T> & Pick<T, K>;
