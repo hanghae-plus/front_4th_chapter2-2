@@ -1,16 +1,15 @@
 // useCart.ts
-import { useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types';
 import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [cart, setCart] = useLocalStorage<CartItem[]>('cart', []);
+  const [selectedCoupon, setSelectedCoupon] = useLocalStorage<Coupon | null>('selectedCoupon', null);
 
   const addToCart = (product: Product) => {
     setCart((currentCart) => {
       const existingItem = currentCart.find((item) => item.product.id === product.id);
-
       if (existingItem) {
         return updateCartItemQuantity(currentCart, product.id, existingItem.quantity + 1);
       } else {
@@ -28,6 +27,7 @@ export const useCart = () => {
   };
 
   const applyCoupon = (coupon: Coupon | null) => {
+    if (!coupon) return;
     setSelectedCoupon(coupon);
   };
 

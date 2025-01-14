@@ -1,42 +1,74 @@
-import { useSyncExternalStore } from 'react';
+import { useCallback, useRef, useSyncExternalStore } from 'react';
 
 type SetStateAction<T> = T | ((prevState: T) => T);
 
-export const useLocalStorage = <T>(key: string, initialValue: T) => {
-  const subscribers = new Set<() => void>();
+export class LocalStorageStore {
+  private static instance: LocalStorageStore;
 
-  const subscribe = (callback: () => void) => {
-    subscribers.add(callback);
-    window.addEventListener('storage', callback);
+  private listeners: (() => void)[] = [];
+
+  static getInstance() {
+    if (!LocalStorageStore.instance) {
+      LocalStorageStore.instance = new LocalStorageStore();
+    }
+    return LocalStorageStore.instance;
+  }
+
+  get clientSideSnapshot() {
+    return LocalStorageStore.getInstance();
+  }
+  public subscribe(listener: () => void) {
+    this.listeners = [...this.listeners, listener];
 
     return () => {
-      subscribers.delete(callback);
-      window.removeEventListener('storage', callback);
+      this.listeners = this.listeners.filter((l) => l !== listener);
     };
-  };
+  }
 
-  const getSnapshot = () => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
-    } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
-    }
-  };
+  private notify() {
+    this.listeners.forEach((listener) => listener());
+  }
 
-  const value = useSyncExternalStore(subscribe, getSnapshot);
+  get<T>(name: string, initialValue: T): string {
+    const value = window.localStorage.getItem(name);
 
-  const setValue = (newValue: SetStateAction<T>) => {
-    try {
-      const valueToStore = newValue instanceof Function ? newValue(value) : newValue;
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    if (!value) return JSON.stringify(initialValue);
 
-      subscribers.forEach((callback) => callback());
-    } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
-    }
-  };
+    return value;
+  }
 
-  return [value, setValue] as const;
+  set(name: string, value: string) {
+    window.localStorage.setItem(name, value);
+    this.notify();
+  }
+
+  remove(name: string) {
+    window.localStorage.removeItem(name);
+    this.notify();
+  }
+}
+
+export const useLocalStorage = <T>(key: string, initialValue: T) => {
+  const externalStore = useRef(LocalStorageStore.getInstance());
+
+  const getSnapshot = useCallback(() => externalStore.current.get(key, initialValue), [key, initialValue]);
+
+  const value = useSyncExternalStore(externalStore.current.subscribe.bind(externalStore.current), getSnapshot);
+
+  const setValue = useCallback(
+    (newValue: SetStateAction<T>) => {
+      try {
+        const prevValue = externalStore.current.get(key, initialValue);
+        externalStore.current.set(
+          key,
+          JSON.stringify(newValue instanceof Function ? newValue(JSON.parse(prevValue) as T) : newValue),
+        );
+      } catch (error) {
+        console.error(`Error setting localStorage key "${key}":`, error);
+      }
+    },
+    [key, initialValue],
+  );
+
+  return [JSON.parse(value) as T, setValue] as const;
 };
