@@ -14,16 +14,12 @@ export const CartPage = ({ products, coupons }: Props) => {
     updateQuantity,
     applyCoupon,
     calculateTotal,
-    selectedCoupon
+    selectedCoupon,
+    getRemainingStock,
   } = useCart();
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find(item => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
   };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()

@@ -53,5 +53,6 @@ export const useCart = () => {
     applyCoupon,
     calculateTotal,
     selectedCoupon,
+    getRemainingStock
   };
 };

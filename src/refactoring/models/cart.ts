@@ -1,32 +1,41 @@
-import { CartItem, Coupon } from "../../types";
+import { CartItem, Coupon, Discount } from "../../types";
+
+const calculateTotalPrice = (price: number, quantity: number) => {
+  return price * quantity;
+}
+
+const getMaxDiscount = (quantity: number, discounts: Discount[]) => {
+  return discounts.reduce((max, discount) => {
+    return quantity >= discount.quantity && discount.rate > max ? discount.rate : max;
+  }, 0);
+}
 
 export const calculateItemTotal = (item: CartItem) => {
-  let totalBeforeDiscount = 0;
-  let totalAfterDiscount = 0;
-  const { price } = item.product;
+  const { price, discounts } = item.product;
   const { quantity } = item;
 
-  totalBeforeDiscount += price * quantity;
+  const totalBeforeDiscount = calculateTotalPrice(price, quantity);
+  const discount = getMaxDiscount(quantity, discounts);
 
-  const discount = item.product.discounts.reduce((maxDiscount, d) => {
-    return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-  }, 0);
-
-  totalAfterDiscount += totalBeforeDiscount * (1 - discount);
-
-  return totalAfterDiscount;
+  return totalBeforeDiscount * (1 - discount);
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
   const { discounts } = item.product;
   const { quantity } = item;
-  let appliedDiscount = 0;
-  for (const discount of discounts) {
-    if (quantity >= discount.quantity) {
-      appliedDiscount = Math.max(appliedDiscount, discount.rate);
-    }
-  }
-  return appliedDiscount;
+  
+  // let appliedDiscount = 0;
+  // for (const discount of discounts) {
+  //   if (quantity >= discount.quantity) {
+  //     appliedDiscount = Math.max(appliedDiscount, discount.rate);
+  //   }
+  // }
+
+  // discounts.reduce((max, discount) => {
+  //   return quantity >= discount.quantity && discount.rate > max ? discount.rate : max;
+  // }, 0);
+  
+  return getMaxDiscount(quantity, discounts);
 };
 
 export const calculateCartTotal = (
