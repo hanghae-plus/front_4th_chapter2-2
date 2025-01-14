@@ -1,6 +1,5 @@
-import {useState} from 'react';
-import {Product} from '../../types.ts';
-
+import { useState } from 'react';
+import { Product } from '../../types';
 
 /**
  export interface Product {
@@ -13,25 +12,21 @@ import {Product} from '../../types.ts';
  */
 
 export const useProducts = (initialProducts: Product[]) => {
-    const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
+  const addProduct = (newProduct: Product) => {
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
+  };
 
-    const addProduct = (newProduct: Product) => {
-        setProducts((prevProducts) => [...prevProducts, newProduct]);
-    }
+  const calculateNewProduct = (updatedProduct: Product) => {
+    const newProducts = products.map((product) =>
+      product.id === updatedProduct.id ? updatedProduct : product,
+    );
+    return newProducts;
+  };
+  const updateProduct = (updatedProduct: Product) => {
+    setProducts(calculateNewProduct(updatedProduct));
+  };
 
-
-    const _calculateNewProduct = (updatedProduct: Product) => {
-        const newProducts = products.map((product) =>
-            product.id === updatedProduct.id
-                ? updatedProduct
-                : product
-        );
-        return newProducts;
-    }
-    const updateProduct = (updatedProduct: Product) => {
-        setProducts(_calculateNewProduct(updatedProduct));
-    }
-
-    return {products: products, updateProduct: updateProduct, addProduct: addProduct,};
+  return { products, updateProduct, addProduct };
 };
