@@ -1,6 +1,6 @@
 import { Coupon, Product } from '../../types';
-import CouponManagement from './CouponManagement';
-import ProductManagement from './ProductManagement';
+import CouponManagement from '../components/CouponManagement';
+import ProductManagement from '../components/ProductManagement';
 
 interface Props {
   productList: Product[];
