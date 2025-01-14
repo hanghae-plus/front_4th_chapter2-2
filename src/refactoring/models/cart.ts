@@ -40,14 +40,15 @@ export const calculateCartTotal = (
         totalAfterDiscount - selectedCoupon.discountValue
       );
     } else if (selectedCoupon.discountType === "percentage") {
-      totalAfterDiscount += 1 - selectedCoupon.discountValue / 100;
+      totalAfterDiscount =
+        totalAfterDiscount * (1 - selectedCoupon.discountValue / 100);
     }
     totalDiscount = totalBeforeDiscount - totalAfterDiscount;
   }
   return {
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
+    totalBeforeDiscount: Math.round(totalBeforeDiscount),
+    totalAfterDiscount: Math.round(totalAfterDiscount),
+    totalDiscount: Math.round(totalDiscount),
   };
 };
 
