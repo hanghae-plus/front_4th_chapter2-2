@@ -1,6 +1,6 @@
 import { CartItem, Product } from '../../types';
-import { calculateMaxDiscount, calculateRemainingStock } from '../../utils/cartUtils';
 import { useCart } from '../hooks';
+import { calculateMaxDiscount, calculateRemainingStock } from '../utils/cartUtils';
 
 interface Props {
   productList: Product[];
