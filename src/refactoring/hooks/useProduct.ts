@@ -1,37 +1,10 @@
 import { useState } from "react";
 import { Product } from "../../types";
 
-const initialProducts: Product[] = [
-  {
-    id: "p1",
-    name: "상품1",
-    price: 10000,
-    stock: 20,
-    discounts: [
-      { quantity: 10, rate: 0.1 },
-      { quantity: 20, rate: 0.2 },
-    ],
-  },
-  {
-    id: "p2",
-    name: "상품2",
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
-  },
-  {
-    id: "p3",
-    name: "상품3",
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
-  },
-];
-
-export const useProduct = () => {
+export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useState(initialProducts);
 
-  const handleEditProduct = (updatedProduct: Product) => {
+  const updateProduct = (updatedProduct: Product) => {
     setProducts((prevProducts: Product[]) =>
       prevProducts.map((product) =>
         product.id === updatedProduct.id
@@ -41,7 +14,7 @@ export const useProduct = () => {
     );
   };
 
-  const handleAddProduct = (newProduct: Product) => {
+  const addProduct = (newProduct: Product) => {
     setProducts((prevProducts: Product[]) => [...prevProducts, newProduct]);
   };
 
@@ -53,8 +26,8 @@ export const useProduct = () => {
 
   return {
     products,
-    handleEditProduct,
-    handleAddProduct,
+    updateProduct,
+    addProduct,
     handleRemoveProduct,
   };
 };
