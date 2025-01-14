@@ -108,6 +108,17 @@ export const CartPage = ({ products, coupons }: Props) => {
     setSelectedCoupon(coupon);
   };
 
+  const changeQuantityBtn = (content: string, itemId: string, newQuantity: number) => {
+    return (
+      <button
+        onClick={() => updateQuantity(itemId, newQuantity)}
+        className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
+      >
+        {content}
+      </button>
+    );
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">장바구니</h1>
@@ -168,16 +179,17 @@ export const CartPage = ({ products, coupons }: Props) => {
           <div className="space-y-2">
             {cart.map((item) => {
               const appliedDiscount = getAppliedDiscount(item);
+              const {
+                product: { id: itemId, name: itemName, price: itemPrice },
+                quantity: itemQnt,
+              } = item;
               return (
-                <div
-                  key={item.product.id}
-                  className="flex justify-between items-center bg-white p-3 rounded shadow"
-                >
+                <div key={itemId} className="flex justify-between items-center bg-white p-3 rounded shadow">
                   <div>
-                    <span className="font-semibold">{item.product.name}</span>
+                    <span className="font-semibold">{itemName}</span>
                     <br />
                     <span className="text-sm text-gray-600">
-                      {item.product.price}원 x {item.quantity}
+                      {itemPrice}원 x {itemQnt}
                       {appliedDiscount > 0 && (
                         <span className="text-green-600 ml-1">
                           ({(appliedDiscount * 100).toFixed(0)}% 할인 적용)
@@ -186,20 +198,10 @@ export const CartPage = ({ products, coupons }: Props) => {
                     </span>
                   </div>
                   <div>
+                    {changeQuantityBtn('-', itemId, itemQnt - 1)}
+                    {changeQuantityBtn('+', itemId, itemQnt + 1)}
                     <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-                    >
-                      -
-                    </button>
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-                    >
-                      +
-                    </button>
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
+                      onClick={() => removeFromCart(itemId)}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
                       삭제
