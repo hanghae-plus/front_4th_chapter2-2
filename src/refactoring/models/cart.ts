@@ -24,52 +24,34 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
   const { discounts } = item.product;
   const { quantity } = item;
   
-  // let appliedDiscount = 0;
-  // for (const discount of discounts) {
-  //   if (quantity >= discount.quantity) {
-  //     appliedDiscount = Math.max(appliedDiscount, discount.rate);
-  //   }
-  // }
-
-  // discounts.reduce((max, discount) => {
-  //   return quantity >= discount.quantity && discount.rate > max ? discount.rate : max;
-  // }, 0);
-  
   return getMaxDiscount(quantity, discounts);
 };
+
+const applyCouponDiscount = (amount: number, coupon: Coupon | null) => {
+  if (!coupon) return amount;
+  return coupon.discountType === 'amount' 
+    ? Math.max(0, amount - coupon.discountValue) 
+    : amount * (1 - coupon.discountValue / 100);
+}
 
 export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null
 ) => {
-  let totalBeforeDiscount = 0;
-  let totalAfterDiscount = 0;
-  cart.forEach(item => {
-    const { price } = item.product;
-    const { quantity } = item;
-    totalBeforeDiscount += price * quantity;
+  const totalBeforeDiscount = cart.reduce((total, item) => {
+    return total += calculateTotalPrice(item.product.price, item.quantity);
+  }, 0);
 
-    const discount = item.product.discounts.reduce((maxDiscount, d) => {
-      return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-    }, 0);
+  const totalAfterDiscount = cart.reduce((total, item) => {
+    return total += calculateItemTotal(item);
+  }, 0);
 
-    totalAfterDiscount += price * quantity * (1 - discount);
-  });
-
-  let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
-
-  if (selectedCoupon) {
-    if (selectedCoupon.discountType === 'amount') {
-      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-    } else {
-      totalAfterDiscount *= (1 - selectedCoupon.discountValue / 100);
-    }
-    totalDiscount = totalBeforeDiscount - totalAfterDiscount;
-  }
+  const totalLastDiscount = applyCouponDiscount(totalAfterDiscount, selectedCoupon);
+  const totalDiscount = totalBeforeDiscount - totalLastDiscount;
 
   return {
     totalBeforeDiscount: Math.round(totalBeforeDiscount),
-    totalAfterDiscount: Math.round(totalAfterDiscount),
+    totalAfterDiscount: Math.round(totalLastDiscount),
     totalDiscount: Math.round(totalDiscount)
   };
 };
