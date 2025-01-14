@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
@@ -71,6 +71,10 @@ const TestAdminPage = () => {
     />
   );
 };
+
+beforeEach(() => {
+  window.localStorage.clear();
+});
 
 describe('basic > ', () => {
   describe('시나리오 테스트 > ', () => {
