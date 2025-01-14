@@ -1,16 +1,12 @@
-import { http, HttpResponse } from "msw";
-import { Product } from "../types";
+import { CartItem, Coupon, Product } from "../types";
 import mockProducts from "./data/products.json";
-
-const mockStorage: Map<string, object> = new Map();
-mockStorage.set("/products", mockProducts);
+import mockCoupons from "./data/coupons.json";
+import mockCartItems from "./data/cartItems.json";
+import { getHandlers } from "./utils/mockUtil";
+import { API } from "../const";
 
 export const handlers = [
-  http.get<never, never, Product[]>("/products", () => {
-    return HttpResponse.json(mockStorage.get("/products") as Product[]);
-  }),
-  http.put<never, Product[], Product[]>("/products", async ({ request }) => {
-    mockStorage.set("/products", request.json());
-    return HttpResponse.json(mockStorage.get("/products") as Product[]);
-  }),
+  ...getHandlers<Product>(API.PRODUCT, mockProducts as Product[]),
+  ...getHandlers<Coupon>(API.COUPON, mockCoupons as Coupon[]),
+  ...getHandlers<CartItem>(API.CART_ITEM, mockCartItems as CartItem[]),
 ];
