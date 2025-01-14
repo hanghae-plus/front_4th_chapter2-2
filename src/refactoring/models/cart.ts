@@ -1,4 +1,4 @@
-import { CartItem, Coupon, Discount } from 'src/types';
+import { CartItemType, CouponType, DiscountType } from '../types';
 
 /**
  * 장바구니 아이템 총액 계산 (할인 반영)
@@ -15,10 +15,10 @@ const calculateTotalWithDiscount = (
 
 /**
  * 상품 총액 계산 (수량 및 할인 반영)
- * @param {CartItem} item - 장바구니 아이템
+ * @param {CartItemType} item - 장바구니 아이템
  * @returns {number} - 총액
  */
-export const calculateItemTotal = (item: CartItem): number => {
+export const calculateItemTotal = (item: CartItemType): number => {
   const { price } = item.product;
   const discount = getMaxApplicableDiscount(item);
 
@@ -27,11 +27,11 @@ export const calculateItemTotal = (item: CartItem): number => {
 
 /**
  * 장바구니 총액 계산 (쿠폰 적용)
- * @param {CartItem[]} cart - 장바구니
+ * @param {CartItemType[]} cart - 장바구니
  * @param {Coupon | null} selectedCoupon - 선택된 쿠폰
  * @returns {object} - 총액 (할인 전, 후, 할인 금액)
  */
-export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
+export const calculateCartTotal = (cart: CartItemType[], selectedCoupon: CouponType | null) => {
   let totalBeforeDiscount = 0;
   let totalAfterDiscount = 0;
 
@@ -76,10 +76,10 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
  * @returns {CartItem[]} - 업데이트된 장바구니
  */
 export const updateCartItemQuantity = (
-  cart: CartItem[],
+  cart: CartItemType[],
   productId: string,
   newQuantity: number,
-): CartItem[] =>
+): CartItemType[] =>
   cart.reduce((updatedCart, item) => {
     if (item.product.id === productId) {
       const updatedQuantity = Math.max(0, Math.min(newQuantity, item.product.stock));
@@ -90,17 +90,17 @@ export const updateCartItemQuantity = (
       updatedCart.push(item);
     }
     return updatedCart;
-  }, [] as CartItem[]);
+  }, [] as CartItemType[]);
 
 /**
  * 최대 할인율 계산
- * @param {CartItem} item - 장바구니 아이템
+ * @param {CartItemType} item - 장바구니 아이템
  * @returns {number} - 최대 할인율
  */
-export const getMaxApplicableDiscount = (item: CartItem): number => {
+export const getMaxApplicableDiscount = (item: CartItemType): number => {
   const { discounts } = item.product;
   return discounts.reduce(
-    (maxDiscount, discount: Discount) =>
+    (maxDiscount, discount: DiscountType) =>
       item.quantity >= discount.quantity ? Math.max(maxDiscount, discount.rate) : maxDiscount,
     0,
   );

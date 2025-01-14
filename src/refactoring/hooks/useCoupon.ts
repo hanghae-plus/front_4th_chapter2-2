@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Coupon } from '../../types';
+import { CouponType } from '../types';
 
 /**
  * 쿠폰 관련 상태와 동작을 관리하는 커스텀 훅.
@@ -13,17 +13,17 @@ import { Coupon } from '../../types';
  * }} 상태 관리 함수(coupons, selectedCoupon, addCoupon, applyCoupon)를 반환
  */
 
-export const useCoupons = (initialCouponList: Coupon[]) => {
+export const useCoupons = (initialCouponList: CouponType[]) => {
   const [coupons, setCoupons] = useState(initialCouponList);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [selectedCoupon, setSelectedCoupon] = useState<CouponType | null>(null);
 
   // 새로운 쿠폰을 추가하는 함수
-  const addCoupon = (newCoupon: Coupon) => {
+  const addCoupon = (newCoupon: CouponType) => {
     setCoupons((prevCouponList) => [...prevCouponList, newCoupon]);
   };
 
   // 쿠폰을 적용하는 함수
-  const applyCoupon = (coupon: Coupon) => {
+  const applyCoupon = (coupon: CouponType) => {
     setSelectedCoupon(coupon);
   };
 

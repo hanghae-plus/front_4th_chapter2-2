@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { CartPage } from './components/CartPage';
 import { AdminPage } from './components/AdminPage';
 import { Navigation } from './components/Navigation';
-import { Coupon, Product } from '../types';
+import { CouponType, ProductType } from '../refactoring/types';
 import { useCoupons, useProducts } from './hooks';
 
-const initialProductList: Product[] = [
+const initialProductList: ProductType[] = [
   {
     id: 'p1',
     name: '상품1',
@@ -32,7 +32,7 @@ const initialProductList: Product[] = [
   },
 ];
 
-const initialCoupons: Coupon[] = [
+const initialCouponList: CouponType[] = [
   {
     name: '5000원 할인 쿠폰',
     code: 'AMOUNT5000',
@@ -49,7 +49,7 @@ const initialCoupons: Coupon[] = [
 
 const App = () => {
   const { productList, updateProduct, addProduct } = useProducts(initialProductList);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
+  const { coupons, addCoupon } = useCoupons(initialCouponList);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (

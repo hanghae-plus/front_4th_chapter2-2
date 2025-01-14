@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Product } from '../../types';
+import { ProductType } from '../types';
 
-type ProductAction = { type: 'update'; product: Product } | { type: 'add'; product: Product };
+type ProductAction =
+  | { type: 'update'; product: ProductType }
+  | { type: 'add'; product: ProductType };
 
 /**
  * 제품 목록을 업데이트하거나 새로운 제품을 추가하는 순수 함수
  *
- * @param {Product[]} productList - 현재 제품 목록
+ * @param {ProductType[]} productList - 현재 제품 목록
  * @param {ProductAction} action - 작업 유형과 제품 객체
- * @returns {Product[]} 업데이트된 제품 목록
+ * @returns {ProductType[]} 업데이트된 제품 목록
  */
-const manageProducts = (productList: Product[], action: ProductAction): Product[] => {
+const manageProducts = (productList: ProductType[], action: ProductAction): ProductType[] => {
   switch (action.type) {
     case 'update':
       return productList.map((p) => (p.id === action.product.id ? action.product : p));
@@ -24,15 +26,15 @@ const manageProducts = (productList: Product[], action: ProductAction): Product[
 /**
  * 제품 목록 상태 관리 및 제품 업데이트/추가 훅
  *
- * @param {Product[]} initialProducts - 초기 제품 목록
+ * @param {ProductType[]} initialProducts - 초기 제품 목록
  * @returns {{
- *   productList: Product[],
+ *   productList: ProductType[],
  *   updateProduct: (updatedProduct: Product) => void,
  *   addProduct: (newProduct: Product) => void
  * }} 상태 관리 함수(productList, updateProduct, addProduct)를 반환
  */
-export const useProducts = (initialProductList: Product[]) => {
-  const [productList, setProductList] = useState<Product[]>(initialProductList);
+export const useProducts = (initialProductList: ProductType[]) => {
+  const [productList, setProductList] = useState<ProductType[]>(initialProductList);
 
   // 상태 업데이트를 처리하는 함수
   const dispatch: (action: ProductAction) => void = (action) => {
@@ -40,13 +42,11 @@ export const useProducts = (initialProductList: Product[]) => {
   };
 
   // 제품을 업데이트하는 함수
-  const updateProduct = (updatedProduct: Product) =>
+  const updateProduct = (updatedProduct: ProductType) =>
     dispatch({ type: 'update', product: updatedProduct });
 
   // 새로운 제품을 추가하는 함수
-  const addProduct = (newProduct: Product) => dispatch({ type: 'add', product: newProduct });
+  const addProduct = (newProduct: ProductType) => dispatch({ type: 'add', product: newProduct });
 
   return { productList, updateProduct, addProduct };
 };
-
-export default useProducts;
