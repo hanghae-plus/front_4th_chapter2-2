@@ -1,4 +1,4 @@
-import {CartItem, Coupon, Discount} from "../../types";
+import {CartItem, Coupon, Product} from "../../types";
 
 
 export const calculateItemTotal = (item: CartItem) => {
@@ -52,3 +52,7 @@ export const updateCartItemQuantity = (
         quantity: Math.min(newQuantity, item.product.stock)
     } : item);
 };
+
+export const findExistingItem = (cart: CartItem[], product: Product): CartItem | undefined => {
+    return cart.find(item => item.product.id === product.id);
+}

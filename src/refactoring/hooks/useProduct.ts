@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Discount, Product} from '../../types.ts';
+import {Product} from '../../types.ts';
 
 
 /**
