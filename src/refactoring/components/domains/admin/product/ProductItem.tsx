@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
+import ProductItemDetail from './ProductItemDetail';
+
 import type { Discount, Product } from '../../../../../types';
+
+const INITIAL_DISCOUNT: Discount = { quantity: 0, rate: 0 };
 
 interface ProductItemProps {
   product: Product;
@@ -12,11 +16,24 @@ export const ProductItem = ({ product, products, onProductUpdate }: ProductItemP
   // 현재 선택된 프로덕트인듯. 있어야할듯
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  // 상태 필요없음 엔티티 로직도 다 props로 받게 변경예정
+  const [newDiscount, setNewDiscount] = useState<Discount>(INITIAL_DISCOUNT);
+
   // 있어야함, (상품 수정 toggle)
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
 
-  // 상태 필요없음 엔티티 로직도 다 props로 받게 변경예정
-  const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
+  // 유지 or 분리?
+  const toggleProductAccordion = (productId: string) => {
+    setOpenProductIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
 
   // useProduct로 이동
   const handleRemoveDiscount = (productId: string, index: number) => {
@@ -67,7 +84,7 @@ export const ProductItem = ({ product, products, onProductUpdate }: ProductItemP
       };
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
+      setNewDiscount(INITIAL_DISCOUNT);
     }
   };
 
@@ -89,19 +106,6 @@ export const ProductItem = ({ product, products, onProductUpdate }: ProductItemP
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
-  };
-
-  // 유지 or 분리?
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
   };
 
   return (
@@ -191,22 +195,7 @@ export const ProductItem = ({ product, products, onProductUpdate }: ProductItemP
               </button>
             </div>
           ) : (
-            <div>
-              {product.discounts.map((discount, index) => (
-                <div key={index} className="mb-2">
-                  <span>
-                    {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
-                  </span>
-                </div>
-              ))}
-              <button
-                data-testid="modify-button"
-                onClick={() => handleEditProduct(product)}
-                className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
-              >
-                수정
-              </button>
-            </div>
+            <ProductItemDetail product={product} onEditProduct={handleEditProduct} />
           )}
         </div>
       )}
