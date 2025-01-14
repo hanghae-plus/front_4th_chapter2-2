@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Coupon } from '../../types';
-import { initialCoupons } from '../models/initialData';
 
-export const useCoupons = () => {
+import { Coupon } from '../../types';
+
+export const useCoupons = (initialCoupons: Coupon[]) => {
   const [coupons, setCoupons] = useState<Coupon[]>(initialCoupons);
 
   const addCoupon = (newCoupon: Coupon) => {

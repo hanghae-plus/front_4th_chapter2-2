@@ -10,10 +10,12 @@ export const useCart = () => {
 
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(cart, product);
+
     if (remainingStock <= 0) return;
 
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.product.id === product.id);
+
       if (existingItem) {
         return prevCart.map((item) =>
           item.product.id === product.id
@@ -21,6 +23,7 @@ export const useCart = () => {
             : item
         );
       }
+
       return [...prevCart, { product, quantity: 1 }];
     });
   };
@@ -30,7 +33,7 @@ export const useCart = () => {
   };
 
   const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart(updateCartItemQuantity(cart, productId, newQuantity));
+    setCart((prevCart) => updateCartItemQuantity(prevCart, productId, newQuantity));
   };
 
   const applyCoupon = (coupon: Coupon) => {

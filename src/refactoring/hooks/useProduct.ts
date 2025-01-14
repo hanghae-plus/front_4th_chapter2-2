@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Product } from '../../types';
-import { initialProducts } from '../models/initialData';
 
-export const useProducts = () => {
+import { Product } from '../../types';
+
+export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const updateProduct = (updatedProduct: Product) => {
