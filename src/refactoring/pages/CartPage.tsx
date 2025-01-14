@@ -1,7 +1,7 @@
 import { Coupon, Product } from "../../types.ts";
 import { useCart } from "../hooks";
 import PageContainer from "../components/shared/PageContainer.tsx";
-import CartSection from "../components/cart/CartSection.tsx";
+import PageSection from "../components/shared/PageSection.tsx";
 import ProductList from "../components/cart/ProductList.tsx";
 import ItemList from "../components/cart/ItemList.tsx";
 import DetailInfoCard from "../components/cart/DetailInfoCard.tsx";
@@ -30,7 +30,7 @@ export const CartPage = ({ products, coupons }: Props) => {
 
   return (
     <PageContainer pageTitle="장바구니">
-      <CartSection title="상품 목록">
+      <PageSection title="상품 목록">
         {products.map((product) => (
           <ProductList
             product={product}
@@ -39,8 +39,8 @@ export const CartPage = ({ products, coupons }: Props) => {
             getMaxDiscount={getMaxDiscount}
           />
         ))}
-      </CartSection>
-      <CartSection title="장바구니 내역">
+      </PageSection>
+      <PageSection title="장바구니 내역">
         {cart.map((item) => (
           <ItemList
             item={item}
@@ -85,7 +85,7 @@ export const CartPage = ({ products, coupons }: Props) => {
             </p>
           </div>
         </DetailInfoCard>
-      </CartSection>
+      </PageSection>
     </PageContainer>
   );
 };
