@@ -16,5 +16,5 @@ export const useProducts = (initialProducts: Product[]) => {
     products,
     updateProduct,
     addProduct,
-  };
+  } as const;
 };

@@ -1,51 +1,29 @@
 // useCart.ts
 import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { calculateCartTotal, updateCartItemQuantity, 장바구니에서_상품빼기, 장바구니에서_상품추가 } from "../models/cart";
 
-const getRemainingStock = ({ cart, product }: { cart: CartItem[], product: Product }) => {
-  const cartItem = cart.find(item => item.product.id === product.id);
-  return product.stock - (cartItem?.quantity || 0);
-};
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-
-  const addToCart = (product: Product) => {
-    const remainingStock = getRemainingStock({ cart, product });
-    if (remainingStock <= 0) return;
-
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.product.id === product.id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.product.id === product.id
-            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-            : item
-        );
-      }
-      return [...prevCart, { product, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
-  };
-
-  const applyCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
-  };
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon>();
 
   return {
     cart,
-    addToCart,
-    removeFromCart,
-    updateQuantity: (productId: string, newQuantity: number) => {
-      setCart(cart =>  updateCartItemQuantity(cart, productId, newQuantity))
-    },
-    applyCoupon,
-    calculateTotal: () => calculateCartTotal(cart, selectedCoupon),
     selectedCoupon,
-  };
+    applyCoupon: setSelectedCoupon,
+    calculateTotal: () => calculateCartTotal(cart, selectedCoupon),
+
+    addToCart: (product: Product) => {
+      setCart(prevCart => 장바구니에서_상품추가(prevCart, product));
+    },
+
+    removeFromCart: (productId: string) => {
+      setCart((prevCart) => 장바구니에서_상품빼기(prevCart, productId));
+    },
+
+    updateQuantity: (productId: string, newQuantity: number) => {
+      setCart(cart =>  updateCartItemQuantity(cart, productId, newQuantity));
+    },
+  } as const;
 };
