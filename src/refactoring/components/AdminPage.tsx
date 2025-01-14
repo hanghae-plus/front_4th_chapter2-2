@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { Product } from '../models/types/Product';
 import { Coupon } from '../models/types/Coupon';
-import { useProducts } from '../hooks';
+import { useOthers } from '../hooks/useOthers';
 
 interface Props {
   products: Product[];
+  onProductAdd: (product: Product) => void;
+  onProductUpdate: (product: Product) => void;
   coupons: Coupon[];
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-function AdminPage({ products, coupons, onCouponAdd }: Props) {
+function AdminPage({
+  products,
+  onProductAdd,
+  onProductUpdate,
+  coupons,
+  onCouponAdd,
+}: Props) {
   const {
     newProduct,
     showNewProductForm,
@@ -31,7 +39,11 @@ function AdminPage({ products, coupons, onCouponAdd }: Props) {
       handleUpdateNewDiscountQuantity,
       handleUpdateNewDiscountRate,
     },
-  } = useProducts(products);
+  } = useOthers({
+    products,
+    addProduct: onProductAdd,
+    updateProduct: onProductUpdate,
+  });
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
 
   const [newCoupon, setNewCoupon] = useState<Coupon>({
@@ -241,7 +253,7 @@ function AdminPage({ products, coupons, onCouponAdd }: Props) {
                               value={newDiscount.rate * 100}
                               onChange={(e) =>
                                 handleUpdateNewDiscountRate(
-                                  Number(e.target.value),
+                                  Number(e.target.value) / 100,
                                 )
                               }
                               className="w-1/3 p-2 border rounded"
