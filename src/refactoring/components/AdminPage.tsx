@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Coupon, Product } from '@/types'
 import { ProductForm } from './ProductManagement/ProductForm'
-
+import { ProductList } from './ProductManagement/ProductList'
 interface Props {
   products: Product[]
   coupons: Coupon[]
@@ -60,6 +60,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* 상품 관리 섹션 */}
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
           <button
@@ -83,57 +84,18 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
           )}
 
           {/* 상품 목록 */}
-          {/* 상품 목록 */}
-          <div className="space-y-2">
-            {products.map((product, index) => (
-              <div key={product.id} data-testid={`product-${index + 1}`} className="bg-white p-4 rounded shadow">
-                {/* 상품 아코디언 헤더 */}
-                <button
-                  data-testid="toggle-button"
-                  onClick={() => toggleProductAccordion(product.id)}
-                  className="w-full text-left font-semibold"
-                >
-                  {product.name} - {product.price}원 (재고: {product.stock})
-                </button>
-
-                {/* 상품 상세 정보 및 수정 폼 */}
-                {openProductIds.has(product.id) && (
-                  <div className="mt-2">
-                    {editingProduct && editingProduct.id === product.id ? (
-                      <ProductForm
-                        initialProduct={editingProduct}
-                        onSubmit={(updatedProduct) => {
-                          onProductUpdate({ ...updatedProduct, id: product.id })
-                          setEditingProduct(null)
-                        }}
-                        onCancel={() => setEditingProduct(null)}
-                        submitLabel="수정 완료"
-                      />
-                    ) : (
-                      <div>
-                        {/* 할인 정보 표시 */}
-                        {product.discounts.map((discount, index) => (
-                          <div key={index} className="mb-2">
-                            <span>
-                              {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
-                            </span>
-                          </div>
-                        ))}
-                        {/* 수정 버튼 */}
-                        <button
-                          data-testid="modify-button"
-                          onClick={() => setEditingProduct({ ...product })}
-                          className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
-                        >
-                          수정
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <ProductList
+            products={products}
+            openProductIds={openProductIds}
+            editingProduct={editingProduct}
+            onToggleAccordion={toggleProductAccordion}
+            onEditStart={(product) => setEditingProduct({ ...product })}
+            onEditComplete={(updatedProduct) => {
+              onProductUpdate(updatedProduct)
+              setEditingProduct(null)
+            }}
+            onEditCancel={() => setEditingProduct(null)}
+          />
         </div>
 
         {/* 쿠폰 관리 섹션 */}
