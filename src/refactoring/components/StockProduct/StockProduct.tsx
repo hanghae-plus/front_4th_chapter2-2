@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Discount, Product } from "../../../types";
+import { EditFormField } from "./EditFormField";
 
 type EditState = "closed" | "viewing" | "editing";
 
@@ -86,45 +87,30 @@ const EditProductForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label className="block mb-1">상품명: </label>
-        <input
-          type="text"
-          value={editingProduct.name}
-          onChange={(e) =>
-            setEditingProduct({ ...editingProduct, name: e.target.value })
-          }
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">가격: </label>
-        <input
-          type="number"
-          value={editingProduct.price}
-          onChange={(e) =>
-            setEditingProduct({
-              ...editingProduct,
-              price: parseInt(e.target.value),
-            })
-          }
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">재고: </label>
-        <input
-          type="number"
-          value={editingProduct.stock}
-          onChange={(e) =>
-            setEditingProduct({
-              ...editingProduct,
-              stock: parseInt(e.target.value),
-            })
-          }
-          className="w-full p-2 border rounded"
-        />
-      </div>
+      <EditFormField
+        id="name"
+        label="상품명"
+        value={editingProduct.name}
+        onChange={(value) =>
+          setEditingProduct({ ...editingProduct, name: value })
+        }
+      />
+      <EditFormField
+        id="price"
+        label="가격"
+        value={editingProduct.price}
+        onChange={(value) =>
+          setEditingProduct({ ...editingProduct, price: parseInt(value) })
+        }
+      />
+      <EditFormField
+        id="stock"
+        label="재고"
+        value={editingProduct.stock}
+        onChange={(value) =>
+          setEditingProduct({ ...editingProduct, stock: parseInt(value) })
+        }
+      />
       <div>
         <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
         {editingProduct.discounts.map((discount, index) => (
