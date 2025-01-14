@@ -47,7 +47,7 @@ export const useCart = () => {
     removeFromCart,
     updateQuantity: (productId: string, newQuantity: number) => {
       // 수량 업데이트
-      setCart((cart) => updateCartItemQuantity({ cart, productId, newQuantity }));
+      setCart((cart) => updateCartItemQuantity(cart, productId, newQuantity));
     },
     applyCoupon,
     calculateTotal: () => {

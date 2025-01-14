@@ -1,9 +1,11 @@
 import { CartItem, Coupon } from '../../types';
 
 // 개별 항목의 총 금액 계산
+// 테스트 코드를 보니까 할인율까지 적용한 총 금액이네
 export const calculateItemTotal = (item: CartItem) => {
   const { product, quantity } = item;
-  return product.price * quantity;
+  const discount = getMaxApplicableDiscount(item);
+  return product.price * quantity * (1 - discount);
 };
 
 // 개별 항목에서 적용 가능한 최대 할인율 계산
@@ -54,15 +56,11 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
 };
 
 // 장바구니 항목의 수량 업데이트
-export const updateCartItemQuantity = ({
-  cart,
-  productId,
-  newQuantity,
-}: {
-  cart: CartItem[];
-  productId: string;
-  newQuantity: number;
-}): CartItem[] => {
+export const updateCartItemQuantity = (
+  cart: CartItem[],
+  productId: string,
+  newQuantity: number,
+): CartItem[] => {
   return cart
     .map((item) => {
       if (item.product.id === productId) {
