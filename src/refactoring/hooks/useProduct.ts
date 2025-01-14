@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { Product } from '../../types.ts';
+import {useState} from 'react';
+import {Product} from '../../types.ts';
 
 export const useProducts = (initialProducts: Product[]) => {
-  return { products: [], updateProduct: () => undefined, addProduct: () => undefined };
+    const [products, setProducts] = useState(initialProducts);
+
+    return {products: products, updateProduct: () => undefined, addProduct: () => undefined};
 };
