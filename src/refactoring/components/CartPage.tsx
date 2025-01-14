@@ -1,3 +1,4 @@
+import React from 'react';
 import { useCart } from '../hooks';
 import { CartItem } from '../models/types/CartItem';
 import { Coupon } from '../models/types/Coupon';
@@ -34,13 +35,13 @@ function CartPage({ products, coupons }: Props) {
   const getAppliedDiscount = (item: CartItem) => {
     const { discounts } = item.product;
     const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
+
+    return discounts.reduce((max, discount) => {
       if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
+        return Math.max(max, discount.rate);
       }
-    }
-    return appliedDiscount;
+      return max;
+    }, 0);
   };
 
   return (
@@ -82,8 +83,8 @@ function CartPage({ products, coupons }: Props) {
                   </div>
                   {product.discounts.length > 0 && (
                     <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
-                      {product.discounts.map((discount, index) => (
-                        <li key={index}>
+                      {product.discounts.map((discount) => (
+                        <li key={discount.rate}>
                           {discount.quantity}개 이상:{' '}
                           {(discount.rate * 100).toFixed(0)}% 할인
                         </li>
@@ -91,6 +92,7 @@ function CartPage({ products, coupons }: Props) {
                     </ul>
                   )}
                   <button
+                    type="button"
                     onClick={() => addToCart(product)}
                     className={`w-full px-3 py-1 rounded ${
                       remainingStock > 0
@@ -131,6 +133,7 @@ function CartPage({ products, coupons }: Props) {
                   </div>
                   <div>
                     <button
+                      type="button"
                       onClick={() =>
                         updateQuantity(item.product.id, item.quantity - 1)
                       }
@@ -139,6 +142,7 @@ function CartPage({ products, coupons }: Props) {
                       -
                     </button>
                     <button
+                      type="button"
                       onClick={() =>
                         updateQuantity(item.product.id, item.quantity + 1)
                       }
@@ -147,6 +151,7 @@ function CartPage({ products, coupons }: Props) {
                       +
                     </button>
                     <button
+                      type="button"
                       onClick={() => removeFromCart(item.product.id)}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
@@ -161,7 +166,7 @@ function CartPage({ products, coupons }: Props) {
           <div className="mt-6 bg-white p-4 rounded shadow">
             <h2 className="text-2xl font-semibold mb-2">쿠폰 적용</h2>
             <select
-              onChange={(e) => applyCoupon(coupons[parseInt(e.target.value)])}
+              onChange={(e) => applyCoupon(coupons[Number(e.target.value)])}
               className="w-full p-2 border rounded mb-2"
             >
               <option value="">쿠폰 선택</option>
