@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Coupon, Discount, Product } from "../../types.ts";
 import Button from "../components/shared/Button.tsx";
+import Input from "../components/shared/Input.tsx";
 
 interface Props {
   products: Product[];
@@ -150,60 +151,43 @@ export const AdminPage = ({
             <div className="bg-white p-4 rounded shadow mb-4">
               <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
               <div className="mb-2">
-                <label
-                  htmlFor="productName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  상품명
-                </label>
-                <input
+                <Input
+                  label="상품명"
+                  labelType="newItem"
                   id="productName"
                   type="text"
                   value={newProduct.name}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewProduct({ ...newProduct, name: e.target.value })
                   }
-                  className="w-full p-2 border rounded"
                 />
               </div>
               <div className="mb-2">
-                <label
-                  htmlFor="productPrice"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  가격
-                </label>
-                <input
+                <Input
+                  label="가격"
+                  labelType="newItem"
                   id="productPrice"
-                  type="number"
                   value={newProduct.price}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewProduct({
                       ...newProduct,
                       price: parseInt(e.target.value),
                     })
                   }
-                  className="w-full p-2 border rounded"
                 />
               </div>
               <div className="mb-2">
-                <label
-                  htmlFor="productStock"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  재고
-                </label>
-                <input
+                <Input
+                  label="재고"
+                  labelType="newItem"
                   id="productStock"
-                  type="number"
                   value={newProduct.stock}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setNewProduct({
                       ...newProduct,
                       stock: parseInt(e.target.value),
                     })
                   }
-                  className="w-full p-2 border rounded"
                 />
               </div>
               <Button onClick={handleAddNewProduct}>추가</Button>
@@ -228,8 +212,9 @@ export const AdminPage = ({
                     {editingProduct && editingProduct.id === product.id ? (
                       <div>
                         <div className="mb-4">
-                          <label className="block mb-1">상품명: </label>
-                          <input
+                          <Input
+                            label="상품명: "
+                            labelType="editItem"
                             type="text"
                             value={editingProduct.name}
                             onChange={(e) =>
@@ -238,13 +223,12 @@ export const AdminPage = ({
                                 e.target.value
                               )
                             }
-                            className="w-full p-2 border rounded"
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block mb-1">가격: </label>
-                          <input
-                            type="number"
+                          <Input
+                            label="가격: "
+                            labelType="editItem"
                             value={editingProduct.price}
                             onChange={(e) =>
                               handlePriceUpdate(
@@ -252,13 +236,12 @@ export const AdminPage = ({
                                 parseInt(e.target.value)
                               )
                             }
-                            className="w-full p-2 border rounded"
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block mb-1">재고: </label>
-                          <input
-                            type="number"
+                          <Input
+                            label="재고: "
+                            labelType="editItem"
                             value={editingProduct.stock}
                             onChange={(e) =>
                               handleStockUpdate(
@@ -266,7 +249,6 @@ export const AdminPage = ({
                                 parseInt(e.target.value)
                               )
                             }
-                            className="w-full p-2 border rounded"
                           />
                         </div>
                         {/* 할인 정보 수정 부분 */}
@@ -294,8 +276,7 @@ export const AdminPage = ({
                             </div>
                           ))}
                           <div className="flex space-x-2">
-                            <input
-                              type="number"
+                            <Input
                               placeholder="수량"
                               value={newDiscount.quantity}
                               onChange={(e) =>
@@ -304,10 +285,9 @@ export const AdminPage = ({
                                   quantity: parseInt(e.target.value),
                                 })
                               }
-                              className="w-1/3 p-2 border rounded"
+                              size="small"
                             />
-                            <input
-                              type="number"
+                            <Input
                               placeholder="할인율 (%)"
                               value={newDiscount.rate * 100}
                               onChange={(e) =>
@@ -316,7 +296,7 @@ export const AdminPage = ({
                                   rate: parseInt(e.target.value) / 100,
                                 })
                               }
-                              className="w-1/3 p-2 border rounded"
+                              size="small"
                             />
                             <Button
                               onClick={() => handleAddDiscount(product.id)}
@@ -362,23 +342,21 @@ export const AdminPage = ({
           <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
           <div className="bg-white p-4 rounded shadow">
             <div className="space-y-2 mb-4">
-              <input
+              <Input
                 type="text"
                 placeholder="쿠폰 이름"
                 value={newCoupon.name}
                 onChange={(e) =>
                   setNewCoupon({ ...newCoupon, name: e.target.value })
                 }
-                className="w-full p-2 border rounded"
               />
-              <input
+              <Input
                 type="text"
                 placeholder="쿠폰 코드"
                 value={newCoupon.code}
                 onChange={(e) =>
                   setNewCoupon({ ...newCoupon, code: e.target.value })
                 }
-                className="w-full p-2 border rounded"
               />
               <div className="flex gap-2">
                 <select
@@ -394,8 +372,7 @@ export const AdminPage = ({
                   <option value="amount">금액(원)</option>
                   <option value="percentage">할인율(%)</option>
                 </select>
-                <input
-                  type="number"
+                <Input
                   placeholder="할인 값"
                   value={newCoupon.discountValue}
                   onChange={(e) =>
@@ -404,7 +381,6 @@ export const AdminPage = ({
                       discountValue: parseInt(e.target.value),
                     })
                   }
-                  className="w-full p-2 border rounded"
                 />
               </div>
               <Button
