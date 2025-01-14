@@ -13,7 +13,7 @@ export const useCart = () => {
         const existingItem = findExistingItem(cart, product);
 
         if (existingItem) {
-            return cart.map((item) => item.product.id === product.id ? updateQuantity(item) : item);
+            return updateCartItemQuantity(cart, product.id, existingItem.quantity + 1);
         }
 
         return [...cart, createCartItem(product)];
