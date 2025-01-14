@@ -1,24 +1,46 @@
 // useCart.ts
 import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { calculateCartTotal } from "../models/cart";
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
-  const addToCart = (product: Product) => {};
+  // 장바구니에 추가한다
+  const addToCart = (product: Product) => {
+    const existingItem = cart.find((item) => item.product.id === product.id);
+    if (existingItem) {
+      updateQuantity(product.id, existingItem.quantity + 1);
+    } else {
+      setCart([...cart, { product, quantity: 1 }]);
+    }
+  };
 
-  const removeFromCart = (productId: string) => {};
+  // 장바구니에서 제거한다
+  const removeFromCart = (productId: string) => {
+    setCart(cart.filter((item) => item.product.id !== productId));
+  };
 
-  const updateQuantity = (productId: string, newQuantity: number) => {};
+  // 장바구니에서 수량을 변경한다
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.product.id === productId
+          ? { ...item, quantity: newQuantity }
+          : item
+      )
+    );
+  };
 
-  const applyCoupon = (coupon: Coupon) => {};
+  // 쿠폰을 적용한다
+  const applyCoupon = (coupon: Coupon) => {
+    setSelectedCoupon(coupon);
+  };
 
+  // 장바구니 금액을 계산한다
   const calculateTotal = () => ({
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
+    ...calculateCartTotal(cart, selectedCoupon),
   });
 
   return {
