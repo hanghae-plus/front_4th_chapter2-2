@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { CartPage } from "./pages/CartPage.tsx";
 import { AdminPage } from "./pages/AdminPage.tsx";
-import { Coupon, Product } from "../types.ts";
-import { useCoupons, useProducts } from "./hooks";
+import { Product } from "../types.ts";
+import { useProducts } from "./hooks";
 import Navigation from "./components/Navigation.tsx";
 
 const initialProducts: Product[] = [
@@ -32,24 +32,8 @@ const initialProducts: Product[] = [
   },
 ];
 
-const initialCoupons: Coupon[] = [
-  {
-    name: "5000원 할인 쿠폰",
-    code: "AMOUNT5000",
-    discountType: "amount",
-    discountValue: 5000,
-  },
-  {
-    name: "10% 할인 쿠폰",
-    code: "PERCENT10",
-    discountType: "percentage",
-    discountValue: 10,
-  },
-];
-
 const App = () => {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
@@ -62,13 +46,11 @@ const App = () => {
         {isAdmin ? (
           <AdminPage
             products={products}
-            coupons={coupons}
             onProductUpdate={updateProduct}
             onProductAdd={addProduct}
-            onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons} />
+          <CartPage products={products} />
         )}
       </main>
     </div>

@@ -3,21 +3,19 @@ import { Coupon, Discount, Product } from "../../types.ts";
 import Button from "../components/shared/Button.tsx";
 import Input from "../components/shared/Input.tsx";
 import PageContainer from "../components/shared/PageContainer.tsx";
+import { useCoupons } from "../hooks";
+import { initialCoupons } from "../../store/globalStore.ts";
 
 interface Props {
   products: Product[];
-  coupons: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
-  onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 export const AdminPage = ({
   products,
-  coupons,
   onProductUpdate,
   onProductAdd,
-  onCouponAdd,
 }: Props) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -25,6 +23,8 @@ export const AdminPage = ({
     quantity: 0,
     rate: 0,
   });
+
+  const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: "",
     code: "",
@@ -112,16 +112,6 @@ export const AdminPage = ({
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
-  };
-
-  const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: "",
-      code: "",
-      discountType: "percentage",
-      discountValue: 0,
-    });
   };
 
   const handleAddNewProduct = () => {
@@ -380,7 +370,7 @@ export const AdminPage = ({
               />
             </div>
             <Button
-              onClick={handleAddCoupon}
+              onClick={() => addCoupon(newCoupon)}
               className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
             >
               쿠폰 추가

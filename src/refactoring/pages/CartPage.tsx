@@ -1,17 +1,17 @@
-import { Coupon, Product } from "../../types.ts";
-import { useCart } from "../hooks";
+import { Product } from "../../types.ts";
+import { useCart, useCoupons } from "../hooks";
 import PageContainer from "../components/shared/PageContainer.tsx";
 import PageSection from "../components/shared/PageSection.tsx";
 import ProductList from "../components/cart/ProductList.tsx";
 import ItemList from "../components/cart/ItemList.tsx";
 import DetailInfoCard from "../components/cart/DetailInfoCard.tsx";
+import { initialCoupons } from "../../store/globalStore.ts";
 
 interface Props {
   products: Product[];
-  coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({ products }: Props) => {
   const {
     cart,
     removeFromCart,
@@ -24,6 +24,8 @@ export const CartPage = ({ products, coupons }: Props) => {
     addToCart,
     selectedCoupon,
   } = useCart();
+
+  const { coupons } = useCoupons(initialCoupons);
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
     calculateTotal();
