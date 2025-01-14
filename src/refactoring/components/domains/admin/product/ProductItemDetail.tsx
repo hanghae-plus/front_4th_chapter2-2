@@ -2,10 +2,10 @@ import type { Product } from '../../../../../types';
 
 interface ProductItemDetailProps {
   product: Product;
-  onEditProduct: (product: Product) => void;
+  onToggleEditForm: () => void;
 }
 
-const ProductItemDetail = ({ product, onEditProduct }: ProductItemDetailProps) => {
+export const ProductItemDetail = ({ product, onToggleEditForm }: ProductItemDetailProps) => {
   return (
     <div>
       {product.discounts.map((discount, index) => (
@@ -17,7 +17,7 @@ const ProductItemDetail = ({ product, onEditProduct }: ProductItemDetailProps) =
       ))}
       <button
         data-testid="modify-button"
-        onClick={() => onEditProduct(product)}
+        onClick={onToggleEditForm}
         className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
       >
         수정
@@ -25,5 +25,3 @@ const ProductItemDetail = ({ product, onEditProduct }: ProductItemDetailProps) =
     </div>
   );
 };
-
-export default ProductItemDetail;

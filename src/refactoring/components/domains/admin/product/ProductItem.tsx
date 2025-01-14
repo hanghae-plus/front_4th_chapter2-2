@@ -1,23 +1,18 @@
 import { useState } from 'react';
 
-import ProductItemDetail from './ProductItemDetail';
+import { ProductEditForm } from './ProductEditForm';
+import { ProductItemDetail } from './ProductItemDetail';
 
-import type { Discount, Product } from '../../../../../types';
-
-const INITIAL_DISCOUNT: Discount = { quantity: 0, rate: 0 };
+import type { Product } from '../../../../../types';
 
 interface ProductItemProps {
   product: Product;
-  products: Product[];
   onProductUpdate: (updatedProduct: Product) => void;
 }
 
-export const ProductItem = ({ product, products, onProductUpdate }: ProductItemProps) => {
+export const ProductItem = ({ product, onProductUpdate }: ProductItemProps) => {
   // 현재 선택된 프로덕트인듯. 있어야할듯
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-  // 상태 필요없음 엔티티 로직도 다 props로 받게 변경예정
-  const [newDiscount, setNewDiscount] = useState<Discount>(INITIAL_DISCOUNT);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   // 있어야함, (상품 수정 toggle)
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
@@ -35,77 +30,8 @@ export const ProductItem = ({ product, products, onProductUpdate }: ProductItemP
     });
   };
 
-  // useProduct로 이동
-  const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  // 수정 완료 핸들러 함수 추가
-  // 핸들러는 냅두고 엔티티 로직만 props로 받게 변경
-  const handleEditComplete = () => {
-    if (editingProduct) {
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-    }
-  };
-
-  // handleEditProduct 함수 수정
-  // [핸들러만 남겨놓고 수정 로직은 분리]
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({ ...product });
-  };
-
-  // 새로운 핸들러 함수 추가
-  //  핸들러는 냅두고 엔티티 로직만 props로 받게 변경
-  // 근데 각 Input마다 state를 두지말고 Form으로 변경해야할듯
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // useProduct로 이동
-  // 핸들러는 냅둠
-  const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount(INITIAL_DISCOUNT);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  // 핸들러는 냅두고 엔티티 로직만 props로 받게 변경
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // useProduct로 이동
-  // 핸들러는 냅둠
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
+  const toggleEditForm = () => {
+    setShowEditForm((prev) => !prev);
   };
 
   return (
@@ -119,83 +45,10 @@ export const ProductItem = ({ product, products, onProductUpdate }: ProductItemP
       </button>
       {openProductIds.has(product.id) && (
         <div className="mt-2">
-          {editingProduct && editingProduct.id === product.id ? (
-            <div>
-              <div className="mb-4">
-                <label className="block mb-1">상품명: </label>
-                <input
-                  type="text"
-                  value={editingProduct.name}
-                  onChange={(e) => handleProductNameUpdate(product.id, e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">가격: </label>
-                <input
-                  type="number"
-                  value={editingProduct.price}
-                  onChange={(e) => handlePriceUpdate(product.id, parseInt(e.target.value))}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1">재고: </label>
-                <input
-                  type="number"
-                  value={editingProduct.stock}
-                  onChange={(e) => handleStockUpdate(product.id, parseInt(e.target.value))}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              {/* 할인 정보 수정 부분 */}
-              <div>
-                <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
-                {editingProduct.discounts.map((discount, index) => (
-                  <div key={index} className="flex justify-between items-center mb-2">
-                    <span>
-                      {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
-                    </span>
-                    <button
-                      onClick={() => handleRemoveDiscount(product.id, index)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                    >
-                      삭제
-                    </button>
-                  </div>
-                ))}
-                <div className="flex space-x-2">
-                  <input
-                    type="number"
-                    placeholder="수량"
-                    value={newDiscount.quantity}
-                    onChange={(e) => setNewDiscount({ ...newDiscount, quantity: parseInt(e.target.value) })}
-                    className="w-1/3 p-2 border rounded"
-                  />
-                  <input
-                    type="number"
-                    placeholder="할인율 (%)"
-                    value={newDiscount.rate * 100}
-                    onChange={(e) => setNewDiscount({ ...newDiscount, rate: parseInt(e.target.value) / 100 })}
-                    className="w-1/3 p-2 border rounded"
-                  />
-                  <button
-                    onClick={() => handleAddDiscount(product.id)}
-                    className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                  >
-                    할인 추가
-                  </button>
-                </div>
-              </div>
-              <button
-                onClick={handleEditComplete}
-                className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
-              >
-                수정 완료
-              </button>
-            </div>
+          {showEditForm ? (
+            <ProductEditForm product={product} onProductUpdate={onProductUpdate} onToggleEditForm={toggleEditForm} />
           ) : (
-            <ProductItemDetail product={product} onEditProduct={handleEditProduct} />
+            <ProductItemDetail product={product} onToggleEditForm={toggleEditForm} />
           )}
         </div>
       )}

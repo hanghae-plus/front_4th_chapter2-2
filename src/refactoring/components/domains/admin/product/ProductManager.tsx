@@ -28,7 +28,7 @@ export const ProductManager = ({ products, onProductUpdate, onProductAdd }: Prod
       <div className="space-y-2">
         {products.map((product, index) => (
           <div key={product.id} data-testid={`product-${index + 1}`} className="bg-white p-4 rounded shadow">
-            <ProductItem product={product} products={products} onProductUpdate={onProductUpdate} />
+            <ProductItem product={product} onProductUpdate={onProductUpdate} />
           </div>
         ))}
       </div>
