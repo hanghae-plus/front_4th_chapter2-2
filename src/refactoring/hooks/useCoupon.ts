@@ -1,5 +1,5 @@
-import { Coupon } from "../../types.ts";
-import { useState } from "react";
+import { Coupon } from '../shared/types/types.ts';
+import { useState } from 'react';
 
 export const useCoupons = (initialCoupons: Coupon[]) => {
   const [coupons, setCoupons] = useState<Coupon[]>(initialCoupons);
