@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react";
 import { useCart } from "../hooks/useCart.ts";
-import { useCoupons } from "../hooks/useCoupons.ts";
 import { useProducts } from "../hooks/useProducts.ts";
 import { Coupon, Product } from "../../types.ts";
 
@@ -15,17 +15,47 @@ export const CartPage = ({ products = [], coupons = [] }: Props) => {
     addToCart,
     removeFromCart,
     updateQuantity,
+    applyCoupon,
     calculateTotal,
     getRemainingStock,
     getAppliedDiscount,
   } = useCart();
 
-  const { selectedCoupon, applyCoupon } = useCoupons();
   const { getMaxDiscount } = useProducts(products);
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [summary, setSummary] = useState<{
+    totalBeforeDiscount: number;
+    totalAfterDiscount: number;
+    totalDiscount: number;
+  }>({
+    totalBeforeDiscount: 0,
+    totalAfterDiscount: 0,
+    totalDiscount: 0,
+  });
 
-  console.log("총 금액:", { totalBeforeDiscount, totalAfterDiscount, totalDiscount });
+  // 쿠폰 적용 및 상태 업데이트
+  const handleApplyCoupon = (index: number) => {
+    const selected = coupons[index];
+    if (index === -1) {  // "쿠폰 선택"을 선택한 경우
+      applyCoupon(null);  // 쿠폰을 취소
+      setSelectedCoupon(null); // 상태 초기화
+    } else {
+      applyCoupon(selected);  // 새로운 쿠폰 적용
+      setSelectedCoupon(selected); // 상태 업데이트
+    }
+  };
+
+  // selectedCoupon이 변경될 때마다 계산
+  useEffect(() => {
+    const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+
+    setSummary({
+      totalBeforeDiscount: totalBeforeDiscount,
+      totalAfterDiscount: totalAfterDiscount,
+      totalDiscount: totalDiscount,
+    });
+  }, [selectedCoupon, cart]); // selectedCoupon 또는 cart 변경 시 재계산
 
   return (
     <div className="container mx-auto p-4">
@@ -129,10 +159,10 @@ export const CartPage = ({ products = [], coupons = [] }: Props) => {
           <div className="mt-6 bg-white p-4 rounded shadow">
             <h2 className="text-2xl font-semibold mb-2">쿠폰 적용</h2>
             <select
-              onChange={(e) => applyCoupon(coupons[parseInt(e.target.value)])}
+              onChange={(e) => handleApplyCoupon(parseInt(e.target.value))}
               className="w-full p-2 border rounded mb-2"
             >
-              <option value="">쿠폰 선택</option>
+              <option value="-1">쿠폰 선택</option>
               {coupons.map((coupon, index) => (
                 <option key={coupon.code} value={index}>
                   {coupon.name} - {coupon.discountType === "amount" ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
@@ -150,10 +180,10 @@ export const CartPage = ({ products = [], coupons = [] }: Props) => {
           <div className="mt-6 bg-white p-4 rounded shadow">
             <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
             <div className="space-y-1">
-              <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
-              <p className="text-green-600">할인 금액: {totalDiscount.toLocaleString()}원</p>
+              <p>상품 금액: {(summary?.totalBeforeDiscount).toLocaleString()}원</p>
+              <p className="text-green-600">할인 금액: {(summary?.totalDiscount).toLocaleString()}원</p>
               <p className="text-xl font-bold">
-                최종 결제 금액: {totalAfterDiscount.toLocaleString()}원
+                최종 결제 금액: {(summary?.totalAfterDiscount).toLocaleString()}원
               </p>
             </div>
           </div>

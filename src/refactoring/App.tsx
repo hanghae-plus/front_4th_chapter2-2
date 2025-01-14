@@ -47,6 +47,7 @@ const App = () => {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -71,7 +72,11 @@ const App = () => {
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons}/>
+          <CartPage 
+            products={products} 
+            coupons={coupons} 
+            selectedCoupon={selectedCoupon} 
+            setSelectedCoupon={setSelectedCoupon} />
         )}
       </main>
     </div>

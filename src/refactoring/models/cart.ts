@@ -2,14 +2,15 @@ import { CartItem, Coupon } from "../../types";
 
 export const calculateCartTotal = (
   cart: CartItem[],
-  selectedCoupon: Coupon | null
-): { totalBeforeDiscount: number; totalAfterDiscount: number; totalDiscount: number } => {
+  selectedCoupon: Coupon | null 
+) => {
+   // 1. 상품 금액 합계 (할인 전)
   const totalBeforeDiscount = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
 
-  // 항목별 할인 적용 후의 총 금액
+  // 2. 상품별 할인 적용 후 합계
   const totalAfterItemDiscount = cart.reduce(
     (sum, item) => sum + calculateItemTotal(item),
     0
@@ -20,15 +21,19 @@ export const calculateCartTotal = (
   let couponDiscount = 0;
 
   if (selectedCoupon) {
+    // 전체 금액에 대해 한 번만 쿠폰 할인 적용
     if (selectedCoupon.discountType === "percentage") {
-      couponDiscount = Math.round(totalAfterItemDiscount * (selectedCoupon.discountValue / 100));
+      couponDiscount = totalAfterItemDiscount * (selectedCoupon.discountValue / 100);
     } else if (selectedCoupon.discountType === "amount") {
-      couponDiscount = selectedCoupon.discountValue;
+      couponDiscount = Math.min(selectedCoupon.discountValue, totalAfterItemDiscount);
     }
   }
 
-  const totalAfterDiscount = Math.max(totalAfterItemDiscount - couponDiscount, 0);
-  const totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+  // 4. 최종 결제 금액
+  const totalAfterDiscount = Math.max(0, totalAfterItemDiscount - couponDiscount);
+
+  // 5. 총 할인 금액
+  const totalDiscount = totalBeforeDiscount - totalAfterItemDiscount + couponDiscount;
 
   return {
     totalBeforeDiscount,
@@ -48,6 +53,7 @@ export const calculateItemTotal = (item: CartItem): number => {
 export const getMaxApplicableDiscount = (item: CartItem): number => {
   const { discounts } = item.product;
   const { quantity } = item;
+  
   return discounts.reduce(
     (maxDiscount, discount) =>
       quantity >= discount.quantity ? Math.max(maxDiscount, discount.rate) : maxDiscount,
