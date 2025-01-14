@@ -1,7 +1,5 @@
-import { ReactNode } from "react";
-
 interface ContainerProps {
-  children: ReactNode;
+  children: React.ReactNode;
   title: string;
 }
 

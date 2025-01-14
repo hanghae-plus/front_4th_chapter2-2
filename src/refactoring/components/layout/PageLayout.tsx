@@ -1,7 +1,5 @@
-import { ReactNode } from "react";
-
 interface PageLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
   actions: JSX.Element;
 }
 

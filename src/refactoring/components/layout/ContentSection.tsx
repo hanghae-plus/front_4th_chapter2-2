@@ -1,7 +1,5 @@
-import { ReactNode } from "react";
-
 interface ContentSectionProps {
-  children: ReactNode;
+  children: React.ReactNode;
   subTitle: string;
 }
 
