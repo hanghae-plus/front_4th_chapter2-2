@@ -174,33 +174,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                   onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
                   className="w-full p-2 border rounded"
                 />
-              </div>
-              <div className="mb_2">
-                <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">할인율</label>
-                <div className="flex space-x-2 mb-2">
-                  <input
-                    type="number"
-                    placeholder="수량"
-                    value={newDiscount.quantity}
-                    onChange={(e) => setNewDiscount({ ...newDiscount, quantity: parseInt(e.target.value) })}
-                    className="w-1/3 p-2 border rounded"
-                  />
-                  <input
-                    type="number"
-                    placeholder="할인율 (%)"
-                    value={newDiscount.rate * 100}
-                    onChange={(e) => setNewDiscount({ ...newDiscount, rate: parseInt(e.target.value) / 100 })}
-                    className="w-1/3 p-2 border rounded"
-                  />
-                  <button
-                    onClick={() => handleAddDiscount} 
-                    className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                  >
-                    할인 추가
-                  </button>
-                </div>
-              </div>
-                
+              </div>                
               <button
                 onClick={handleAddNewProduct}
                 className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
