@@ -1,6 +1,12 @@
-import { Coupon } from "../../types.ts";
-import { useState } from "react";
+import { Coupon } from '../../types.ts';
+import { useState } from 'react';
 
 export const useCoupons = (initialCoupons: Coupon[]) => {
-  return { coupons: [], addCoupon: () => undefined };
+  const [couponList, setCouponList] = useState<Coupon[]>(() => initialCoupons);
+
+  const addCoupon = (newCoupon: Coupon) => {
+    setCouponList((previous) => [...previous, newCoupon]);
+  };
+
+  return { couponList, addCoupon };
 };
