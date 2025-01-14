@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { Coupon } from '../../../types';
+import type { Coupon } from '../../../../../types';
 
 interface CouponCreateFormProps {
   onCouponAdd: (newCoupon: Coupon) => void;

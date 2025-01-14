@@ -67,7 +67,7 @@ export default tseslint.config({
     ],
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
-    'react/jsx-props-no-spreading': 'warn',
+    'react/jsx-props-no-spreading': 'off', // ...rest 형식으로 props를 전달하는 경우가 있어서
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'import/order': [

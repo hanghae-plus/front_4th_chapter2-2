@@ -1,7 +1,7 @@
 import { CouponForm } from './CouponForm';
 import { CreatedCouponList } from './CreatedCouponList';
 
-import type { Coupon } from '../../../types';
+import type { Coupon } from '../../../../../types';
 
 interface CouponManagerProps {
   onCouponAdd: (newCoupon: Coupon) => void;
