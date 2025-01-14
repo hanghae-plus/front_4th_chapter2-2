@@ -4,6 +4,7 @@ import PageContainer from "../components/shared/PageContainer.tsx";
 import CartSection from "../components/cart/CartSection.tsx";
 import ProductList from "../components/cart/ProductList.tsx";
 import ItemList from "../components/cart/ItemList.tsx";
+import DetailInfoCard from "../components/cart/DetailInfoCard.tsx";
 
 interface Props {
   products: Product[];
@@ -48,8 +49,7 @@ export const CartPage = ({ products, coupons }: Props) => {
             getAppliedDiscount={getAppliedDiscount}
           />
         ))}
-        <div className="mt-6 bg-white p-4 rounded shadow">
-          <h2 className="text-2xl font-semibold mb-2">쿠폰 적용</h2>
+        <DetailInfoCard cardTitle="쿠폰 적용">
           <select
             onChange={(e) => applyCoupon(coupons[parseInt(e.target.value)])}
             className="w-full p-2 border rounded mb-2"
@@ -73,10 +73,8 @@ export const CartPage = ({ products, coupons }: Props) => {
               할인)
             </p>
           )}
-        </div>
-
-        <div className="mt-6 bg-white p-4 rounded shadow">
-          <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
+        </DetailInfoCard>
+        <DetailInfoCard cardTitle="주문 요약">
           <div className="space-y-1">
             <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
             <p className="text-green-600">
@@ -86,7 +84,7 @@ export const CartPage = ({ products, coupons }: Props) => {
               최종 결제 금액: {totalAfterDiscount.toLocaleString()}원
             </p>
           </div>
-        </div>
+        </DetailInfoCard>
       </CartSection>
     </PageContainer>
   );
