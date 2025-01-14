@@ -30,6 +30,7 @@ export const useCart = () => {
 
 
     const applyCoupon = (coupon: Coupon) => {
+        setSelectedCoupon(coupon);
     };
 
     const calculateTotal = () => ({
