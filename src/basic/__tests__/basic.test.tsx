@@ -183,16 +183,14 @@ describe('basic > ', () => {
       fireEvent.click(within($product1).getByTestId('toggle-button'));
       fireEvent.click(within($product1).getByTestId('modify-button'));
 
-      act(() => {
-        fireEvent.change(within($product1).getByDisplayValue('20'), {
-          target: { value: '25' }
-        });
-        fireEvent.change(within($product1).getByDisplayValue('10000'), {
-          target: { value: '12000' }
-        });
-        fireEvent.change(within($product1).getByDisplayValue('상품1'), {
-          target: { value: '수정된 상품1' }
-        });
+      fireEvent.change(within($product1).getByDisplayValue('20'), {
+        target: { value: '25' }
+      });
+      fireEvent.change(within($product1).getByDisplayValue('10000'), {
+        target: { value: '12000' }
+      });
+      fireEvent.change(within($product1).getByDisplayValue('상품1'), {
+        target: { value: '수정된 상품1' }
       });
 
       fireEvent.click(within($product1).getByText('수정 완료'));
@@ -206,22 +204,20 @@ describe('basic > ', () => {
       fireEvent.click(within($product1).getByTestId('modify-button'));
 
       // 할인 추가
-      act(() => {
-        fireEvent.change(screen.getByPlaceholderText('수량'), {
-          target: { value: '5' }
-        });
-        fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), {
-          target: { value: '5' }
-        });
+      fireEvent.change(screen.getByPlaceholderText('수량'), {
+        target: { value: '5' }
+      });
+      fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), {
+        target: { value: '5' }
       });
       fireEvent.click(screen.getByText('할인 추가'));
 
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
+      expect(screen.getByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
 
       // 할인 삭제
       fireEvent.click(screen.getAllByText('삭제')[0]);
       expect(screen.queryByText('10개 이상 구매 시 10% 할인')).not.toBeInTheDocument();
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
+      expect(screen.getByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
 
       fireEvent.click(screen.getAllByText('삭제')[0]);
       expect(screen.queryByText('10개 이상 구매 시 10% 할인')).not.toBeInTheDocument();
