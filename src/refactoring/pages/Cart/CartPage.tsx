@@ -96,6 +96,8 @@ export const CartPage = ({ products, coupons }: Props) => {
 
           <div className="mt-6 rounded bg-white p-4 shadow">
             <h2 className="mb-2 text-2xl font-semibold">쿠폰 적용</h2>
+
+            <CouponSelect coupons={coupons} onCouponApply={applyCoupon} />
             <select
               onChange={e => applyCoupon(coupons[parseInt(e.target.value)])}
               className="mb-2 w-full rounded border p-2"
