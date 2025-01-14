@@ -1,3 +1,5 @@
+import { combineClassNames } from "../../utils/style-utile";
+
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "success" | "danger";
   children: React.ReactNode;
@@ -42,16 +44,7 @@ const Button = ({
   const variantStyle = variantStyles[variant];
   const combinedStyles = { ...baseStyle, ...variantStyle };
 
-  if (className) {
-    const customStyles = className.split(" ").reduce((acc, cls) => {
-      const [property] = cls.split("-");
-      return { ...acc, [property]: cls };
-    }, {});
-
-    Object.assign(combinedStyles, customStyles);
-  }
-
-  const classNames = Object.values(combinedStyles).join(" ");
+  const classNames = combineClassNames(combinedStyles, className);
 
   return (
     <button className={classNames} {...props}>

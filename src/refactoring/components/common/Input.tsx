@@ -1,3 +1,5 @@
+import { combineClassNames } from "../../utils/style-utile";
+
 interface InputProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -7,10 +9,17 @@ interface InputProps
   className?: string;
 }
 
-const INIT_STYLE = "w-full p-2 border rounded";
+const baseStyle = {
+  width: "w-full",
+  p: "p-2",
+  border: "border",
+  rounded: "rounded",
+};
 
-const Input = ({ onChange, className = INIT_STYLE, ...rest }: InputProps) => {
-  return <input onChange={onChange} className={className} {...rest} />;
+const Input = ({ onChange, className, ...rest }: InputProps) => {
+  const classNames = combineClassNames(baseStyle, className);
+
+  return <input onChange={onChange} className={classNames} {...rest} />;
 };
 
 export default Input;
