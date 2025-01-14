@@ -1,11 +1,10 @@
 import { Coupon, Product } from '../../types.ts';
 import useAdmin from '../hooks/useAdmin.ts';
-import useNewCoupon from '../hooks/useNewCoupon.ts';
 import useProductSet from '../hooks/useProductSet.ts';
 import useNewProduct from '../hooks/useNewProduct.ts';
 import EditProductForm from './EditProductForm.tsx';
 import ProductForm from './ProductForm.tsx';
-import ManageCoupon from './ManageCoupon.tsx';
+import AdminCouponForm from './AdminCouponForm.tsx';
 import ProductDiscount from './ProductDiscount.tsx';
 
 interface Props {
@@ -27,8 +26,6 @@ export const AdminPage = ({
     products,
     onProductUpdate,
   });
-
-  const newCouponProps = useNewCoupon({ onCouponAdd });
 
   const { openProductIds, toggleProductAccordion } = useProductSet();
 
@@ -80,7 +77,7 @@ export const AdminPage = ({
             ))}
           </div>
         </div>
-        <ManageCoupon coupons={coupons} {...newCouponProps} />
+        <AdminCouponForm coupons={coupons} onCouponAdd={onCouponAdd} />
       </div>
     </div>
   );
