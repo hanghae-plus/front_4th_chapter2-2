@@ -1,6 +1,9 @@
+import { useCart } from '@/refactoring/hooks/useCart';
+import { getRemainingStock } from '@/refactoring/models/stock';
+import { AppliedCoupon } from '@/refactoring/pages/Cart/components/AppliedCoupon';
 import { CartItem } from '@/refactoring/pages/Cart/components/CartItem';
-import { useCart } from '@/refactoring/pages/Cart/hooks/useCart';
-import type { CartItem as CartItemType, Coupon, Product } from '@/types';
+import { CouponSelect } from '@/refactoring/pages/Cart/components/CouponSelect';
+import type { Coupon, Product } from '@/types';
 
 interface Props {
   products: Product[];
@@ -12,11 +15,6 @@ export const CartPage = ({ products, coupons }: Props) => {
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product, cart: CartItemType[]) => {
-    const cartItem = cart.find(item => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
   };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
@@ -37,12 +35,14 @@ export const CartPage = ({ products, coupons }: Props) => {
           <div className="space-y-2">
             {products.map(product => {
               const remainingStock = getRemainingStock(product, cart);
+
               return (
                 <div key={product.id} data-testid={`product-${product.id}`} className="rounded bg-white p-3 shadow">
                   <div className="mb-2 flex items-center justify-between">
                     <span className="font-semibold">{product.name}</span>
                     <span className="text-gray-600">{product.price.toLocaleString()}원</span>
                   </div>
+
                   <div className="mb-2 text-sm text-gray-500">
                     <span className={`font-medium ${remainingStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
                       재고: {remainingStock}개
@@ -53,6 +53,7 @@ export const CartPage = ({ products, coupons }: Props) => {
                       </span>
                     )}
                   </div>
+
                   {product.discounts.length > 0 && (
                     <ul className="mb-2 list-inside list-disc text-sm text-gray-500">
                       {product.discounts.map((discount, index) => (
@@ -62,6 +63,7 @@ export const CartPage = ({ products, coupons }: Props) => {
                       ))}
                     </ul>
                   )}
+
                   <button
                     onClick={() => handleAddToCart(product)}
                     className={`w-full rounded px-3 py-1 ${
