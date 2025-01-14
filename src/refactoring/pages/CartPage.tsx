@@ -1,4 +1,4 @@
-import { useCart } from '@/refactoring/entity/cart/hooks/useCart';
+import { useCart } from '@/refactoring/hooks';
 import { getMaxApplicableDiscount } from '@/refactoring/models/cart';
 import type { CartItem, Coupon, Product } from '@/types';
 
