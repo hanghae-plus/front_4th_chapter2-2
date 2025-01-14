@@ -2,7 +2,7 @@ import { CartItem, Coupon, Product } from "../../types.ts";
 import { useCart } from "../hooks/index.ts";
 import Container from "../components/layout/Container.tsx";
 import ContentSection from "../components/layout/ContentSection.tsx";
-import ProductCard from "../components/product/ProductCard.tsx";
+import ProductCard from "../components/cart/ProductCard.tsx";
 import CartProductCard from "../components/cart/CartProductCard.tsx";
 import OrderSummary from "../components/cart/OrderSummary.tsx";
 
