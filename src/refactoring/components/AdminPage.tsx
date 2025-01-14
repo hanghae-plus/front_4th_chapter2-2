@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import CouponManager from './coupon/CouponManager.tsx';
+
 import type { Coupon, Discount, Product } from '../../types.ts';
 
 interface Props {
@@ -21,14 +23,6 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   // 상태 필요없음 엔티티 로직도 다 props로 받게 변경예정
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
-
-  // 필요없음
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
 
   // 상품 추가 토글 (있어야함)
   const [showNewProductForm, setShowNewProductForm] = useState(false);
@@ -126,18 +120,6 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
-  };
-
-  // setNewCoupon 상태 제거하고 Form으로 변경 후 각 상태를 한번만 수정하도록 변경
-  // 핸들러는 남겨놓고 엔티티 로직만 props로 받게 변경
-  const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
   };
 
   // 핸들러는 놔두고 엔티티 로직만 Product로 분리
@@ -323,63 +305,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
             ))}
           </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
-          <div className="bg-white p-4 rounded shadow">
-            <div className="space-y-2 mb-4">
-              <input
-                type="text"
-                placeholder="쿠폰 이름"
-                value={newCoupon.name}
-                onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                placeholder="쿠폰 코드"
-                value={newCoupon.code}
-                onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
-              <div className="flex gap-2">
-                <select
-                  value={newCoupon.discountType}
-                  onChange={(e) =>
-                    setNewCoupon({ ...newCoupon, discountType: e.target.value as 'amount' | 'percentage' })
-                  }
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="amount">금액(원)</option>
-                  <option value="percentage">할인율(%)</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="할인 값"
-                  value={newCoupon.discountValue}
-                  onChange={(e) => setNewCoupon({ ...newCoupon, discountValue: parseInt(e.target.value) })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <button
-                onClick={handleAddCoupon}
-                className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-              >
-                쿠폰 추가
-              </button>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>
-              <div className="space-y-2">
-                {coupons.map((coupon, index) => (
-                  <div key={index} data-testid={`coupon-${index + 1}`} className="bg-gray-100 p-2 rounded">
-                    {coupon.name} ({coupon.code}):
-                    {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`} 할인
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <CouponManager coupons={coupons} onCouponAdd={onCouponAdd} />
       </div>
     </div>
   );
