@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import CouponManager from './coupon/CouponManager.tsx';
+import { CouponManager } from './coupon/CouponManager.tsx';
 
 import type { Coupon, Discount, Product } from '../../types.ts';
 
