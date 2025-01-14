@@ -192,6 +192,12 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                     onChange={(e) => setNewDiscount({ ...newDiscount, rate: parseInt(e.target.value) / 100 })}
                     className="w-1/3 p-2 border rounded"
                   />
+                  <button
+                    onClick={() => handleAddDiscount()}
+                    className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                  >
+                    할인 추가
+                  </button>
                 </div>
               </div>
                 
