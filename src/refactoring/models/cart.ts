@@ -1,4 +1,5 @@
 import { CartItem, Coupon } from '@/types'
+// 유틸 함수는 전부 순수 함수로 구현
 
 /**
  * 장바구니 개별 상품의 총액을 계산하는 함수
