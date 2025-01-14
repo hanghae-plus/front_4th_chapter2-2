@@ -114,12 +114,18 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
+
+    // 새 상품에 할인율 추가
+    if (!Array.isArray(productWithId.discounts)) {
+      productWithId.discounts = [];
+    }
+
     onProductAdd(productWithId);
     setNewProduct({
       name: '',
       price: 0,
       stock: 0,
-      discounts: []
+      discounts: [],
     });
     setShowNewProductForm(false);
   };
@@ -169,6 +175,26 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                   className="w-full p-2 border rounded"
                 />
               </div>
+              <div className="mb_2">
+                <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">할인율</label>
+                <div className="flex space-x-2 mb-2">
+                  <input
+                    type="number"
+                    placeholder="수량"
+                    value={newDiscount.quantity}
+                    onChange={(e) => setNewDiscount({ ...newDiscount, quantity: parseInt(e.target.value) })}
+                    className="w-1/3 p-2 border rounded"
+                  />
+                  <input
+                    type="number"
+                    placeholder="할인율 (%)"
+                    value={newDiscount.rate * 100}
+                    onChange={(e) => setNewDiscount({ ...newDiscount, rate: parseInt(e.target.value) / 100 })}
+                    className="w-1/3 p-2 border rounded"
+                  />
+                </div>
+              </div>
+                
               <button
                 onClick={handleAddNewProduct}
                 className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"

@@ -31,7 +31,7 @@ export const useCart = () => {
     setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
   };
 
-  const getRemainingStock = (product: Product): number => {
+  const getRemainingStock = (product: Product) => {
     const cartItem = cart.find(item => item.product.id === product.id);
     return product.stock - (cartItem?.quantity || 0);
   };

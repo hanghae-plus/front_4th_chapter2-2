@@ -16,7 +16,6 @@ export const calculateCartTotal = (
     0
   );
 
-  
   // 쿠폰 할인 적용
   let couponDiscount = 0;
 
