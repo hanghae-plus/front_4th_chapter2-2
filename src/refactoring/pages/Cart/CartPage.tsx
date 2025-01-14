@@ -1,8 +1,8 @@
 import { useCart } from '@/refactoring/hooks/useCart';
-import { getRemainingStock } from '@/refactoring/models/stock';
 import { AppliedCoupon } from '@/refactoring/pages/Cart/components/AppliedCoupon';
 import { CartItem } from '@/refactoring/pages/Cart/components/CartItem';
 import { CouponSelect } from '@/refactoring/pages/Cart/components/CouponSelect';
+import { ProductItem } from '@/refactoring/pages/Cart/components/ProductItem';
 import type { Coupon, Product } from '@/types';
 
 interface Props {
@@ -13,18 +13,7 @@ interface Props {
 export const CartPage = ({ products, coupons }: Props) => {
   const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
-
-  const handleAddToCart = (product: Product) => {
-    const remainingStock = getRemainingStock(product, cart);
-    if (remainingStock <= 0) return;
-
-    addToCart(product);
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -34,55 +23,13 @@ export const CartPage = ({ products, coupons }: Props) => {
           <h2 className="mb-4 text-2xl font-semibold">상품 목록</h2>
           <div className="space-y-2">
             {products.map(product => {
-              const remainingStock = getRemainingStock(product, cart);
-
-              return (
-                <div key={product.id} data-testid={`product-${product.id}`} className="rounded bg-white p-3 shadow">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="font-semibold">{product.name}</span>
-                    <span className="text-gray-600">{product.price.toLocaleString()}원</span>
-                  </div>
-
-                  <div className="mb-2 text-sm text-gray-500">
-                    <span className={`font-medium ${remainingStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      재고: {remainingStock}개
-                    </span>
-                    {product.discounts.length > 0 && (
-                      <span className="ml-2 font-medium text-blue-600">
-                        최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
-                      </span>
-                    )}
-                  </div>
-
-                  {product.discounts.length > 0 && (
-                    <ul className="mb-2 list-inside list-disc text-sm text-gray-500">
-                      {product.discounts.map((discount, index) => (
-                        <li key={index}>
-                          {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}% 할인
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <button
-                    onClick={() => handleAddToCart(product)}
-                    className={`w-full rounded px-3 py-1 ${
-                      remainingStock > 0
-                        ? 'bg-blue-500 text-white hover:bg-blue-600'
-                        : 'cursor-not-allowed bg-gray-300 text-gray-500'
-                    }`}
-                    disabled={remainingStock <= 0}
-                  >
-                    {remainingStock > 0 ? '장바구니에 추가' : '품절'}
-                  </button>
-                </div>
-              );
+              return <ProductItem key={product.id} product={product} cart={cart} onCartAdd={addToCart} />;
             })}
           </div>
         </div>
+
         <div>
           <h2 className="mb-4 text-2xl font-semibold">장바구니 내역</h2>
-
           <div className="space-y-2">
             {cart.map(item => {
               return (
@@ -98,7 +45,6 @@ export const CartPage = ({ products, coupons }: Props) => {
 
           <div className="mt-6 rounded bg-white p-4 shadow">
             <h2 className="mb-2 text-2xl font-semibold">쿠폰 적용</h2>
-
             <CouponSelect coupons={coupons} onCouponApply={applyCoupon} />
             {selectedCoupon && <AppliedCoupon appliedCoupon={selectedCoupon} />}
           </div>
