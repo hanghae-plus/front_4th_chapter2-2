@@ -80,6 +80,7 @@ export const useCart = () => {
     );
   };
 
+  // 위치를 변경할 수 없는건가, 아니면 적용 대상이 다른건가?
   // 할인 쿠폰을 선택하면 적용하면 최종 결제 금액에 할인정보가 반영
   const applyCoupon = (coupon: Coupon) => {
     setSelectedCoupon(coupon);
@@ -125,6 +126,9 @@ export const useCart = () => {
     };
   };
 
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
+    calculateTotal();
+
   return {
     cart,
     addToCart,
@@ -136,5 +140,8 @@ export const useCart = () => {
     calculateTotal,
     getAppliedDiscount,
     selectedCoupon,
+    totalBeforeDiscount,
+    totalAfterDiscount,
+    totalDiscount,
   };
 };

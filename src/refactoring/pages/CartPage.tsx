@@ -17,18 +17,17 @@ export const CartPage = ({ products }: Props) => {
     removeFromCart,
     updateQuantity,
     applyCoupon,
-    calculateTotal,
     getAppliedDiscount,
     getRemainingStock,
     getMaxDiscount,
     addToCart,
     selectedCoupon,
+    totalBeforeDiscount,
+    totalAfterDiscount,
+    totalDiscount,
   } = useCart();
 
   const { coupons } = useCoupons(initialCoupons);
-
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
-    calculateTotal();
 
   return (
     <PageContainer pageTitle="장바구니">
