@@ -2,10 +2,9 @@ import { Coupon, Product } from '../../types.ts';
 import useAdmin from '../hooks/useAdmin.ts';
 import useProductSet from '../hooks/useProductSet.ts';
 import useNewProduct from '../hooks/useNewProduct.ts';
-import EditProductForm from './EditProductForm.tsx';
 import ProductForm from './ProductForm.tsx';
 import AdminCouponForm from './AdminCouponForm.tsx';
-import ProductDiscount from './ProductDiscount.tsx';
+import AdminProductContent from './AdminProductContent.tsx';
 
 interface Props {
   products: Product[];
@@ -22,7 +21,7 @@ export const AdminPage = ({
   onProductAdd,
   onCouponAdd,
 }: Props) => {
-  const { handleEditProduct, editingProduct, ...adminProps } = useAdmin({
+  const adminProps = useAdmin({
     products,
     onProductUpdate,
   });
@@ -61,17 +60,7 @@ export const AdminPage = ({
                   {product.name} - {product.price}원 (재고: {product.stock})
                 </button>
                 {openProductIds.has(product.id) && (
-                  <div className='mt-2'>
-                    {editingProduct && editingProduct.id === product.id ? (
-                      <EditProductForm
-                        product={product}
-                        editingProduct={editingProduct}
-                        {...adminProps}
-                      />
-                    ) : (
-                      <ProductDiscount product={product} handleEditProduct={handleEditProduct} />
-                    )}
-                  </div>
+                  <AdminProductContent product={product} {...adminProps} />
                 )}
               </div>
             ))}
