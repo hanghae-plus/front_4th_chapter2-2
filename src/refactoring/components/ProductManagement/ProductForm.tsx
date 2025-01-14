@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Product, Discount } from '@/types'
 
 interface ProductFormProps {

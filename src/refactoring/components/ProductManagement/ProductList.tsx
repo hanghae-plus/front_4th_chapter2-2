@@ -6,8 +6,8 @@ interface ProductListProps {
   openProductIds: Set<string>
   editingProduct: Product | null
   onToggleAccordion: (productId: string) => void
-  onEditStart: (product: Product) => void
-  onEditComplete: (updatedProduct: Product) => void
+  onEditStart: (product: Product) => void // handleEditProduct
+  onEditComplete: (updatedProduct: Product) => void // handleEditComplete
   onEditCancel: () => void
 }
 
