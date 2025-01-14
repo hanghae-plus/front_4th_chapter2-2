@@ -21,7 +21,6 @@ export const ProductEditForm = ({ product, onProductUpdate, onToggleEditForm }: 
     };
     onProductUpdate(newProduct);
     setEditingProduct(newProduct);
-    onToggleEditForm();
   };
 
   const handleEditComplete = () => {
