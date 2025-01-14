@@ -4,23 +4,15 @@ import { Product } from '../models/types/Product';
 
 interface Arguments {
   products: Product[];
-  addProduct: (product: Product) => void;
   updateProduct: (product: Product) => void;
 }
 
-const useOthers = ({ products, addProduct, updateProduct }: Arguments) => {
+const useOthers = ({ products, updateProduct }: Arguments) => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({
     quantity: 0,
     rate: 0,
   });
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
@@ -85,30 +77,6 @@ const useOthers = ({ products, addProduct, updateProduct }: Arguments) => {
     }
   };
 
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    addProduct(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
-  };
-
-  const handleUpdateNewProductName = (name: string) => {
-    setNewProduct((prev) => ({ ...prev, name }));
-  };
-
-  const handleUpdateNewProductPrice = (price: number) => {
-    setNewProduct((prev) => ({ ...prev, price }));
-  };
-
-  const handleUpdateNewProductStock = (stock: number) => {
-    setNewProduct((prev) => ({ ...prev, stock }));
-  };
-
   const handleUpdateNewDiscountQuantity = (quantity: number) => {
     setNewDiscount((prev) => ({ ...prev, quantity }));
   };
@@ -118,10 +86,8 @@ const useOthers = ({ products, addProduct, updateProduct }: Arguments) => {
   };
 
   return {
-    newProduct,
     editingProduct,
     newDiscount,
-    showNewProductForm,
     handlers: {
       handleEditProduct,
       handleProductNameUpdate,
@@ -130,11 +96,6 @@ const useOthers = ({ products, addProduct, updateProduct }: Arguments) => {
       handleStockUpdate,
       handleAddDiscount,
       handleRemoveDiscount,
-      handleAddNewProduct,
-      handleShowNewProductForm: () => setShowNewProductForm((prev) => !prev),
-      handleUpdateNewProductName,
-      handleUpdateNewProductPrice,
-      handleUpdateNewProductStock,
       handleUpdateNewDiscountQuantity,
       handleUpdateNewDiscountRate,
     },

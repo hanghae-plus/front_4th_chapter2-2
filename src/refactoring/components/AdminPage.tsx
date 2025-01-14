@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '../models/types/Product';
 import { Coupon } from '../models/types/Coupon';
 import { useOthers } from '../hooks/useOthers';
+import ProductForm from './admin/ProductForm';
 
 interface Props {
   products: Product[];
@@ -19,12 +20,9 @@ function AdminPage({
   onCouponAdd,
 }: Props) {
   const {
-    newProduct,
-    showNewProductForm,
     editingProduct,
     newDiscount,
     handlers: {
-      handleAddNewProduct,
       handleEditProduct,
       handleProductNameUpdate,
       handlePriceUpdate,
@@ -32,19 +30,15 @@ function AdminPage({
       handleAddDiscount,
       handleRemoveDiscount,
       handleEditComplete,
-      handleShowNewProductForm,
-      handleUpdateNewProductName,
-      handleUpdateNewProductPrice,
-      handleUpdateNewProductStock,
       handleUpdateNewDiscountQuantity,
       handleUpdateNewDiscountRate,
     },
   } = useOthers({
     products,
-    addProduct: onProductAdd,
     updateProduct: onProductUpdate,
   });
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+  const [showNewProductForm, setShowNewProductForm] = useState(false);
 
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
@@ -83,72 +77,16 @@ function AdminPage({
           <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
           <button
             type="button"
-            onClick={handleShowNewProductForm}
+            onClick={() => setShowNewProductForm((prev) => !prev)}
             className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
           >
             {showNewProductForm ? '취소' : '새 상품 추가'}
           </button>
-          {showNewProductForm && (
-            <div className="bg-white p-4 rounded shadow mb-4">
-              <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
-              <div className="mb-2">
-                <label
-                  htmlFor="productName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  상품명
-                  <input
-                    id="productName"
-                    type="text"
-                    value={newProduct.name}
-                    onChange={(e) => handleUpdateNewProductName(e.target.value)}
-                    className="w-full p-2 border rounded"
-                  />
-                </label>
-              </div>
-              <div className="mb-2">
-                <label
-                  htmlFor="productPrice"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  가격
-                  <input
-                    id="productPrice"
-                    type="number"
-                    value={newProduct.price}
-                    onChange={(e) =>
-                      handleUpdateNewProductPrice(Number(e.target.value))
-                    }
-                    className="w-full p-2 border rounded"
-                  />
-                </label>
-              </div>
-              <div className="mb-2">
-                <label
-                  htmlFor="productStock"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  재고
-                  <input
-                    id="productStock"
-                    type="number"
-                    value={newProduct.stock}
-                    onChange={(e) =>
-                      handleUpdateNewProductStock(Number(e.target.value))
-                    }
-                    className="w-full p-2 border rounded"
-                  />
-                </label>
-              </div>
-              <button
-                type="button"
-                onClick={handleAddNewProduct}
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                추가
-              </button>
-            </div>
-          )}
+          <ProductForm
+            addProduct={onProductAdd}
+            isOpen={showNewProductForm}
+            setFormState={setShowNewProductForm}
+          />
           <div className="space-y-2">
             {products.map((product, index) => (
               <div
