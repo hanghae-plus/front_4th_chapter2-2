@@ -1,11 +1,7 @@
 import { CartItem, Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
 import { calculateCartTotal } from '../models/cart.ts';
-import {
-  getAppliedDiscount,
-  getMaxDiscount,
-  getRemainingStock,
-} from '../utils/cart.ts';
+import { getAppliedDiscount, getMaxDiscount, getRemainingStock } from '../utils/cart.ts';
 
 interface Props {
   productList: Product[];
@@ -13,40 +9,34 @@ interface Props {
 }
 
 export const CartPage = ({ productList, couponList }: Props) => {
-  const {
-    cart,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    applyCoupon,
-    selectedCoupon,
-  } = useCart();
+  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, selectedCoupon } =
+    useCart();
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
-    calculateCartTotal(cart, selectedCoupon);
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateCartTotal(
+    cart,
+    selectedCoupon,
+  );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">장바구니</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className='container mx-auto p-4'>
+      <h1 className='text-3xl font-bold mb-6'>장바구니</h1>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <div>
-          <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
-          <div className="space-y-2">
+          <h2 className='text-2xl font-semibold mb-4'>상품 목록</h2>
+          <div className='space-y-2'>
             {productList.map((product) => {
               const remainingStock = getRemainingStock(product, cart);
               return (
                 <div
                   key={product.id}
                   data-testid={`product-${product.id}`}
-                  className="bg-white p-3 rounded shadow"
+                  className='bg-white p-3 rounded shadow'
                 >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">{product.name}</span>
-                    <span className="text-gray-600">
-                      {product.price.toLocaleString()}원
-                    </span>
+                  <div className='flex justify-between items-center mb-2'>
+                    <span className='font-semibold'>{product.name}</span>
+                    <span className='text-gray-600'>{product.price.toLocaleString()}원</span>
                   </div>
-                  <div className="text-sm text-gray-500 mb-2">
+                  <div className='text-sm text-gray-500 mb-2'>
                     <span
                       className={`font-medium ${
                         remainingStock > 0 ? 'text-green-600' : 'text-red-600'
@@ -55,19 +45,16 @@ export const CartPage = ({ productList, couponList }: Props) => {
                       재고: {remainingStock}개
                     </span>
                     {product.discounts.length > 0 && (
-                      <span className="ml-2 font-medium text-blue-600">
-                        최대{' '}
-                        {(getMaxDiscount(product.discounts) * 100).toFixed(0)}%
-                        할인
+                      <span className='ml-2 font-medium text-blue-600'>
+                        최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
                       </span>
                     )}
                   </div>
                   {product.discounts.length > 0 && (
-                    <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
+                    <ul className='list-disc list-inside text-sm text-gray-500 mb-2'>
                       {product.discounts.map((discount, index) => (
                         <li key={index}>
-                          {discount.quantity}개 이상:{' '}
-                          {(discount.rate * 100).toFixed(0)}% 할인
+                          {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}% 할인
                         </li>
                       ))}
                     </ul>
@@ -89,23 +76,23 @@ export const CartPage = ({ productList, couponList }: Props) => {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
+          <h2 className='text-2xl font-semibold mb-4'>장바구니 내역</h2>
 
-          <div className="space-y-2">
+          <div className='space-y-2'>
             {cart.map((item) => {
               const appliedDiscount = getAppliedDiscount(item);
               return (
                 <div
                   key={item.product.id}
-                  className="flex justify-between items-center bg-white p-3 rounded shadow"
+                  className='flex justify-between items-center bg-white p-3 rounded shadow'
                 >
                   <div>
-                    <span className="font-semibold">{item.product.name}</span>
+                    <span className='font-semibold'>{item.product.name}</span>
                     <br />
-                    <span className="text-sm text-gray-600">
+                    <span className='text-sm text-gray-600'>
                       {item.product.price}원 x {item.quantity}
                       {appliedDiscount > 0 && (
-                        <span className="text-green-600 ml-1">
+                        <span className='text-green-600 ml-1'>
                           ({(appliedDiscount * 100).toFixed(0)}% 할인 적용)
                         </span>
                       )}
@@ -113,24 +100,20 @@ export const CartPage = ({ productList, couponList }: Props) => {
                   </div>
                   <div>
                     <button
-                      onClick={() =>
-                        updateQuantity(item.product.id, item.quantity - 1)
-                      }
-                      className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
+                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                      className='bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400'
                     >
                       -
                     </button>
                     <button
-                      onClick={() =>
-                        updateQuantity(item.product.id, item.quantity + 1)
-                      }
-                      className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
+                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      className='bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400'
                     >
                       +
                     </button>
                     <button
                       onClick={() => removeFromCart(item.product.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'
                     >
                       삭제
                     </button>
@@ -140,15 +123,13 @@ export const CartPage = ({ productList, couponList }: Props) => {
             })}
           </div>
 
-          <div className="mt-6 bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">쿠폰 적용</h2>
+          <div className='mt-6 bg-white p-4 rounded shadow'>
+            <h2 className='text-2xl font-semibold mb-2'>쿠폰 적용</h2>
             <select
-              onChange={(e) =>
-                applyCoupon(couponList[parseInt(e.target.value)])
-              }
-              className="w-full p-2 border rounded mb-2"
+              onChange={(e) => applyCoupon(couponList[parseInt(e.target.value)])}
+              className='w-full p-2 border rounded mb-2'
             >
-              <option value="">쿠폰 선택</option>
+              <option value=''>쿠폰 선택</option>
               {couponList.map((coupon, index) => (
                 <option key={coupon.code} value={index}>
                   {coupon.name} -{' '}
@@ -159,7 +140,7 @@ export const CartPage = ({ productList, couponList }: Props) => {
               ))}
             </select>
             {selectedCoupon && (
-              <p className="text-green-600">
+              <p className='text-green-600'>
                 적용된 쿠폰: {selectedCoupon.name}(
                 {selectedCoupon.discountType === 'amount'
                   ? `${selectedCoupon.discountValue}원`
@@ -169,14 +150,12 @@ export const CartPage = ({ productList, couponList }: Props) => {
             )}
           </div>
 
-          <div className="mt-6 bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
-            <div className="space-y-1">
+          <div className='mt-6 bg-white p-4 rounded shadow'>
+            <h2 className='text-2xl font-semibold mb-2'>주문 요약</h2>
+            <div className='space-y-1'>
               <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
-              <p className="text-green-600">
-                할인 금액: {totalDiscount.toLocaleString()}원
-              </p>
-              <p className="text-xl font-bold">
+              <p className='text-green-600'>할인 금액: {totalDiscount.toLocaleString()}원</p>
+              <p className='text-xl font-bold'>
                 최종 결제 금액: {totalAfterDiscount.toLocaleString()}원
               </p>
             </div>
