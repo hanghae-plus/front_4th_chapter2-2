@@ -6,6 +6,8 @@ import ProductList from "../components/admin/product/ProductList";
 import Container from "../components/layout/Container";
 import ContentSection from "../components/layout/ContentSection";
 import ProductForm from "../components/admin/product/ProductForm";
+import ProductSearch from "../components/admin/product/ProductSearch";
+import { useProductSearch } from "../hooks";
 
 interface AdminPageProps {
   products: Array<Product>;
@@ -25,6 +27,14 @@ export const AdminPage = ({
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [showNewProductForm, setShowNewProductForm] = useState(false);
+
+  const {
+    searchQuery,
+    handleSearch,
+    setSearchQuery,
+    resetSearch,
+    searchResults,
+  } = useProductSearch(products);
 
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds((prev) => {
@@ -50,6 +60,13 @@ export const AdminPage = ({
   return (
     <Container title="관리자 페이지">
       <ContentSection subTitle="상품 관리">
+        <ProductSearch
+          keyword={searchQuery}
+          onChange={setSearchQuery}
+          onSubmit={handleSearch}
+          onReset={resetSearch}
+        />
+
         <Button
           onClick={() => setShowNewProductForm(!showNewProductForm)}
           variant="success"
@@ -61,7 +78,7 @@ export const AdminPage = ({
         {showNewProductForm && <ProductForm onSubmit={handleAddNewProduct} />}
 
         <ProductList
-          products={products}
+          products={searchResults}
           openProductIds={openProductIds}
           editingProductId={editingProductId}
           onToggleAccordion={toggleProductAccordion}
