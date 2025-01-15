@@ -8,8 +8,8 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { CartPage } from "../../refactoring/components/CartPage";
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { CartPage } from "../../refactoring/components/CartPage/CartPage.tsx";
+import { AdminPage } from "../../refactoring/components/AdminPage/AdminPage.tsx";
 import { CartItem, Coupon, Product } from "../../types";
 import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
 import * as cartUtils from "../../refactoring/models/cart";
@@ -460,7 +460,7 @@ describe("basic > ", () => {
       act(() => {
         result.current.addToCart(testProduct);
       });
-
+      console.log("카트 값", result.current.cart)
       expect(result.current.cart).toHaveLength(1);
       expect(result.current.cart[0]).toEqual({
         product: testProduct,

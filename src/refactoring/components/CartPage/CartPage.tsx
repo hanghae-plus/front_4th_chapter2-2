@@ -1,5 +1,7 @@
-import { CartItem, Coupon, Product } from '../../types.ts';
-import { useCart } from "../hooks";
+import { CartItem, Coupon, Product } from '../../../types.ts';
+import { useCart } from "../../hooks";
+import useCartPage from "./useCartPage.ts";
+import {useSearchProducts} from "../../hooks/useSearchProduct.ts";
 
 interface Props {
   products: Product[];
@@ -17,37 +19,37 @@ export const CartPage = ({ products, coupons }: Props) => {
     selectedCoupon
   } = useCart();
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find(item => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
+  const {
+    getMaxDiscount,
+    getRemainingStock,
+    getAppliedDiscount
+  } = useCartPage({
+    cart
+  })
+  
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
-
-  const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
-
+  
+  const {
+    searchQuery,
+    filteredProducts,
+    handleSearch
+  } = useSearchProducts({products});
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">장바구니</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
+          <input
+            value={searchQuery}
+            onChange={handleSearch}
+            type="text"
+            placeholder="상품 검색..."
+            className="mb-2 w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          />
           <div className="space-y-2">
-            {products.map(product => {
+            {filteredProducts.map(product => {
               const remainingStock = getRemainingStock(product);
               return (
                 <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
