@@ -1,9 +1,4 @@
-import { CartInfo } from './components/CartInfo';
-import { CartItemActions } from './components/CartItemActions';
-import { CartItemCard } from './components/CartItemCard';
-import CouponSelector from './components/CouponSelector';
-import { OrderSummary } from './components/OrderSummary';
-import ProductItem from './components/ProductItem';
+import { CartInfo, CartItemActions, CartItemCard, CouponSelector, OrderSummary, ProductItem } from './components';
 import { useCart } from './hooks/useCart';
 import { PageContainer } from '../../shared/page-container/PageContainer';
 import { Section } from '../../shared/section/Section';

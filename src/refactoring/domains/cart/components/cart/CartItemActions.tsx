@@ -1,4 +1,4 @@
-import type { CartItem } from '../../../../types';
+import type { CartItem } from '../../../../../types';
 
 interface CartItemActionsProps {
   item: CartItem;

@@ -1,4 +1,4 @@
-import type { CartItem } from '../../../../types';
+import type { CartItem } from '../../../../../types';
 
 interface CartInfoProps {
   item: CartItem;
@@ -8,6 +8,7 @@ export const CartInfo = ({ item }: CartInfoProps) => {
   const getAppliedDiscount = (item: CartItem) => {
     const { discounts } = item.product;
     const { quantity } = item;
+
     let appliedDiscount = 0;
     for (const discount of discounts) {
       if (quantity >= discount.quantity) {

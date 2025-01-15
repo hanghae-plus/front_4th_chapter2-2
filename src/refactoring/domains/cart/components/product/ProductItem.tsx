@@ -1,4 +1,7 @@
-import type { CartItem, Product } from '../../../../types';
+import { getRemainingStock } from '../../../../models/cart';
+import { getMaxDiscount } from '../models/getMaxDiscount';
+
+import type { CartItem, Product } from '../../../../../types';
 
 interface ProductItemProps {
   product: Product;
@@ -7,16 +10,7 @@ interface ProductItemProps {
 }
 
 export const ProductItem = ({ product, cart, onAddToCart }: ProductItemProps) => {
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
-  const remainingStock = getRemainingStock(product);
+  const remainingStock = getRemainingStock(product, cart);
 
   return (
     <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
