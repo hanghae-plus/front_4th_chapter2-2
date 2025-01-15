@@ -1,4 +1,6 @@
-  // 쿠폰 적용한 값값
+import { Coupon } from "../../types";
+
+  // 쿠폰 적용한 값
   export const getCouponDiscount = (coupon: Coupon, afterDiscountPrice: number) => {
     if (coupon.discountType === 'amount') {
       afterDiscountPrice = Math.max(
