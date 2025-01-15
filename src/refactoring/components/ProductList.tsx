@@ -1,5 +1,6 @@
 import { Product, CartItem } from '../../types';
-import { calculateRemainingStock, calculateMaxDiscount } from '../models/cart';
+import { calculateRemainingStock } from '../models/cart';
+import { calculateMaxDiscount } from '../models/discount';
 
 interface ProductListProps {
   productList: Product[];

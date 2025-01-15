@@ -1,29 +1,10 @@
 import { Product, CartItem, Coupon } from '../../types';
-
-// 개별 항목의 할인율 적용한 총 금액 계산
-export const calculateItemTotal = (item: CartItem) => {
-  const { product, quantity } = item;
-  const discount = getMaxApplicableDiscount(item);
-  return product.price * quantity * (1 - discount);
-};
-
-// 개별 항목에서 적용 가능한 최대 할인율 계산
-export const getMaxApplicableDiscount = (item: CartItem) => {
-  const discount = item.product.discounts.reduce((maxDiscount, d) => {
-    return item.quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-  }, 0);
-  return discount;
-};
+import { calculateItemTotal } from './discount';
 
 // 항목의 남은 재고 확인
 export const calculateRemainingStock = (cart: CartItem[], product: Product) => {
   const cartItem = cart.find((item) => item.product.id === product.id);
   return product.stock - (cartItem?.quantity || 0);
-};
-
-// 항목의 최대 할인율
-export const calculateMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-  return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
 };
 
 // 장바구니 전체 금액 및 할인 계산
