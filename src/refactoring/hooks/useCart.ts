@@ -1,6 +1,6 @@
-// useCart.ts
 import { useCallback, useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
+import { useDiscountCalculator } from "./useDiscountCalculator";
 
 interface CartState {
   cart: Array<CartItem>;
@@ -19,6 +19,7 @@ interface CartState {
 export const useCart = (): CartState => {
   const [cart, setCart] = useState<Array<CartItem>>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const { calculateTotal: calculateDiscount } = useDiscountCalculator();
 
   const getRemainingStock = useCallback(
     (product: Product) => {
@@ -86,69 +87,9 @@ export const useCart = (): CartState => {
     setSelectedCoupon(coupon);
   }, []);
 
-  const applyCouponDiscount = useCallback(
-    (
-      totalBeforeDiscount: number,
-      totalAfterDiscount: number,
-      selectedCoupon: Coupon | null
-    ) => {
-      if (!selectedCoupon) {
-        return {
-          finalAfterDiscount: totalAfterDiscount,
-          totalDiscount: totalBeforeDiscount - totalAfterDiscount,
-        };
-      }
-
-      let finalAfterDiscount = totalAfterDiscount;
-      if (selectedCoupon.discountType === "amount") {
-        finalAfterDiscount = Math.max(
-          0,
-          totalAfterDiscount - selectedCoupon.discountValue
-        );
-      } else {
-        finalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
-      }
-
-      return {
-        finalAfterDiscount,
-        totalDiscount: totalBeforeDiscount - finalAfterDiscount,
-      };
-    },
-    []
-  );
-
   const calculateTotal = useCallback(() => {
-    const { totalBeforeDiscount, totalAfterDiscount } = cart.reduce(
-      (totals, item) => {
-        const { price } = item.product;
-        const { quantity } = item;
-        totals.totalBeforeDiscount += price * quantity;
-        const discount = item.product.discounts.reduce(
-          (maxDiscount, discount) => {
-            return quantity >= discount.quantity && discount.rate > maxDiscount
-              ? discount.rate
-              : maxDiscount;
-          },
-          0
-        );
-        totals.totalAfterDiscount += price * quantity * (1 - discount);
-        return totals;
-      },
-      { totalBeforeDiscount: 0, totalAfterDiscount: 0 }
-    );
-
-    const { finalAfterDiscount, totalDiscount } = applyCouponDiscount(
-      totalBeforeDiscount,
-      totalAfterDiscount,
-      selectedCoupon
-    );
-
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(finalAfterDiscount),
-      totalDiscount: Math.round(totalDiscount),
-    };
-  }, [applyCouponDiscount, cart, selectedCoupon]);
+    return calculateDiscount(cart, selectedCoupon);
+  }, [calculateDiscount, cart, selectedCoupon]);
 
   return {
     cart,
