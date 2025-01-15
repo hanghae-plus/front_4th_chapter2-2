@@ -7,35 +7,41 @@ export const calculateRemainingStock = (cart: CartItem[], product: Product) => {
   return product.stock - (cartItem?.quantity || 0);
 };
 
-// 장바구니 전체 금액 및 할인 계산
-export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
-  // 할인 적용 전 총 금액 계산
-  const totalBeforeDiscount = cart.reduce((total, item) => {
-    const { product, quantity } = item;
-    return total + product.price * quantity;
+// 할인 적용 전 총 금액 계산
+export const calculateTotalBeforeDiscount = (cart: CartItem[]) => {
+  return cart.reduce((total, item) => {
+    return total + item.product.price * item.quantity;
   }, 0);
+};
 
-  // 할인 적용 후 총 금액 계산
-  let totalAfterDiscount = cart.reduce((total, item) => {
+// 할인 적용 후 총 금액 계산
+export const calculateTotalAfterDiscount = (cart: CartItem[]) => {
+  return cart.reduce((total, item) => {
     return total + calculateItemTotal(item);
   }, 0);
+};
+
+// 쿠폰 적용
+export const applyCoupon = (totalAfterDiscount: number, selectedCoupon: Coupon | null): number => {
+  if (!selectedCoupon) return totalAfterDiscount;
+
+  if (selectedCoupon.discountType === 'amount') {
+    return Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
+  } else {
+    return totalAfterDiscount * (1 - selectedCoupon.discountValue / 100);
+  }
+};
+
+// 장바구니 전체 금액 및 할인 계산
+export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
+  const totalBeforeDiscount = calculateTotalBeforeDiscount(cart);
+  let totalAfterDiscount = calculateTotalAfterDiscount(cart);
+
+  // 쿠폰 적용
+  totalAfterDiscount = applyCoupon(totalAfterDiscount, selectedCoupon);
 
   // 총 할인 금액 계산
   let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
-
-  // 쿠폰 적용
-  if (selectedCoupon != null) {
-    if (selectedCoupon.discountType === 'amount') {
-      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-    } else {
-      totalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
-    }
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
-      totalDiscount: Math.round(totalBeforeDiscount - totalAfterDiscount),
-    };
-  }
 
   return {
     totalBeforeDiscount: Math.round(totalBeforeDiscount),
