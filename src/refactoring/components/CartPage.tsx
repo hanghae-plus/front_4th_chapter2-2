@@ -1,6 +1,6 @@
 import { Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
-import { getMaxApplicableDiscount, getMaxDiscount } from '../models/cart.ts';
+import { getMaxApplicableDiscount, getMaxDiscount } from '../models';
 
 interface Props {
   products: Product[];
