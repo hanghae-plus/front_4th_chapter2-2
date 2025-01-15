@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Product, Discount, AdminProductListProps } from "../../../types";
-import { ProductForm } from "./ProductForm";
+import { ProductForm } from "./AdminProductForm";
 
 export const ProductList = ({ products, onProductUpdate }: AdminProductListProps) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
