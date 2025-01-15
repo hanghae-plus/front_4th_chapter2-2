@@ -25,8 +25,8 @@ const App = () => {
       <main className='container mx-auto mt-6'>
         {isAdmin ? (
           <AdminPage
-            products={productList}
-            coupons={couponList}
+            productList={productList}
+            couponList={couponList}
             onProductUpdate={updateProduct}
             onProductAdd={addProduct}
             onCouponAdd={addCoupon}
