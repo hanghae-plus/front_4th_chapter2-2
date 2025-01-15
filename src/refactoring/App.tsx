@@ -4,7 +4,7 @@ import { AdminPage } from './components/AdminPage';
 import { Coupon, Product } from '../types';
 import { useCoupons, useProducts } from './hooks';
 
-const initialProducts: Product[] = [
+const initialProductList: Product[] = [
   {
     id: 'p1',
     name: '상품1',
@@ -31,7 +31,7 @@ const initialProducts: Product[] = [
   },
 ];
 
-const initialCoupons: Coupon[] = [
+const initialCouponList: Coupon[] = [
   {
     name: '5000원 할인 쿠폰',
     code: 'AMOUNT5000',
@@ -47,8 +47,8 @@ const initialCoupons: Coupon[] = [
 ];
 
 const App = () => {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
+  const { productList, updateProduct, addProduct } = useProducts(initialProductList);
+  const { couponList, addCoupon } = useCoupons(initialCouponList);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
@@ -67,14 +67,14 @@ const App = () => {
       <main className='container mx-auto mt-6'>
         {isAdmin ? (
           <AdminPage
-            products={products}
-            coupons={coupons}
+            productList={productList}
+            couponList={couponList}
             onProductUpdate={updateProduct}
             onProductAdd={addProduct}
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons} />
+          <CartPage productList={productList} couponList={couponList} />
         )}
       </main>
     </div>

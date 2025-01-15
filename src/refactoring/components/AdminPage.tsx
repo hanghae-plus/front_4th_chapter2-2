@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../types';
 
 interface Props {
-  products: Product[];
-  coupons: Coupon[];
+  productList: Product[];
+  couponList: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 export const AdminPage = ({
-  products,
-  coupons,
+  productList,
+  couponList,
   onProductUpdate,
   onProductAdd,
   onCouponAdd,
@@ -74,8 +74,9 @@ export const AdminPage = ({
     }
   };
 
+  // 재고 업데이트
   const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
       onProductUpdate(newProduct);
@@ -83,8 +84,9 @@ export const AdminPage = ({
     }
   };
 
+  // 할인 추가
   const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct && editingProduct) {
       const newProduct = {
         ...updatedProduct,
@@ -96,8 +98,9 @@ export const AdminPage = ({
     }
   };
 
+  // 할인 삭제
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = {
         ...updatedProduct,
@@ -108,6 +111,7 @@ export const AdminPage = ({
     }
   };
 
+  // 새로운 쿠폰 추가
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
     setNewCoupon({
@@ -118,6 +122,7 @@ export const AdminPage = ({
     });
   };
 
+  // 새로운 상품 추가
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
     onProductAdd(productWithId);
@@ -194,7 +199,7 @@ export const AdminPage = ({
             </div>
           )}
           <div className='space-y-2'>
-            {products.map((product, index) => (
+            {productList.map((product, index) => (
               <div
                 key={product.id}
                 data-testid={`product-${index + 1}`}
@@ -374,7 +379,7 @@ export const AdminPage = ({
             <div>
               <h3 className='text-lg font-semibold mb-2'>현재 쿠폰 목록</h3>
               <div className='space-y-2'>
-                {coupons.map((coupon, index) => (
+                {couponList.map((coupon, index) => (
                   <div
                     key={index}
                     data-testid={`coupon-${index + 1}`}
