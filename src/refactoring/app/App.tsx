@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { CartPage } from './components/CartPage';
-import { AdminPage } from './components/AdminPage/AdminPage.tsx';
-import { Coupon, Product } from '../types';
-import { useCoupons, useProducts } from './hooks';
+import { CartPage } from '../pages/CartPage/CartPage.tsx';
+import { AdminPage } from '../pages/AdminPage/AdminPage.tsx';
+import { Coupon, Product } from '../shared/types/types.ts';
+import { useCoupons, useProducts } from '../features/hooks';
 
 // 데이터 : 상테에 대한 값을 담고 있다.
 const initialProducts: Product[] = [

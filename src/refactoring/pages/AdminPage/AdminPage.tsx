@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Coupon, Discount, Product } from '../../../types.ts';
+import { Coupon, Discount, Product } from '../../shared/types/types.ts';
 
 interface Props {
   products: Product[];
