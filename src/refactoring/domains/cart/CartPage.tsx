@@ -5,6 +5,8 @@ import CouponSelector from './components/CouponSelector';
 import { OrderSummary } from './components/OrderSummary';
 import ProductItem from './components/ProductItem';
 import { useCart } from './hooks/useCart';
+import { PageContainer } from '../../shared/page-container/PageContainer';
+import { Section } from '../../shared/section/Section';
 
 import type { Coupon, Product } from '../../../types';
 
@@ -19,39 +21,35 @@ export const CartPage = ({ products, coupons }: Props) => {
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">장바구니</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
-          <div className="space-y-2">
-            {products.map((product) => (
-              <ProductItem product={product} cart={cart} onAddToCart={addToCart} />
-            ))}
-          </div>
+    <PageContainer title="장바구니">
+      <Section title="상품 목록">
+        <div className="space-y-2">
+          {products.map((product) => (
+            <ProductItem product={product} cart={cart} onAddToCart={addToCart} />
+          ))}
         </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-          <div className="space-y-2">
-            {cart.map((item) => {
-              return (
-                <CartItemCard key={item.product.id}>
-                  <CartInfo item={item} />
-                  <CartItemActions item={item} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />
-                </CartItemCard>
-              );
-            })}
-          </div>
+      </Section>
 
-          <CouponSelector coupons={coupons} selectedCoupon={selectedCoupon} onApplyCoupon={applyCoupon} />
-
-          <OrderSummary
-            totalBeforeDiscount={totalBeforeDiscount}
-            totalDiscount={totalDiscount}
-            totalAfterDiscount={totalAfterDiscount}
-          />
+      <Section title="장바구니 내역">
+        <div className="space-y-2">
+          {cart.map((item) => {
+            return (
+              <CartItemCard key={item.product.id}>
+                <CartInfo item={item} />
+                <CartItemActions item={item} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />
+              </CartItemCard>
+            );
+          })}
         </div>
-      </div>
-    </div>
+
+        <CouponSelector coupons={coupons} selectedCoupon={selectedCoupon} onApplyCoupon={applyCoupon} />
+
+        <OrderSummary
+          totalBeforeDiscount={totalBeforeDiscount}
+          totalDiscount={totalDiscount}
+          totalAfterDiscount={totalAfterDiscount}
+        />
+      </Section>
+    </PageContainer>
   );
 };
