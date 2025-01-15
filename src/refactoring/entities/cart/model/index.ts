@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from '../shared/types/types.ts';
+import { CartItem, Coupon } from '@/shared/types/';
 
 export const calculateItemTotal = (item: CartItem) => {
   const { price } = item.product;

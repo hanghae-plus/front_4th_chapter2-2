@@ -1,52 +1,9 @@
 import { useState } from 'react';
-import { CartPage } from '../pages/CartPage/CartPage.tsx';
-import { AdminPage } from '../pages/AdminPage/AdminPage.tsx';
-import { Coupon, Product } from '../shared/types/types.ts';
-import { useCoupons, useProducts } from '../features/hooks';
-
-// 데이터 : 상테에 대한 값을 담고 있다.
-const initialProducts: Product[] = [
-  {
-    id: 'p1',
-    name: '상품1',
-    price: 10000,
-    stock: 20,
-    discounts: [
-      { quantity: 10, rate: 0.1 },
-      { quantity: 20, rate: 0.2 },
-    ],
-  },
-  {
-    id: 'p2',
-    name: '상품2',
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
-  },
-  {
-    id: 'p3',
-    name: '상품3',
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
-  },
-];
-
-// 쿠폰 값에 대한 정보를 담고 있다.
-const initialCoupons: Coupon[] = [
-  {
-    name: '5000원 할인 쿠폰',
-    code: 'AMOUNT5000',
-    discountType: 'amount',
-    discountValue: 5000,
-  },
-  {
-    name: '10% 할인 쿠폰',
-    code: 'PERCENT10',
-    discountType: 'percentage',
-    discountValue: 10,
-  },
-];
+import { CartPage } from '@/pages/CartPage';
+import { AdminPage } from '@/pages/AdminPage';
+import { useCoupons, useProducts } from '@/features/hooks';
+import { initialProducts } from '@/entities/product';
+import { initialCoupons } from '@/entities/coupon';
 
 function App() {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
