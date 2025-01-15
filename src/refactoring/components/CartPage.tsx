@@ -1,7 +1,7 @@
 import { Coupon, Product } from '../../types.ts';
 import { useCart } from "../hooks";
-import CartList from './carts/CartList.tsx';
-import CartProduct from './carts/CartProduct.tsx';
+import { CartList } from './carts/CartList.tsx';
+import { CartProduct } from './carts/CartProduct.tsx';
 
 interface Props {
   products: Product[];
@@ -11,9 +11,9 @@ interface Props {
 export const CartPage = ({ products, coupons }: Props) => {
   const {
     cart,
+    selectedCoupon,
     applyCoupon,
     calculateTotal,
-    selectedCoupon
   } = useCart();
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
 
@@ -33,8 +33,8 @@ export const CartPage = ({ products, coupons }: Props) => {
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
 
           <div className="space-y-2">
-            {cart.map((item) =>
-              <CartProduct item={item} />
+            {cart.map(item => 
+              <CartProduct item={item} key={item.product.id} />
             )}
           </div>
 
