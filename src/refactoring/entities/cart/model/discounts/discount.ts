@@ -1,6 +1,6 @@
 import { CartItem } from '@/shared/types';
 
-export const getMaxApplicableDiscount = (item: CartItem) => {
+export const getAppliedDiscount = (item: CartItem) => {
   const { discounts } = item.product;
   const { quantity } = item;
   let appliedDiscount = 0;
@@ -10,6 +10,11 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
     }
   }
   return appliedDiscount;
+};
+
+// 이미 있는 getAppliedDiscount를 수정하지 않고 재사용하기 위함
+export const getMaxApplicableDiscount = (item: CartItem) => {
+  return getAppliedDiscount(item);
 };
 
 export const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
