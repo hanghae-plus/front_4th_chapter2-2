@@ -3,7 +3,7 @@ import CartList from '../components/CartList';
 import CouponForm from '../components/CouponForm';
 import OrderSummary from '../components/OrderSummary';
 import ProductList from '../components/ProductList';
-import { useCart } from '../hooks';
+import { useCart } from '../hooks/useCart';
 
 interface Props {
   productList: Product[];

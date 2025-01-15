@@ -1,5 +1,5 @@
 import { CartItem } from '../../types';
-import { useCart } from '../hooks';
+import { useCart } from '../hooks/useCart';
 import { calculateAppliedDiscount } from '../utils/cartUtils';
 
 interface Props {

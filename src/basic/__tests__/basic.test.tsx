@@ -1,7 +1,9 @@
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
-import { useCart, useCoupons, useProduct } from '../../refactoring/hooks';
+import { useCart } from '../../refactoring/hooks/useCart';
+import { useCoupon } from '../../refactoring/hooks/useCoupon';
+import { useProduct } from '../../refactoring/hooks/useProduct';
 import * as cartUtils from '../../refactoring/models/cart';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
@@ -296,14 +298,14 @@ describe('basic > ', () => {
     });
   });
 
-  describe('useCoupons > ', () => {
+  describe('useCoupon > ', () => {
     test('쿠폰을 초기화할 수 있다.', () => {
-      const { result } = renderHook(() => useCoupons(mockCoupons));
+      const { result } = renderHook(() => useCoupon(mockCoupons));
       expect(result.current.coupons).toEqual(mockCoupons);
     });
 
     test('쿠폰을 추가할 수 있다', () => {
-      const { result } = renderHook(() => useCoupons(mockCoupons));
+      const { result } = renderHook(() => useCoupon(mockCoupons));
       const newCoupon: Coupon = {
         name: 'New Coupon',
         code: 'NEWCODE',

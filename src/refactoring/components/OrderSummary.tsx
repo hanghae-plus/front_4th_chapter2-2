@@ -1,4 +1,4 @@
-import { useCart } from '../hooks';
+import { useCart } from '../hooks/useCart';
 
 interface Props {
   calculateTotal: ReturnType<typeof useCart>['calculateTotal'];

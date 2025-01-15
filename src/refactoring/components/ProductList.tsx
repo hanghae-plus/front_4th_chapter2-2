@@ -1,5 +1,5 @@
 import { CartItem, Product } from '../../types';
-import { useCart } from '../hooks';
+import { useCart } from '../hooks/useCart';
 import { calculateMaxDiscount, calculateRemainingStock } from '../utils/cartUtils';
 
 interface Props {

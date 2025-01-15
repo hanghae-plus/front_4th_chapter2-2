@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Coupon, Product } from '../types';
-import { useCoupons, useProduct } from './hooks';
+import { useCoupon } from './hooks/useCoupon';
+import { useProduct } from './hooks/useProduct';
 import { AdminPage } from './pages/AdminPage';
 import { CartPage } from './pages/CartPage';
 
@@ -48,7 +49,7 @@ const initialCoupons: Coupon[] = [
 
 const App = () => {
   const { productList, updateProduct, addProduct } = useProduct(initialProductList);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
+  const { coupons, addCoupon } = useCoupon(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
