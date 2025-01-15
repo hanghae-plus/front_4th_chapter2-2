@@ -19,6 +19,7 @@ export const AdminPage = ({
   const { openProductIds, toggleProductAccordion } =
     useProducts(initialProducts);
 
+  // 상품관리 > 상품 클릭 시
   const [showNewProductForm, setShowNewProductForm] = useState(false);
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
