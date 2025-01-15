@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Discount } from '../models/types/Discount';
-import { Product } from '../models/types/Product';
+import { Discount } from '../../models/types/Discount';
+import { Product } from '../../models/types/Product';
 
 interface Arguments {
   products: Product[];
@@ -8,7 +8,7 @@ interface Arguments {
   updateEditingProduct: (product: Product) => void;
 }
 
-const useOthers = ({
+const useDiscount = ({
   products,
   updateProduct,
   updateEditingProduct,
@@ -63,4 +63,4 @@ const useOthers = ({
   };
 };
 
-export { useOthers };
+export { useDiscount };

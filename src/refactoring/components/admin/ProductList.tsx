@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Product } from '../../models/types/Product';
 import { useEditProduct } from '../../hooks/admin/useEditProduct';
-import { useOthers } from '../../hooks/useOthers';
+import { useDiscount } from '../../hooks/admin/useDiscount';
 
 interface ProductListProps {
   products: Product[];
@@ -29,7 +29,7 @@ function ProductList({ products, onProductUpdate }: ProductListProps) {
       handleUpdateNewDiscountQuantity,
       handleUpdateNewDiscountRate,
     },
-  } = useOthers({
+  } = useDiscount({
     products,
     updateProduct: onProductUpdate,
     updateEditingProduct: handleEditProduct,
