@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import { useLocalStorage } from './useLocalStorage';
 import { CartItem, Coupon, Product } from '../../types';
 import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../models/cart';
-import { useLocalStorage } from './useLocalStorage';
 
 export const useCart = () => {
   const { saveToStorage, getFromStorage, clearStorage } = useLocalStorage();
@@ -14,16 +14,18 @@ export const useCart = () => {
 
     const loadCart = () => {
       const storedItems = getFromStorage();
+
       if (storedItems.length > 0) {
         setCart(storedItems);
       }
     };
 
     loadCart();
-  }, [getFromStorage]);
+  }, [getFromStorage, clearStorage]);
 
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(cart, product);
+
     if (remainingStock <= 0) return;
 
     setCart((prevCart) => {
@@ -42,6 +44,7 @@ export const useCart = () => {
       })();
 
       saveToStorage(newCart);
+
       return newCart;
     });
   };
@@ -49,7 +52,9 @@ export const useCart = () => {
   const removeFromCart = (productId: string) => {
     setCart((prevCart) => {
       const newCart = prevCart.filter((item) => item.product.id !== productId);
+
       saveToStorage(newCart);
+
       return newCart;
     });
   };

@@ -147,6 +147,9 @@ export default tseslint.config(
       'react/prop-types': 'off',
     },
     settings: {
+      react: {
+        version: 'detect',
+      },
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,

@@ -7,11 +7,13 @@ export const useLocalStorage = () => {
       product: item.product,
       quantity: item.quantity,
     }));
+
     localStorage.setItem(LOCAL_STORAGE_KEY['CART'], JSON.stringify(items));
   };
 
   const getFromStorage = (): CartItem[] => {
     const items = localStorage.getItem(LOCAL_STORAGE_KEY['CART']);
+
     return items ? JSON.parse(items) : [];
   };
 
