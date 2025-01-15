@@ -50,7 +50,7 @@ export const AdminProductCard = ({
           {editingProduct && editingProduct.id === product.id ? (
             <div>
               {productInputDataList?.map((data) => (
-                <div className="mb-4">
+                <div key={data.label} className="mb-4">
                   <label className="block mb-1">{data.label}</label>
                   <input
                     type={data.type}
@@ -83,6 +83,7 @@ export const AdminProductCard = ({
                 <div className="flex space-x-2">
                   {dicountInputDataList?.map((data) => (
                     <input
+                      key={data.placeholder}
                       type="number"
                       placeholder={data.placeholder}
                       value={data.value}

@@ -23,7 +23,7 @@ export const NewProductCard = ({ addNewProduct }: Props) => {
     <div className="bg-white p-4 rounded shadow mb-4">
       <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
       {inputData.map((data) => (
-        <div className="mb-2">
+        <div key={data.id} className="mb-2">
           <label
             htmlFor={data.id}
             className="block text-sm font-medium text-gray-700"

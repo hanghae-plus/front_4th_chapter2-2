@@ -52,6 +52,7 @@ export const CartPage = ({ products, coupons }: Props) => {
           <div className="space-y-2">
             {products.map((product) => (
               <CartProductCard
+                key={product.id}
                 product={product}
                 remainingStock={getRemainingStock(product)}
                 maxDiscount={getMaxDiscount(product.discounts)}
@@ -67,6 +68,7 @@ export const CartPage = ({ products, coupons }: Props) => {
             {cart.map((item) => {
               return (
                 <CartItemCard
+                  key={item.product.id}
                   item={item}
                   appliedDiscount={getAppliedDiscount(item)}
                   updateQuantity={updateQuantity}
