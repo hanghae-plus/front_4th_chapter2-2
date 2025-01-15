@@ -45,6 +45,7 @@ export default function CouponManagement({ coupons, onCouponAdd }: Props) {
           />
           <div className='flex gap-2'>
             <select
+              aria-label='할인 유형'
               value={newCoupon.discountType}
               onChange={(e) =>
                 setNewCoupon({
