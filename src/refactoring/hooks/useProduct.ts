@@ -3,7 +3,7 @@ import { Product } from '../../types.ts';
 import { updateProductList } from '../models';
 
 export const useProducts = (initialProductList: Product[]) => {
-  const [productList, setProductList] = useState<Product[]>(initialProductList);
+  const [productList, setProductList] = useState<Product[]>(initialProductList);  // 상품 리스트 
 
   // 상품리스트 업데이트
   const handleUpdateProductList = (updatedProduct: Product) => {

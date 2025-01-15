@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Coupon, Discount, Product } from '../../types.ts';
+import { Coupon, Product } from '../../types.ts';
 import {
   INITIAL_COUPON_STATE,
   INITIAL_DISCOUNT_STATE,
@@ -23,9 +23,9 @@ export const AdminPage = ({
 }: Props) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newDiscount, setNewDiscount] = useState(INITIAL_DISCOUNT_STATE);
   const [newCoupon, setNewCoupon] = useState(INITIAL_COUPON_STATE);
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState(INITIAL_PRODUCT_STATE);
 
   const toggleProductAccordion = (productId: string) => {
