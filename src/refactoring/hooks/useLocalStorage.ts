@@ -51,7 +51,14 @@ export class LocalStorageStore {
 export const useLocalStorage = <T>(key: string, initialValue: T) => {
   const externalStore = useRef(LocalStorageStore.getInstance());
 
-  const getSnapshot = useCallback(() => externalStore.current.get(key, initialValue), [key, initialValue]);
+  const getSnapshot = useCallback(() => {
+    try {
+      return externalStore.current.get(key, initialValue);
+    } catch (error) {
+      console.error(`Error getting localStorage key "${key}":`, error);
+      return JSON.stringify(initialValue);
+    }
+  }, [key, initialValue]);
 
   const value = useSyncExternalStore(externalStore.current.subscribe.bind(externalStore.current), getSnapshot);
 
@@ -59,10 +66,8 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
     (newValue: SetStateAction<T>) => {
       try {
         const prevValue = externalStore.current.get(key, initialValue);
-        externalStore.current.set(
-          key,
-          JSON.stringify(newValue instanceof Function ? newValue(JSON.parse(prevValue) as T) : newValue),
-        );
+        const nextValue = newValue instanceof Function ? newValue(JSON.parse(prevValue) as T) : newValue;
+        externalStore.current.set(key, JSON.stringify(nextValue));
       } catch (error) {
         console.error(`Error setting localStorage key "${key}":`, error);
       }
@@ -70,5 +75,10 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
     [key, initialValue],
   );
 
-  return [JSON.parse(value) as T, setValue] as const;
+  try {
+    return [JSON.parse(value) as T, setValue] as const;
+  } catch (error) {
+    console.error(`Error parsing localStorage value for key "${key}":`, error);
+    return [initialValue, setValue] as const;
+  }
 };
