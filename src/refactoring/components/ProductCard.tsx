@@ -5,15 +5,14 @@ interface ProductCardProps {
   product: Product
   remainingStock: number
   discountPrice: string
-  addToCart: (product:Product) => void
+  addToCart: (product: Product) => void
 }
-
 
 export const ProductCard = ({
   product,
   remainingStock,
   discountPrice,
-  addToCart
+  addToCart,
 }: ProductCardProps) => {
   return (
     <div
@@ -47,16 +46,18 @@ export const ProductCard = ({
         </ul>
       )}
 
-      <CartButton  className={`w-full px-3 py-1 rounded ${
+      <CartButton
+        className={`w-full px-3 py-1 rounded ${
           remainingStock > 0
             ? 'bg-blue-500 text-white hover:bg-blue-600'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
         }`}
         onClick={() => addToCart(product)}
-        isDisabled={remainingStock <= 0}> {remainingStock > 0 ? "장바구니에 추가" : "품절"}</CartButton>
-
-
-     
+        isDisabled={remainingStock <= 0}
+      >
+        {' '}
+        {remainingStock > 0 ? '장바구니에 추가' : '품절'}
+      </CartButton>
     </div>
   )
 }

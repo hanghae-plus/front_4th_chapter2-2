@@ -8,7 +8,6 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
-
   const {
     cart,
     addToCart,
@@ -52,7 +51,14 @@ export const CartPage = ({ products, coupons }: Props) => {
             {products.map((product) => {
               const remainingStock = getRemainingStock(product)
               const discountPrice = (getMaxDiscount(product.discounts) * 100).toFixed(0)
-              return <ProductCard  product={product} remainingStock={remainingStock} discountPrice={discountPrice} addToCart={addToCart}/>
+              return (
+                <ProductCard
+                  product={product}
+                  remainingStock={remainingStock}
+                  discountPrice={discountPrice}
+                  addToCart={addToCart}
+                />
+              )
             })}
           </div>
         </div>
