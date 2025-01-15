@@ -1,5 +1,5 @@
-import { InputField } from './InputField';
-import { CouponType } from '../types';
+import { InputField } from '../InputField';
+import { CouponType } from '../../types';
 
 interface CouponFormProps {
   newCoupon: CouponType;

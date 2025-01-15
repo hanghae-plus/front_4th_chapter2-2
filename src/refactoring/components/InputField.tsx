@@ -17,9 +17,9 @@ export const InputField: React.FC<InputFieldProps> = ({
   onChange,
   className,
 }) => (
-  <div className={`mb-2 ${className}`}>
+  <>
     {label && (
-      <label htmlFor={id} className='block text-sm font-medium text-gray-700'>
+      <label htmlFor={id} className='block mb-1'>
         {label}
       </label>
     )}
@@ -29,7 +29,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       value={value}
       placeholder={placeholder}
       onChange={onChange}
-      className={`w-full p-2 border rounded ${className}`}
+      className={`w-full p-2 border rounded ${className ?? ''}`}
     />
-  </div>
+  </>
 );

@@ -1,5 +1,5 @@
-import { ProductType } from '../types';
-import { InputField } from './InputField';
+import { ProductType } from '../../types';
+import { InputField } from '../InputField';
 
 interface ProductFormProps {
   newProduct: Omit<ProductType, 'id'>;
