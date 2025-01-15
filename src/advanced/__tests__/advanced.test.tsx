@@ -10,6 +10,9 @@ import {
   getMaxApplicableDiscount,
   calculateCartTotal,
   updateCartItemQuantity,
+  getMaxDiscount,
+  getRemainingStock,
+  getAppliedDiscount,
 } from '@/refactoring/utils/cart'
 
 // localStorage 모킹 추가
@@ -253,7 +256,19 @@ describe('advanced > ', () => {
   })
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
+    // Common test data setup
+    const testProduct: Product = {
+      id: 'test1',
+      name: '테스트 상품',
+      price: 10000,
+      stock: 20,
+      discounts: [
+        { quantity: 3, rate: 0.1 }, // 3개 이상 10% 할인
+        { quantity: 5, rate: 0.2 }, // 5개 이상 20% 할인
+      ],
+    }
+
+    test('cart util - calculateItemTotal과 관련 할인 함수들 테스트', () => {
       // 1. calculateItemTotal 테스트
       const testItem: CartItem = {
         product: {
@@ -283,8 +298,9 @@ describe('advanced > ', () => {
         const item: CartItem = { ...testItem, quantity }
         expect(getMaxApplicableDiscount(item)).toBe(expected)
       })
+    })
 
-      // 3. calculateCartTotal 테스트
+    test('cart util - calculateCartTotal과 쿠폰 적용 테스트', () => {
       const cart: CartItem[] = [
         {
           product: {
@@ -333,8 +349,26 @@ describe('advanced > ', () => {
       expect(totalWithPercentageCoupon.totalBeforeDiscount).toBe(70000)
       expect(totalWithPercentageCoupon.totalDiscount).toBe(16900) // (10000 * 3 * 0.1) + (20000 * 2 * 0.2) + (59000 * 0.1)
       expect(totalWithPercentageCoupon.totalAfterDiscount).toBe(53100)
+    })
 
-      // 4. updateCartItemQuantity 테스트
+    test('cart util - updateCartItemQuantity 테스트', () => {
+      const cart: CartItem[] = [
+        {
+          product: testProduct,
+          quantity: 3,
+        },
+        {
+          product: {
+            id: 'test2',
+            name: '상품2',
+            price: 20000,
+            stock: 20,
+            discounts: [{ quantity: 2, rate: 0.2 }],
+          },
+          quantity: 2,
+        },
+      ]
+
       const updatedCart = updateCartItemQuantity(cart, 'test1', 4)
       expect(updatedCart[0].quantity).toBe(4)
       expect(updatedCart[1].quantity).toBe(2)
@@ -349,109 +383,195 @@ describe('advanced > ', () => {
       expect(maxStockCart[0].quantity).toBe(20) // stock이 20이므로 20으로 제한됨
     })
 
-    test('새로운 hook 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      // 1. useProducts 테스트
-      const { result: productsResult } = renderHook(() => useProducts(mockProducts))
-
-      // 상품 추가 테스트
-      act(() => {
-        productsResult.current.addProduct({
-          id: 'p4',
-          name: '상품4',
-          price: 15000,
-          stock: 30,
-          discounts: [],
-        })
-      })
-      expect(productsResult.current.products).toHaveLength(4)
-
-      // 상품 업데이트 테스트
-      act(() => {
-        productsResult.current.updateProduct({
-          ...mockProducts[0],
-          price: 12000,
-        })
-      })
-      expect(productsResult.current.products[0].price).toBe(12000)
-
-      // 2. useCoupons 테스트
-      const { result: couponsResult } = renderHook(() => useCoupons(mockCoupons))
-
-      // 쿠폰 추가 테스트
-      act(() => {
-        couponsResult.current.addCoupon({
-          name: '신규 쿠폰',
-          code: 'NEW15',
-          discountType: 'percentage',
-          discountValue: 15,
-        })
-      })
-      expect(couponsResult.current.coupons).toHaveLength(3)
-
-      // 3. useCart 테스트
-      const { result: cartResult } = renderHook(() => useCart())
-
-      // 장바구니에 상품 추가
-      act(() => {
-        cartResult.current.addToCart(mockProducts[0])
-      })
-      expect(cartResult.current.cart).toHaveLength(1)
-      expect(cartResult.current.cart[0].product.id).toBe('p1')
-      expect(cartResult.current.cart[0].quantity).toBe(1)
-
-      // 수량 업데이트
-      act(() => {
-        cartResult.current.updateQuantity(mockProducts[0].id, 3)
-      })
-      expect(cartResult.current.cart[0].quantity).toBe(3)
-
-      // 쿠폰 적용
-      act(() => {
-        cartResult.current.applyCoupon(mockCoupons[0])
-      })
-      expect(cartResult.current.selectedCoupon).toBe(mockCoupons[0])
-
-      // 총액 계산
-      expect(cartResult.current.cart[0].product.price * cartResult.current.cart[0].quantity).toBe(30000)
+    test('cart util - getMaxDiscount 테스트', () => {
+      expect(getMaxDiscount(testProduct.discounts)).toBe(0.2)
+      expect(getMaxDiscount([])).toBe(0) // 할인 없는 경우
     })
 
-    test('useLocalStorage 훅 테스트', () => {
-      // 1. 기본 동작 테스트
-      const { result: basicResult } = renderHook(() => useLocalStorage({ key: 'testKey', initialValue: 'test' }))
-      expect(basicResult.current[0]).toBe('test')
+    test('cart util - getRemainingStock 테스트', () => {
+      const cart: CartItem[] = [{ product: testProduct, quantity: 5 }]
 
-      // 2. 값 업데이트 테스트
+      expect(getRemainingStock(testProduct, cart)).toBe(15) // 20 - 5 = 15
+      expect(getRemainingStock(testProduct, [])).toBe(20) // 장바구니에 없는 경우
+
+      // 다른 상품이 장바구니에 있는 경우
+      const otherProduct = { ...testProduct, id: 'test2' }
+      expect(getRemainingStock(otherProduct, cart)).toBe(20)
+    })
+
+    test('cart util - getAppliedDiscount 테스트', () => {
+      const testCases = [
+        { quantity: 1, expected: 0 }, // 할인 없음
+        { quantity: 3, expected: 0.1 }, // 10% 할인
+        { quantity: 4, expected: 0.1 }, // 10% 할인
+        { quantity: 5, expected: 0.2 }, // 20% 할인
+        { quantity: 10, expected: 0.2 }, // 20% 할인
+      ]
+
+      testCases.forEach(({ quantity, expected }) => {
+        const cartItem: CartItem = {
+          product: testProduct,
+          quantity,
+        }
+        expect(getAppliedDiscount(cartItem)).toBe(expected)
+      })
+
+      // 할인 정책이 없는 경우
+      const noDiscountProduct: Product = {
+        ...testProduct,
+        discounts: [],
+      }
+      expect(getAppliedDiscount({ product: noDiscountProduct, quantity: 5 })).toBe(0)
+    })
+
+    test('cart util - getMaxApplicableDiscount 테스트', () => {
+      const testCases = [
+        { quantity: 1, expected: 0 }, // 할인 기준 미달
+        { quantity: 3, expected: 0.1 }, // 첫 번째 할인율 적용
+        { quantity: 4, expected: 0.1 }, // 첫 번째 할인율 유지
+        { quantity: 5, expected: 0.2 }, // 두 번째 할인율로 상승
+        { quantity: 10, expected: 0.2 }, // 최대 할인율 유지
+      ]
+
+      testCases.forEach(({ quantity, expected }) => {
+        const cartItem: CartItem = {
+          product: testProduct,
+          quantity,
+        }
+        expect(getMaxApplicableDiscount(cartItem)).toBe(expected)
+      })
+
+      // 할인이 없는 상품 테스트
+      const noDiscountItem: CartItem = {
+        product: { ...testProduct, discounts: [] },
+        quantity: 5,
+      }
+      expect(getMaxApplicableDiscount(noDiscountItem)).toBe(0)
+    })
+
+    describe('Coupons 훅 테스트', () => {
+      test('useCoupons 기본 기능 테스트', () => {
+        const { result: couponsResult } = renderHook(() => useCoupons(mockCoupons))
+
+        // 쿠폰 추가 테스트
+        act(() => {
+          couponsResult.current.addCoupon({
+            name: '신규 쿠폰',
+            code: 'NEW15',
+            discountType: 'percentage',
+            discountValue: 15,
+          })
+        })
+        expect(couponsResult.current.coupons).toHaveLength(3)
+      })
+    })
+
+    describe('Cart 훅 테스트', () => {
+      test('useCart 기본 기능 테스트', () => {
+        const { result: cartResult } = renderHook(() => useCart())
+
+        // 장바구니에 상품 추가
+        act(() => {
+          cartResult.current.addToCart(mockProducts[0])
+        })
+        expect(cartResult.current.cart).toHaveLength(1)
+        expect(cartResult.current.cart[0].product.id).toBe('p1')
+        expect(cartResult.current.cart[0].quantity).toBe(1)
+
+        // 수량 업데이트
+        act(() => {
+          cartResult.current.updateQuantity(mockProducts[0].id, 3)
+        })
+        expect(cartResult.current.cart[0].quantity).toBe(3)
+
+        // 쿠폰 적용
+        act(() => {
+          cartResult.current.applyCoupon(mockCoupons[0])
+        })
+        expect(cartResult.current.selectedCoupon).toBe(mockCoupons[0])
+
+        // 총액 계산
+        expect(cartResult.current.cart[0].product.price * cartResult.current.cart[0].quantity).toBe(30000)
+      })
+    })
+
+    describe('LocalStorage 훅 테스트', () => {
+      test('기본 기능 테스트', () => {
+        const { result: basicResult } = renderHook(() => useLocalStorage({ key: 'testKey', initialValue: 'test' }))
+        expect(basicResult.current[0]).toBe('test')
+
+        // 값 업데이트 테스트
+        act(() => {
+          basicResult.current[1]('updated')
+        })
+        expect(basicResult.current[0]).toBe('updated')
+      })
+
+      test('객체 데이터 저장 테스트', () => {
+        const testObject = { name: 'test', value: 123 }
+        const { result: objectResult } = renderHook(() =>
+          useLocalStorage({
+            key: 'objectKey',
+            initialValue: testObject,
+          }),
+        )
+        expect(objectResult.current[0]).toEqual(testObject)
+      })
+
+      test('저장된 데이터 불러오기 테스트', () => {
+        localStorageMock.getItem.mockReturnValue(JSON.stringify('savedValue'))
+        const { result: loadResult } = renderHook(() => useLocalStorage({ key: 'loadKey', initialValue: 'initial' }))
+        expect(loadResult.current[0]).toBe('savedValue')
+      })
+
+      test('에러 처리 테스트', () => {
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+        localStorageMock.getItem.mockImplementation(() => {
+          throw new Error('localStorage error')
+        })
+
+        const { result: errorResult } = renderHook(() => useLocalStorage({ key: 'errorKey', initialValue: 'fallback' }))
+        expect(errorResult.current[0]).toBe('fallback')
+        expect(consoleErrorSpy).toHaveBeenCalled()
+
+        consoleErrorSpy.mockRestore()
+      })
+    })
+
+    test('Product 훅 테스트', () => {
+      const { result } = renderHook(() => useProducts(mockProducts))
+
+      // 초기 상품 목록 확인
+      expect(result.current.products).toEqual(mockProducts)
+
+      // 상품 추가 테스트
+      const newProduct: Product = {
+        id: 'new1',
+        name: '새로운 상품',
+        price: 15000,
+        stock: 30,
+        discounts: [],
+      }
+
       act(() => {
-        basicResult.current[1]('updated')
-      })
-      expect(basicResult.current[0]).toBe('updated')
-
-      // 3. 객체 데이터 테스트
-      const testObject = { name: 'test', value: 123 }
-      const { result: objectResult } = renderHook(() =>
-        useLocalStorage({
-          key: 'objectKey',
-          initialValue: testObject,
-        }),
-      )
-      expect(objectResult.current[0]).toEqual(testObject)
-
-      // 4. localStorage에서 값 불러오기 테스트
-      localStorageMock.getItem.mockReturnValue(JSON.stringify('savedValue'))
-      const { result: loadResult } = renderHook(() => useLocalStorage({ key: 'loadKey', initialValue: 'initial' }))
-      expect(loadResult.current[0]).toBe('savedValue')
-
-      // 5. 에러 처리 테스트
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      localStorageMock.getItem.mockImplementation(() => {
-        throw new Error('localStorage error')
+        result.current.addProduct(newProduct)
       })
 
-      const { result: errorResult } = renderHook(() => useLocalStorage({ key: 'errorKey', initialValue: 'fallback' }))
-      expect(errorResult.current[0]).toBe('fallback')
-      expect(consoleErrorSpy).toHaveBeenCalled()
+      expect(result.current.products).toHaveLength(mockProducts.length + 1)
+      expect(result.current.products).toContainEqual(newProduct)
 
-      consoleErrorSpy.mockRestore()
+      // 상품 업데이트 테스트
+      const updatedProduct = {
+        ...mockProducts[0],
+        price: 12000,
+      }
+
+      act(() => {
+        result.current.updateProduct(updatedProduct)
+      })
+
+      expect(result.current.products[0].price).toBe(12000)
+      expect(result.current.products.find((p) => p.id === updatedProduct.id)?.price).toBe(12000)
     })
   })
 })
