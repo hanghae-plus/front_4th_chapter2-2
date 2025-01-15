@@ -1,5 +1,5 @@
 import { CartItem } from '../../shared/types/types';
-import { getAppliedDiscount } from './lib';
+import { getAppliedDiscount } from './lib/discount';
 
 interface CartListProps {
   cart: CartItem[];
