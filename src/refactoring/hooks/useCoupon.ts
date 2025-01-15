@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useLocalStorage } from './useLocalStorage.ts';
 
 import type { Coupon } from '../../types.ts';
 
 export const useCoupons = (initialCoupons: Coupon[]) => {
-  const [coupons, setCoupons] = useState<Coupon[]>(initialCoupons);
+  const { storageItem: coupons, setItem: setCoupons } = useLocalStorage('coupons', initialCoupons);
 
   const addCoupon = (coupon: Coupon) => {
-    setCoupons((prevCoupons) => [...prevCoupons, coupon]);
+    const updateCoupons = [...coupons, coupon];
+
+    setCoupons(updateCoupons);
   };
 
   return { coupons, addCoupon };

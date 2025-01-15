@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useLocalStorage } from './useLocalStorage.ts';
 
 import type { Product } from '../../types.ts';
 
 export const useProducts = (initialProducts: Product[]) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const { storageItem: products, setItem: setProducts } = useLocalStorage('products', initialProducts);
 
   const updateProduct = (newProduct: Product) => {
     const updateProducts = products.map((product) => (product.id === newProduct.id ? newProduct : product));
@@ -12,7 +12,9 @@ export const useProducts = (initialProducts: Product[]) => {
   };
 
   const addProduct = (product: Product) => {
-    setProducts((prev) => [...prev, product]);
+    const updateProducts = [...products, product];
+
+    setProducts(updateProducts);
   };
 
   return { products, updateProduct, addProduct };
