@@ -13,8 +13,8 @@ interface Props {
   onProductAdd: (newProduct: Product) => void;
 }
 export default function ProductManagement({ productList, onProductUpdate, onProductAdd }: Props) {
-  const productEdit = useProductEdit(onProductUpdate, productList);
-  const { newDiscount, addDiscount, removeDiscount, updateDiscount } = useProductDiscount(
+  const productEdit = useProductEdit(onProductUpdate);
+  const productDiscount = useProductDiscount(
     productEdit.editingProduct,
     productEdit.setEditingProduct,
     productList,
@@ -38,10 +38,7 @@ export default function ProductManagement({ productList, onProductUpdate, onProd
                 <EditingProduct
                   product={product}
                   productEdit={{ ...productEdit, editingProduct: productEdit.editingProduct }}
-                  newDiscount={newDiscount}
-                  onDiscountAdd={addDiscount}
-                  onDiscountRemove={removeDiscount}
-                  onDiscountUpdate={updateDiscount}
+                  productDiscount={productDiscount}
                 />
               ) : (
                 <DiscountsWithModifyButton

@@ -1,4 +1,5 @@
-import { Discount, Product } from '../../types';
+import { Product } from '../../types';
+import { useProductDiscount } from '../hooks/useProductDiscount';
 import { useProductEdit } from '../hooks/useProductEdit';
 
 interface Props {
@@ -6,21 +7,11 @@ interface Props {
   productEdit: ReturnType<typeof useProductEdit> & {
     editingProduct: Product;
   };
-  newDiscount: Discount;
-  onDiscountAdd: (productId: string) => void;
-  onDiscountRemove: (productId: string, index: number) => void;
-  onDiscountUpdate: (newDiscount: Discount) => void;
+  productDiscount: ReturnType<typeof useProductDiscount>;
 }
-export default function EditingProduct({
-  product,
-  productEdit,
-  newDiscount,
-  onDiscountAdd,
-  onDiscountRemove,
-  onDiscountUpdate,
-}: Props) {
-  const { editingProduct, updateProductName, updatePrice, updateStock, completeEditing } =
-    productEdit;
+export default function EditingProduct({ product, productEdit, productDiscount }: Props) {
+  const { editingProduct, updateProductWith, completeEditing } = productEdit;
+  const { newDiscount, addDiscount, removeDiscount, updateDiscount } = productDiscount;
 
   return (
     <div>
@@ -30,7 +21,7 @@ export default function EditingProduct({
           title='상품명'
           type='text'
           value={editingProduct.name}
-          onChange={(e) => updateProductName(product.id, e.target.value)}
+          onChange={(e) => updateProductWith(product.id, 'name', e.target.value)}
           className='w-full p-2 border rounded'
         />
       </div>
@@ -40,7 +31,7 @@ export default function EditingProduct({
           title='가격'
           type='number'
           value={editingProduct.price}
-          onChange={(e) => updatePrice(product.id, parseInt(e.target.value))}
+          onChange={(e) => updateProductWith(product.id, 'price', parseInt(e.target.value))}
           className='w-full p-2 border rounded'
         />
       </div>
@@ -50,7 +41,7 @@ export default function EditingProduct({
           title='재고'
           type='number'
           value={editingProduct.stock}
-          onChange={(e) => updateStock(product.id, parseInt(e.target.value))}
+          onChange={(e) => updateProductWith(product.id, 'stock', parseInt(e.target.value))}
           className='w-full p-2 border rounded'
         />
       </div>
@@ -63,7 +54,7 @@ export default function EditingProduct({
               {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
             </span>
             <button
-              onClick={() => onDiscountRemove(product.id, index)}
+              onClick={() => removeDiscount(product.id, index)}
               className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'
             >
               삭제
@@ -75,9 +66,7 @@ export default function EditingProduct({
             type='number'
             placeholder='수량'
             value={newDiscount.quantity}
-            onChange={(e) =>
-              onDiscountUpdate({ ...newDiscount, quantity: parseInt(e.target.value) })
-            }
+            onChange={(e) => updateDiscount({ ...newDiscount, quantity: parseInt(e.target.value) })}
             className='w-1/3 p-2 border rounded'
           />
           <input
@@ -85,7 +74,7 @@ export default function EditingProduct({
             placeholder='할인율 (%)'
             value={newDiscount.rate * 100}
             onChange={(e) =>
-              onDiscountUpdate({
+              updateDiscount({
                 ...newDiscount,
                 rate: parseInt(e.target.value) / 100,
               })
@@ -93,7 +82,7 @@ export default function EditingProduct({
             className='w-1/3 p-2 border rounded'
           />
           <button
-            onClick={() => onDiscountAdd(product.id)}
+            onClick={() => addDiscount(product.id)}
             className='w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600'
           >
             할인 추가
