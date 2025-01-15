@@ -2,7 +2,7 @@ import { Coupon, Product } from "../../types.ts";
 import { useCart } from "../hooks";
 import { getRemainingStock } from "../service/getRemainingStock.ts";
 import { getAppliedDiscount } from "../service/getAppliedDiscount.ts";
-import { CartProduct } from "./CartProduct/CartProduct.tsx";
+import { ProductListItem } from "./ProductListItem/ProductListItem.tsx";
 
 interface Props {
   products: Product[];
@@ -33,7 +33,7 @@ export const CartPage = ({ products, coupons }: Props) => {
             {products.map((product) => {
               const remainingStock = getRemainingStock(cart, product);
               return (
-                <CartProduct
+                <ProductListItem
                   product={product}
                   remainingStock={remainingStock}
                   addToCart={addToCart}

@@ -7,7 +7,11 @@ type Props = {
   addToCart: (product: Product) => void;
 };
 
-export const CartProduct = ({ product, remainingStock, addToCart }: Props) => {
+export const ProductListItem = ({
+  product,
+  remainingStock,
+  addToCart,
+}: Props) => {
   return (
     <div
       key={product.id}
