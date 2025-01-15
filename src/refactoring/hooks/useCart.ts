@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { CartItem, Product, Coupon } from '@/types'
-import { calculateCartTotal, updateCartItemQuantity } from '../models/cart'
+import { calculateCartTotal, updateCartItemQuantity } from '../utils/cart'
 import { useLocalStorage } from './useLocalStorage'
 
 export const useCart = () => {

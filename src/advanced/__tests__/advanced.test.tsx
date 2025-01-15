@@ -10,7 +10,7 @@ import {
   getMaxApplicableDiscount,
   calculateCartTotal,
   updateCartItemQuantity,
-} from '@/refactoring/models/cart'
+} from '@/refactoring/utils/cart'
 
 // localStorage 모킹 추가
 const localStorageMock = (() => {

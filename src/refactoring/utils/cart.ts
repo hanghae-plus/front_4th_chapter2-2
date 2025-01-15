@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from '@/types'
+import { CartItem, Coupon, Product } from '@/types'
 // 유틸 함수는 전부 순수 함수로 구현
 
 /**
@@ -77,4 +77,36 @@ export const updateCartItemQuantity = (cart: CartItem[], productId: string, newQ
     }
     return item
   })
+}
+
+/**
+ * 상품의 할인 정책 중 최대 할인율을 계산하는 함수
+ */
+export const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
+  return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0)
+}
+
+/**
+ * 상품의 남은 재고를 계산하는 함수
+ */
+export const getRemainingStock = (product: Product, cart: CartItem[]) => {
+  const cartItem = cart.find((item) => item.product.id === product.id)
+  return product.stock - (cartItem?.quantity || 0)
+}
+
+/**
+ * 장바구니 아이템에 적용된 할인율을 계산하는 함수
+ */
+export const getAppliedDiscount = (item: CartItem) => {
+  const { discounts } = item.product
+  const { quantity } = item
+  let appliedDiscount = 0
+
+  for (const discount of discounts) {
+    if (quantity >= discount.quantity) {
+      appliedDiscount = Math.max(appliedDiscount, discount.rate)
+    }
+  }
+
+  return appliedDiscount
 }
