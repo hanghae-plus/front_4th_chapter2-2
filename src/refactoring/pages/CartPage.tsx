@@ -20,6 +20,7 @@ export const CartPage = ({ productList, couponList }: Props) => {
     calculateTotal,
     selectedCoupon,
     getRemainingStock,
+    getMaxDiscount,
   } = useCart();
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
@@ -32,6 +33,7 @@ export const CartPage = ({ productList, couponList }: Props) => {
           productList={productList}
           addToCart={addToCart}
           getRemainingStock={getRemainingStock}
+          getMaxDiscount={getMaxDiscount}
         />
         <CartList cart={cart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />
         <CouponSelector

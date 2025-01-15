@@ -13,6 +13,11 @@ export const useCart = () => {
     return product.stock - (cartItem?.quantity || 0);
   };
 
+  // 항목의 최대 할인율
+  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
+    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
+  };
+
   // 장바구니 항목 추가
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(product);
@@ -55,5 +60,7 @@ export const useCart = () => {
       return calculateCartTotal(cart, selectedCoupon);
     },
     selectedCoupon,
+    getRemainingStock,
+    getMaxDiscount,
   };
 };
