@@ -1,13 +1,7 @@
-import { CartItem, Coupon, Discount } from "../../types";
+import { CartItem, Coupon } from "../../types";
 
 const calculateTotalPrice = (price: number, quantity: number) => {
   return price * quantity;
-}
-
-const getMaxDiscount = (quantity: number, discounts: Discount[]) => {
-  return discounts.reduce((max, discount) => {
-    return quantity >= discount.quantity && discount.rate > max ? discount.rate : max;
-  }, 0);
 }
 
 export const calculateItemTotal = (item: CartItem) => {
@@ -15,7 +9,9 @@ export const calculateItemTotal = (item: CartItem) => {
   const { quantity } = item;
 
   const totalBeforeDiscount = calculateTotalPrice(price, quantity);
-  const discount = getMaxDiscount(quantity, discounts);
+  const discount = discounts.reduce((maxDiscount, d) => {
+    return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
+  }, 0);
 
   return totalBeforeDiscount * (1 - discount);
 };
@@ -24,34 +20,49 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
   const { discounts } = item.product;
   const { quantity } = item;
   
-  return getMaxDiscount(quantity, discounts);
+  let appliedDiscount = 0;
+  for (const discount of discounts) {
+    if (quantity >= discount.quantity) {
+      appliedDiscount = Math.max(appliedDiscount, discount.rate);
+    }
+  }
+  return appliedDiscount;
 };
-
-const applyCouponDiscount = (amount: number, coupon: Coupon | null) => {
-  if (!coupon) return amount;
-  return coupon.discountType === 'amount' 
-    ? Math.max(0, amount - coupon.discountValue) 
-    : amount * (1 - coupon.discountValue / 100);
-}
 
 export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null
 ) => {
-  const totalBeforeDiscount = cart.reduce((total, item) => {
-    return total += calculateTotalPrice(item.product.price, item.quantity);
-  }, 0);
+  let totalBeforeDiscount = 0;
+  let totalAfterDiscount = 0;
 
-  const totalAfterDiscount = cart.reduce((total, item) => {
-    return total += calculateItemTotal(item);
-  }, 0);
+  cart.forEach(item => {
+    const { price } = item.product;
+    const { quantity } = item;
+    totalBeforeDiscount += price * quantity;
 
-  const totalLastDiscount = applyCouponDiscount(totalAfterDiscount, selectedCoupon);
-  const totalDiscount = totalBeforeDiscount - totalLastDiscount;
+    const discount = item.product.discounts.reduce((maxDiscount, d) => {
+      return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
+    }, 0);
+
+    totalAfterDiscount += price * quantity * (1 - discount);
+  });
+
+  let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+
+  // 쿠폰 적용
+  if (selectedCoupon) {
+    if (selectedCoupon.discountType === 'amount') {
+      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
+    } else {
+      totalAfterDiscount *= (1 - selectedCoupon.discountValue / 100);
+    }
+    totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+  }
 
   return {
     totalBeforeDiscount: Math.round(totalBeforeDiscount),
-    totalAfterDiscount: Math.round(totalLastDiscount),
+    totalAfterDiscount: Math.round(totalAfterDiscount),
     totalDiscount: Math.round(totalDiscount)
   };
 };
