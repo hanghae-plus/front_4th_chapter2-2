@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { CouponType, DiscountType, ProductType } from '../types';
 import { ProductForm } from './ProductForm';
 import { InputField } from './InputField';
+import { CouponForm } from './CouponForm';
+import { CouponList } from './CouponList';
 
 interface Props {
   productList: ProductType[];
-  coupons: CouponType[];
+  couponList: CouponType[];
   onProductUpdate: (updatedProduct: ProductType) => void;
   onProductAdd: (newProduct: ProductType) => void;
   onCouponAdd: (newCoupon: CouponType) => void;
@@ -13,7 +15,7 @@ interface Props {
 
 export const AdminPage = ({
   productList,
-  coupons,
+  couponList,
   onProductUpdate,
   onProductAdd,
   onCouponAdd,
@@ -89,6 +91,7 @@ export const AdminPage = ({
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount],
       };
+
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
@@ -97,11 +100,13 @@ export const AdminPage = ({
 
   const handleRemoveDiscount = (productId: string, index: number) => {
     const updatedProduct = productList.find((p) => p.id === productId);
+
     if (updatedProduct) {
       const newProduct = {
         ...updatedProduct,
         discounts: updatedProduct.discounts.filter((_, i) => i !== index),
       };
+
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
@@ -119,6 +124,7 @@ export const AdminPage = ({
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
+
     onProductAdd(productWithId);
     setNewProduct({
       name: '',
@@ -126,6 +132,7 @@ export const AdminPage = ({
       stock: 0,
       discounts: [],
     });
+
     setShowNewProductForm(false);
   };
 
@@ -263,73 +270,16 @@ export const AdminPage = ({
             ))}
           </div>
         </div>
+
         <div>
           <h2 className='text-2xl font-semibold mb-4'>쿠폰 관리</h2>
           <div className='bg-white p-4 rounded shadow'>
-            <div className='space-y-2 mb-4'>
-              <InputField
-                id='coupon-name'
-                placeholder='쿠폰 이름'
-                value={newCoupon.name}
-                type='text'
-                onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
-              />
-              <InputField
-                id='coupon-code'
-                placeholder='쿠폰 코드'
-                value={newCoupon.code}
-                type='text'
-                onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
-              />
-              <div className='flex gap-2'>
-                <select
-                  value={newCoupon.discountType}
-                  onChange={(e) =>
-                    setNewCoupon({
-                      ...newCoupon,
-                      discountType: e.target.value as 'amount' | 'percentage',
-                    })
-                  }
-                  className='w-full p-2 border rounded'
-                >
-                  <option value='amount'>금액(원)</option>
-                  <option value='percentage'>할인율(%)</option>
-                </select>
-                <InputField
-                  id='coupon-discount-value'
-                  placeholder='할인 값'
-                  value={newCoupon.discountValue}
-                  type='number'
-                  onChange={(e) =>
-                    setNewCoupon({ ...newCoupon, discountValue: parseInt(e.target.value) })
-                  }
-                />
-              </div>
-              <button
-                onClick={handleAddCoupon}
-                className='w-full bg-green-500 text-white p-2 rounded hover:bg-green-600'
-              >
-                쿠폰 추가
-              </button>
-            </div>
-            <div>
-              <h3 className='text-lg font-semibold mb-2'>현재 쿠폰 목록</h3>
-              <div className='space-y-2'>
-                {coupons.map((coupon, index) => (
-                  <div
-                    key={index}
-                    data-testid={`coupon-${index + 1}`}
-                    className='bg-gray-100 p-2 rounded'
-                  >
-                    {coupon.name} ({coupon.code}):
-                    {coupon.discountType === 'amount'
-                      ? `${coupon.discountValue}원`
-                      : `${coupon.discountValue}%`}{' '}
-                    할인
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CouponForm
+              newCoupon={newCoupon}
+              setNewCoupon={setNewCoupon}
+              onAddCoupon={handleAddCoupon}
+            />
+            <CouponList couponList={couponList} />
           </div>
         </div>
       </div>
