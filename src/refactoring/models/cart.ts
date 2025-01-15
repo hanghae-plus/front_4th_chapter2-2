@@ -1,9 +1,35 @@
-import { CartItem, Coupon } from "../../types";
+import { CartItem, Coupon, CartTotal } from "../../types";
+
+// 할인 계산 결과를 위한 인터페이스
+interface DiscountResult {
+  discountedTotal: number;
+  discountAmount: number;
+}
+
+// 쿠폰 할인 계산을 위한 함수
+const calculateCouponDiscount = (
+  total: number, 
+  coupon: Coupon
+): DiscountResult => {
+  if (coupon.discountType === "percentage") {
+    const discountAmount = total * (coupon.discountValue / 100);
+    return {
+      discountedTotal: total - discountAmount,
+      discountAmount
+    };
+  } else {
+    const discountAmount = Math.min(coupon.discountValue, total);
+    return {
+      discountedTotal: total - discountAmount,
+      discountAmount
+    };
+  }
+};
 
 export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null 
-) => {
+): CartTotal => {
    // 1. 상품 금액 합계 (할인 전)
   const totalBeforeDiscount = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -16,22 +42,13 @@ export const calculateCartTotal = (
     0
   );
 
-  // 쿠폰 할인 적용
-  let couponDiscount = 0;
+  // 3. 쿠폰 할인 적용
+  const { discountedTotal: totalAfterDiscount, discountAmount: couponDiscount } = 
+    selectedCoupon 
+      ? calculateCouponDiscount(totalAfterItemDiscount, selectedCoupon)
+      : { discountedTotal: totalAfterItemDiscount, discountAmount: 0 };
 
-  if (selectedCoupon) {
-    // 전체 금액에 대해 한 번만 쿠폰 할인 적용
-    if (selectedCoupon.discountType === "percentage") {
-      couponDiscount = totalAfterItemDiscount * (selectedCoupon.discountValue / 100);
-    } else if (selectedCoupon.discountType === "amount") {
-      couponDiscount = Math.min(selectedCoupon.discountValue, totalAfterItemDiscount);
-    }
-  }
-
-  // 4. 최종 결제 금액
-  const totalAfterDiscount = Math.max(0, totalAfterItemDiscount - couponDiscount);
-
-  // 5. 총 할인 금액
+  // 4. 총 할인 금액 계산
   const totalDiscount = totalBeforeDiscount - totalAfterItemDiscount + couponDiscount;
 
   return {
