@@ -1,6 +1,6 @@
 import { Input } from '../../../shared/ui/inputs';
 import { useState } from 'react';
-import { IProduct } from '../../../app/types';
+import { IProduct } from '../../../shared/types';
 
 interface IProductFormProps {
   onProductAdd: (newProduct: IProduct) => void;

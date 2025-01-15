@@ -1,6 +1,6 @@
 import { SectionTitle } from '../../../shared/ui/typography';
 import { Stock } from '../../../features/stock/ui/Stock.tsx';
-import { ICartItem, IProduct } from '../../../app/types';
+import { ICartItem, IProduct } from '../../../shared/types';
 
 interface ProductListProps {
   products: IProduct[];

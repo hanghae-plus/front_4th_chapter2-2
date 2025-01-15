@@ -1,5 +1,5 @@
 import { SectionTitle } from '../../../shared/ui/typography';
-import { ICartItem, ICoupon } from '../../../app/types';
+import { ICartItem, ICoupon } from '../../../shared/types';
 import { OrderSummary } from '../../../features/order/ui/OrderSummary.tsx';
 import { CartList } from '../../../features/cart/ui/CartList.tsx';
 import { CouponSelector } from '../../../features/coupon/ui/CouponSelector.tsx';

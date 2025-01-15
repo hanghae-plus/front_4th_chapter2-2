@@ -1,5 +1,5 @@
 import { SectionTitle } from '../../../shared/ui/typography';
-import { ICoupon } from '../../../app/types';
+import { ICoupon } from '../../../shared/types';
 
 interface ICouponSelectorProps {
   coupons: ICoupon[];

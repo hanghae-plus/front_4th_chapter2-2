@@ -3,7 +3,7 @@ import { CartPage } from '../pages/cart/ui/CartPage.tsx';
 import { AdminPage } from '../pages/admin/ui/AdminPage.tsx';
 import { useProducts } from '../widgets/product/model/useProduct.ts';
 import { useCoupons } from '../widgets/coupon/model/useCoupon.ts';
-import { ICoupon, IProduct } from './types';
+import { ICoupon, IProduct } from '../shared/types';
 import { Layout } from './Layout.tsx';
 
 const initialProducts: IProduct[] = [

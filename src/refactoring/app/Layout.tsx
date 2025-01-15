@@ -3,7 +3,7 @@ import { PageTitle } from '../shared/ui/typography';
 interface ILayoutProps {
   isAdmin: boolean;
   setIsAdmin: (isAdmin: boolean) => void;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function Layout({ isAdmin, setIsAdmin, children }: ILayoutProps) {

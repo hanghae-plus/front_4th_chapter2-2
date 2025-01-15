@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ICoupon } from '../../../app/types';
+import { ICoupon } from '../../../shared/types';
 
 interface CouponFormProps {
   onCouponAdd: (newCoupon: ICoupon) => void;

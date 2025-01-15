@@ -1,5 +1,5 @@
 import { CartItem } from './CartItem.tsx';
-import { ICartItem } from '../../../app/types';
+import { ICartItem } from '../../../shared/types';
 
 interface CartListProps {
   cart: ICartItem[];

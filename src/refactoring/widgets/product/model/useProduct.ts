@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IProduct } from '../../../app/types';
+import { IProduct } from '../../../shared/types';
 
 export const useProducts = (initialProducts: IProduct[]) => {
   const [products, setProducts] = useState<IProduct[]>(initialProducts);

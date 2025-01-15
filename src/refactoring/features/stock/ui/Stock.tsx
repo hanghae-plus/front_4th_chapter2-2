@@ -1,4 +1,4 @@
-import { IProduct } from '../../../app/types';
+import { IProduct } from '../../../shared/types';
 
 interface StockProps {
   product: IProduct;

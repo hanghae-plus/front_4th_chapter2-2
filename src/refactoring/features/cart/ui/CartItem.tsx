@@ -1,4 +1,4 @@
-import { ICartItem } from '../../../app/types';
+import { ICartItem } from '../../../shared/types';
 
 interface CartItemProps {
   item: ICartItem;

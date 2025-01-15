@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SectionTitle } from '../../../shared/ui/typography';
 import { Input } from '../../../shared/ui/inputs';
-import { IDiscount, IProduct } from '../../../app/types';
+import { IDiscount, IProduct } from '../../../shared/types';
 import { ProductForm } from '../../../features/product/ui/ProductForm.tsx';
 
 interface ProductManagementProps {

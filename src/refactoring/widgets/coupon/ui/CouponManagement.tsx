@@ -1,7 +1,7 @@
 import { SectionTitle } from '../../../shared/ui/typography';
 import { CouponForm } from '../../../features/coupon/ui/CouponForm.tsx';
 import { CouponList } from '../../../features/coupon/ui/CouponList.tsx';
-import { ICoupon } from '../../../app/types';
+import { ICoupon } from '../../../shared/types';
 
 interface CouponManagementProps {
   coupons: ICoupon[];
