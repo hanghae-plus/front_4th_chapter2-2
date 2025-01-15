@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Product, Discount, AdminProductListProps } from "../../../types";
 import { ProductForm } from "./AdminProductForm";
 
-export const ProductList = ({ products, onProductUpdate }: AdminProductListProps) => {
+export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminProductListProps) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
@@ -84,7 +84,7 @@ export const ProductList = ({ products, onProductUpdate }: AdminProductListProps
   };
 
   const handleProductAdd = (newProduct: Product) => {
-    onProductUpdate(newProduct);
+    onProductAdd(newProduct);
   };
 
   return (

@@ -7,10 +7,11 @@ interface Props {
   products: Product[];
   coupons: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
+  onProductAdd: (newProduct: Product) => void; 
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export const AdminPage = ({ products, coupons, onProductUpdate, onCouponAdd }: Props) => {
+export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
 
   return (
     <div className="container mx-auto p-4">
@@ -19,6 +20,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onCouponAdd }: P
         <ProductList 
           products={products} 
           onProductUpdate={onProductUpdate} 
+          onProductAdd={onProductAdd}
         />
         <div>
           <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>

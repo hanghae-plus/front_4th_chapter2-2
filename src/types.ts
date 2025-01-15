@@ -61,6 +61,7 @@ export interface ProductFormProps {
 export interface AdminProductListProps {
   products: Product[];
   onProductUpdate: (updatedProduct: Product) => void;
+  onProductAdd: (newProduct: Product) => void; 
 }
 
 export interface CouponListProps {
