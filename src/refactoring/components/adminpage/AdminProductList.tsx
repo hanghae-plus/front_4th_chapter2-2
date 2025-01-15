@@ -1,16 +1,21 @@
 import { useState } from "react";
-import { Product, AdminProductListProps } from "../../../types";
+import { Product, Discount, AdminProductListProps } from "../../../types";
 import { ProductForm } from "./AdminProductForm";
 import { useProductAccordion } from "../../hooks/useProductAccordion";
 import { useEditingProduct } from "../../hooks/useEditingProduct";
-import { useDiscounts } from "../../hooks/useDiscounts";
+import { 
+  updateProductWithNewDiscount,
+  removeDiscountFromProduct,
+  updateProductStock
+ } from "../../utils/productUtils";
 
 export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminProductListProps) => {
   const { openProductIds, toggleProductAccordion } = useProductAccordion();
   const { editingProduct, startEditing, stopEditing, updateProductField, setEditingProduct } = useEditingProduct();
-  const { newDiscount, setNewDiscount, addDiscount } = useDiscounts();
   
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
+  const [ newDiscount, setNewDiscount ] = useState<Discount>({ quantity: 0, rate: 0 });
+  const [ showNewProductForm, setShowNewProductForm ] = useState(false);
+
   // handleEditProduct 함수 수정
   const handleProductAdd = (newProduct: Product) => {
     onProductAdd(newProduct);
@@ -25,41 +30,25 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminPr
   };
 
   const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find(p => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      // 이 부분에서 onProductUpdate 호출
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct); // 수정된 제품을 state로 반영
+    if (editingProduct && editingProduct.id === productId) {
+      const updatedProduct = updateProductStock(editingProduct, newStock);
+      setEditingProduct(updatedProduct);
+      onProductUpdate(updatedProduct);
     }
   };
 
   const handleAddDiscount = (productId: string) => {
     if (editingProduct && editingProduct.id === productId) {
-      const updatedDiscounts = addDiscount(editingProduct.discounts, newDiscount);
-      const updatedProduct = {
-        ...editingProduct,
-        discounts: updatedDiscounts
-      };
+      const updatedProduct = updateProductWithNewDiscount(editingProduct, newDiscount);
       setEditingProduct(updatedProduct);
       onProductUpdate(updatedProduct);
-      
-      // Reset discount input fields
       setNewDiscount({ quantity: 0, rate: 0 });
     }
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const product = products.find(p => p.id === productId);
-    if (product && editingProduct && editingProduct.id === productId) {
-      const updatedDiscounts = [...editingProduct.discounts];
-      updatedDiscounts.splice(index, 1);
-      
-      const updatedProduct = {
-        ...editingProduct,
-        discounts: updatedDiscounts
-      };
-      
+    if (editingProduct && editingProduct.id === productId) {
+      const updatedProduct = removeDiscountFromProduct(editingProduct, index);
       setEditingProduct(updatedProduct);
       onProductUpdate(updatedProduct);
     }
