@@ -1,13 +1,13 @@
 import { useState } from 'react';
 
-import { InputFieldWithLabel } from '@/refactoring/pages/Admin/ProductManagement/AddProduct/ui/InputFieldWithLabel';
+import { InputFieldWithLabel } from '@/refactoring/pages/Admin/ProductManagement/ProductAddForm/ui/InputFieldWithLabel';
 import type { Product } from '@/types';
 
-interface AddProductProps {
+interface ProductAddFormProps {
   onProductAdd: (product: Product) => void;
 }
 
-export const AddProduct = ({ onProductAdd }: AddProductProps) => {
+export const ProductAddForm = ({ onProductAdd }: ProductAddFormProps) => {
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
