@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Discount, Product } from "../../types";
 import { toggleProductInSet } from "../models/product";
+import { EditingProductDiscounts } from "./EditingProductDiscounts";
+import { ProductDiscounts } from "./ProductDiscounts";
 
 interface Props {
   products: Product[];
@@ -245,23 +247,13 @@ export const ProductAdmin = ({
                     <div>
                       <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
                       {editingProduct.discounts.map((discount, index) => (
-                        <div
+                        <EditingProductDiscounts
                           key={index}
-                          className="flex justify-between items-center mb-2"
-                        >
-                          <span>
-                            {discount.quantity}개 이상 구매 시{" "}
-                            {discount.rate * 100}% 할인
-                          </span>
-                          <button
-                            onClick={() =>
-                              handleRemoveDiscount(product.id, index)
-                            }
-                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                          >
-                            삭제
-                          </button>
-                        </div>
+                          index={index}
+                          discount={discount}
+                          productId={product.id}
+                          handleRemoveDiscount={handleRemoveDiscount}
+                        />
                       ))}
                       <div className="flex space-x-2">
                         <input
@@ -306,12 +298,7 @@ export const ProductAdmin = ({
                 ) : (
                   <div>
                     {product.discounts.map((discount, index) => (
-                      <div key={index} className="mb-2">
-                        <span>
-                          {discount.quantity}개 이상 구매 시{" "}
-                          {discount.rate * 100}% 할인
-                        </span>
-                      </div>
+                      <ProductDiscounts key={index} discount={discount} />
                     ))}
                     <button
                       data-testid="modify-button"
