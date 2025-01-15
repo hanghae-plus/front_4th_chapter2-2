@@ -38,7 +38,11 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
           <h2 className="mb-4 text-2xl font-semibold">상품 관리</h2>
 
           <AddProduct onProductAdd={onProductAdd} />
-          <UpdateProduct products={products} onProductUpdate={onProductUpdate} />
+          <div className="space-y-2">
+            {products.map((product, index) => (
+              <UpdateProduct product={product} testId={`${index + 1}`} onProductUpdate={onProductUpdate} />
+            ))}
+          </div>
         </div>
 
         <div>
