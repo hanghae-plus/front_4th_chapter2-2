@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from '@testing-library/react';
 import { CartPage } from '../../refactoring/pages/cart/ui/CartPage.tsx';
 import { AdminPage } from '../../refactoring/pages/admin/ui/AdminPage.tsx';
 import { CartItem, Coupon, Product } from '../../types';
 import * as cartUtils from '../../refactoring/pages/cart/lib/cart.ts';
-import { useCoupons } from '../../refactoring/features/coupon/model/useCoupon.ts';
-import { useProducts } from '../../refactoring/features/product/model/useProduct.ts';
+import { useCoupons } from '../../refactoring/widgets/coupon/model/useCoupon.ts';
+import { useProducts } from '../../refactoring/widgets/product/model/useProduct.ts';
 import { useCart } from '../../refactoring/pages/cart/model/useCart.ts';
 
 const mockProducts: Product[] = [
@@ -52,7 +59,11 @@ const TestAdminPage = () => {
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
 
   const handleProductUpdate = (updatedProduct: Product) => {
-    setProducts((prevProducts) => prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)));
+    setProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.id === updatedProduct.id ? updatedProduct : p,
+      ),
+    );
   };
 
   const handleProductAdd = (newProduct: Product) => {
@@ -81,9 +92,12 @@ describe('basic > ', () => {
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
-      const addToCartButtonsAtProduct1 = within(product1).getByText('장바구니에 추가');
-      const addToCartButtonsAtProduct2 = within(product2).getByText('장바구니에 추가');
-      const addToCartButtonsAtProduct3 = within(product3).getByText('장바구니에 추가');
+      const addToCartButtonsAtProduct1 =
+        within(product1).getByText('장바구니에 추가');
+      const addToCartButtonsAtProduct2 =
+        within(product2).getByText('장바구니에 추가');
+      const addToCartButtonsAtProduct3 =
+        within(product3).getByText('장바구니에 추가');
 
       // 1. 상품 정보 표시
       expect(product1).toHaveTextContent('상품1');
@@ -217,16 +231,26 @@ describe('basic > ', () => {
       });
       fireEvent.click(screen.getByText('할인 추가'));
 
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
+      expect(
+        screen.queryByText('5개 이상 구매 시 5% 할인'),
+      ).toBeInTheDocument();
 
       // 할인 삭제
       fireEvent.click(screen.getAllByText('삭제')[0]);
-      expect(screen.queryByText('10개 이상 구매 시 10% 할인')).not.toBeInTheDocument();
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
+      expect(
+        screen.queryByText('10개 이상 구매 시 10% 할인'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('5개 이상 구매 시 5% 할인'),
+      ).toBeInTheDocument();
 
       fireEvent.click(screen.getAllByText('삭제')[0]);
-      expect(screen.queryByText('10개 이상 구매 시 10% 할인')).not.toBeInTheDocument();
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('10개 이상 구매 시 10% 할인'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('5개 이상 구매 시 5% 할인'),
+      ).not.toBeInTheDocument();
 
       // 4. 쿠폰 추가
       fireEvent.change(screen.getByPlaceholderText('쿠폰 이름'), {
@@ -251,7 +275,9 @@ describe('basic > ', () => {
   });
 
   describe('useProducts > ', () => {
-    const initialProducts: Product[] = [{ id: '1', name: 'Product 1', price: 100, stock: 10, discounts: [] }];
+    const initialProducts: Product[] = [
+      { id: '1', name: 'Product 1', price: 100, stock: 10, discounts: [] },
+    ];
 
     test('특정 제품으로 초기화할 수 있다.', () => {
       const { result } = renderHook(() => useProducts(initialProducts));

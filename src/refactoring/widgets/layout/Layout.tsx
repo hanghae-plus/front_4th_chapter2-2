@@ -1,4 +1,4 @@
-import { PageTitle } from '../../shared/ui/typography/PageTitle.tsx';
+import { PageTitle } from '../../shared/ui/typography';
 
 interface LayoutProps extends React.HTMLProps<HTMLDivElement> {
   title: string;
