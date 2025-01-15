@@ -3,8 +3,10 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/pages/user/CartPage';
 import { AdminPage } from '../../refactoring/pages/admin/AdminPage';
-import { Coupon, Product } from '../../refactoring/shared/types/types';
+import { CartItem, Coupon, Discount, Product } from '../../refactoring/shared/types/types';
 import { useProductStore } from '../../refactoring/entities/product/model/useProductStore';
+import { calculateMaxDiscount, getRemainingStock } from '../../refactoring/features/products/lib';
+import { getAppliedDiscount } from '../../refactoring/features/cart/lib/discount';
 
 const mockProducts: Product[] = [
   {
@@ -88,7 +90,6 @@ describe('advanced > ', () => {
       const addToCartButtonsAtProduct2 = within(product2).getByText('장바구니에 추가');
       const addToCartButtonsAtProduct3 = within(product3).getByText('장바구니에 추가');
 
-      // 1. 상품 정보 표시
       expect(product1).toHaveTextContent('상품1');
       expect(product1).toHaveTextContent('10,000원');
       expect(product1).toHaveTextContent('재고: 20개');
@@ -226,6 +227,107 @@ describe('advanced > ', () => {
       const $newCoupon = screen.getByTestId('coupon-3');
 
       expect($newCoupon).toHaveTextContent('새 쿠폰 (NEW10):10% 할인');
+    });
+  });
+
+  describe('계산 함수 테스트', () => {
+    describe('calculateMaxDiscount', () => {
+      test('가장 높은 할인율 반환', () => {
+        const discounts: Discount[] = [
+          { quantity: 5, rate: 0.1 },
+          { quantity: 10, rate: 0.2 },
+          { quantity: 15, rate: 0.15 },
+        ];
+        const result = calculateMaxDiscount(discounts);
+        expect(result).toBe(0.2);
+      });
+
+      test('할인이 없으면 0 반환', () => {
+        const discounts: Discount[] = [];
+        const result = calculateMaxDiscount(discounts);
+        expect(result).toBe(0);
+      });
+    });
+
+    describe('getRemainingStock', () => {
+      let product: Product;
+      let cart: CartItem[];
+
+      beforeEach(() => {
+        product = {
+          id: 'p1',
+          name: 'Test Product',
+          price: 10000,
+          stock: 20,
+          discounts: [],
+        };
+
+        cart = [
+          {
+            product: { ...product },
+            quantity: 5,
+          },
+        ];
+      });
+
+      test('장바구니에 있는 상품의 남은 재고를 정확히 계산', () => {
+        const result = getRemainingStock(product, cart);
+        expect(result).toBe(15);
+      });
+
+      test('장바구니가 비어 있을 경우 전체 재고를 반환', () => {
+        const result = getRemainingStock(product, []);
+        expect(result).toBe(20);
+      });
+    });
+
+    describe('getAppliedDiscount', () => {
+      const mockDiscounts: Discount[] = [
+        { quantity: 5, rate: 0.1 },
+        { quantity: 10, rate: 0.15 },
+        { quantity: 15, rate: 0.2 },
+      ];
+
+      const mockCartItem: CartItem = {
+        product: {
+          id: 'p1',
+          name: '테스트 상품',
+          price: 10000,
+          stock: 50,
+          discounts: mockDiscounts,
+        },
+        quantity: 0,
+      };
+
+      test('적용 가능한 최대 할인율을 반환해야 함 (수량이 15 이상일 경우)', () => {
+        const item = { ...mockCartItem, quantity: 15 };
+        const result = getAppliedDiscount(item);
+        expect(result).toBe(0.2);
+      });
+
+      test('적용 가능한 최대 할인율을 반환해야 함 (수량이 10 이상 15 미만일 경우)', () => {
+        const item = { ...mockCartItem, quantity: 10 };
+        const result = getAppliedDiscount(item);
+        expect(result).toBe(0.15);
+      });
+
+      test('적용 가능한 최대 할인율을 반환해야 함 (수량이 5 이상 10 미만일 경우)', () => {
+        const item = { ...mockCartItem, quantity: 5 };
+        const result = getAppliedDiscount(item);
+        expect(result).toBe(0.1);
+      });
+
+      test('할인율이 없는 경우 0을 반환해야 함 (수량이 5 미만)', () => {
+        const item = { ...mockCartItem, quantity: 4 };
+        const result = getAppliedDiscount(item);
+        expect(result).toBe(0);
+      });
+
+      test('할인 정보가 비어 있을 경우 0을 반환해야 함', () => {
+        const item = { ...mockCartItem, product: { ...mockCartItem.product, discounts: [] } };
+        const result = getAppliedDiscount(item);
+        expect(result).toBe(0);
+      });
     });
   });
 
