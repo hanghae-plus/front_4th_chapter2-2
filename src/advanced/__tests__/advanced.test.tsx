@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, beforeEach, vi } from 'vitest'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { renderHook } from '@testing-library/react'
 import { Coupon, Product, CartItem } from '@/types'
-import { useProducts, useCoupons, useCart } from '@/refactoring/hooks'
+import { useProducts, useCoupons, useCart, useLocalStorage } from '@/refactoring/hooks'
 import { CartPage, AdminPage } from '@/refactoring/components'
 import {
   calculateItemTotal,
@@ -11,6 +11,20 @@ import {
   calculateCartTotal,
   updateCartItemQuantity,
 } from '@/refactoring/models/cart'
+
+// localStorage 모킹 추가
+const localStorageMock = (() => {
+  let store: Record<string, string> = {}
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value
+    }),
+    clear: vi.fn(() => {
+      store = {}
+    }),
+  }
+})()
 
 const mockProducts: Product[] = [
   {
@@ -78,6 +92,15 @@ const TestAdminPage = () => {
 }
 
 describe('advanced > ', () => {
+  // 각 테스트 전에 localStorage 초기화
+  beforeEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true,
+    })
+    localStorageMock.clear()
+  })
+
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
       render(<CartPage products={mockProducts} coupons={mockCoupons} />)
@@ -390,6 +413,45 @@ describe('advanced > ', () => {
 
       // 총액 계산
       expect(cartResult.current.cart[0].product.price * cartResult.current.cart[0].quantity).toBe(30000)
+    })
+
+    test('useLocalStorage 훅 테스트', () => {
+      // 1. 기본 동작 테스트
+      const { result: basicResult } = renderHook(() => useLocalStorage({ key: 'testKey', initialValue: 'test' }))
+      expect(basicResult.current[0]).toBe('test')
+
+      // 2. 값 업데이트 테스트
+      act(() => {
+        basicResult.current[1]('updated')
+      })
+      expect(basicResult.current[0]).toBe('updated')
+
+      // 3. 객체 데이터 테스트
+      const testObject = { name: 'test', value: 123 }
+      const { result: objectResult } = renderHook(() =>
+        useLocalStorage({
+          key: 'objectKey',
+          initialValue: testObject,
+        }),
+      )
+      expect(objectResult.current[0]).toEqual(testObject)
+
+      // 4. localStorage에서 값 불러오기 테스트
+      localStorageMock.getItem.mockReturnValue(JSON.stringify('savedValue'))
+      const { result: loadResult } = renderHook(() => useLocalStorage({ key: 'loadKey', initialValue: 'initial' }))
+      expect(loadResult.current[0]).toBe('savedValue')
+
+      // 5. 에러 처리 테스트
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      localStorageMock.getItem.mockImplementation(() => {
+        throw new Error('localStorage error')
+      })
+
+      const { result: errorResult } = renderHook(() => useLocalStorage({ key: 'errorKey', initialValue: 'fallback' }))
+      expect(errorResult.current[0]).toBe('fallback')
+      expect(consoleErrorSpy).toHaveBeenCalled()
+
+      consoleErrorSpy.mockRestore()
     })
   })
 })
