@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Discount, Product } from "../../../../types";
+import InputField from "../../../components/InputField";
 
 interface Props {
   products: Product[];
@@ -31,19 +32,9 @@ const ProductToggleButton = ({ products, onProductUpdate }: Props) => {
     setEditingProduct({ ...product });
   };
 
-  // 새로운 핸들러 함수 추가
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
+  const updateProductField = (field: keyof Product, value: any) => {
+    if (editingProduct) {
+      setEditingProduct({ ...editingProduct, [field]: value });
     }
   };
 
@@ -52,15 +43,6 @@ const ProductToggleButton = ({ products, onProductUpdate }: Props) => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
       setEditingProduct(null);
-    }
-  };
-
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
     }
   };
 
@@ -108,39 +90,23 @@ const ProductToggleButton = ({ products, onProductUpdate }: Props) => {
             <div className="mt-2">
               {editingProduct && editingProduct.id === product.id ? (
                 <div>
-                  <div className="mb-4">
-                    <label className="block mb-1">상품명: </label>
-                    <input
-                      type="text"
-                      value={editingProduct.name}
-                      onChange={(e) =>
-                        handleProductNameUpdate(product.id, e.target.value)
-                      }
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block mb-1">가격: </label>
-                    <input
-                      type="number"
-                      value={editingProduct.price}
-                      onChange={(e) =>
-                        handlePriceUpdate(product.id, parseInt(e.target.value))
-                      }
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block mb-1">재고: </label>
-                    <input
-                      type="number"
-                      value={editingProduct.stock}
-                      onChange={(e) =>
-                        handleStockUpdate(product.id, parseInt(e.target.value))
-                      }
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
+                  <InputField
+                    label="상품명"
+                    value={product.name}
+                    onChange={(e) => updateProductField("name", e.target.value)}
+                  />
+                  <InputField
+                    label="가격"
+                    value={product.price}
+                    type="number"
+                    onChange={(e) => updateProductField("price", parseFloat(e.target.value))}
+                  />
+                  <InputField
+                    label="재고"
+                    value={product.stock}
+                    type="number"
+                    onChange={(e) => updateProductField("stock", parseInt(e.target.value))}
+                  />
                   {/* 할인 정보 수정 부분 */}
                   <div>
                     <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
