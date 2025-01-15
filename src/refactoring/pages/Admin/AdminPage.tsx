@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { AddProduct } from '@/refactoring/pages/Admin/EditProduct/AddProduct';
-import { UpdateProduct } from '@/refactoring/pages/Admin/EditProduct/UpdateProduct';
+import { AddProduct } from '@/refactoring/pages/Admin/components/ProductManagement/AddProduct';
+import { UpdateProduct } from '@/refactoring/pages/Admin/components/ProductManagement/UpdateProduct';
 import type { Coupon, Product } from '@/types';
 
 interface Props {
