@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CartPage } from './components/CartPage.tsx';
 import { AdminPage } from './components/AdminPage.tsx';
 import { useCoupons, useProducts } from "./hooks";
-import { initialCoupons, initialProducts } from './models/cart.ts';
+import { initialCoupons, initialProducts } from './models/datas.ts';
 
 const App = () => {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
@@ -32,7 +32,10 @@ const App = () => {
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons}/>
+          <CartPage 
+            products={products} 
+            coupons={coupons}
+          />
         )}
       </main>
     </div>
