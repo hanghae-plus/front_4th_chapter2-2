@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
+import { validateCouponData, validateProductData } from '../../refactoring/utils/validateData';
 
 const mockProducts: Product[] = [
   {
@@ -229,16 +230,53 @@ describe('advanced > ', () => {
   });
 
   describe('추가된 테스트 코드', () => {
-    const testProduct: Product = {
-      id: "1",
-      name: "Test Product",
-      price: 100,
-      stock: 10,
-      discounts: [],
-    };
-    
-    describe('useLocalStorage > ', () => {
+    test('validateData', () => {
+      const validProduct = { name: '상품1', price: 10000, stock: 10 };
+      const invalidProduct1 = { name: '', price: 10000, stock: 10 };
+      const invalidProduct2 = { name: '상품2', price: -5000, stock: 10 };
+      const invalidProduct3 = { name: '상품3', price: 10000, stock: -5 };
 
+      expect(validateProductData(validProduct)).toBe(true);
+      expect(validateProductData(invalidProduct1)).toBe(false);
+      expect(validateProductData(invalidProduct2)).toBe(false);
+      expect(validateProductData(invalidProduct3)).toBe(false);
+
+      const validCoupon: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+      const invalidCoupon1: Coupon = {
+        name: '',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+      const invalidCoupon2: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: '',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+      const invalidCoupon3: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: -5,
+      };
+      const invalidCoupon4: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 110,
+      };
+
+      expect(validateCouponData(validCoupon)).toBe(true);
+      expect(validateCouponData(invalidCoupon1)).toBe(false);
+      expect(validateCouponData(invalidCoupon2)).toBe(false);
+      expect(validateCouponData(invalidCoupon3)).toBe(false);
+      expect(validateCouponData(invalidCoupon4)).toBe(false);
     });
   });
 });
