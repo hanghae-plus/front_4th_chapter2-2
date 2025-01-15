@@ -3,9 +3,9 @@ import { Discount, Product } from '../../types';
 
 export const useProductDiscount = (
   editingProduct: Product | null,
+  setEditingProduct: (product: Product) => void,
   productList: Product[],
   onProductUpdate: (updatedProduct: Product) => void,
-  setEditingProduct: (product: Product) => void,
 ) => {
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
 

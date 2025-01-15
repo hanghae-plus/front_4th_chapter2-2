@@ -1,11 +1,11 @@
 import { Discount, Product } from '../../types';
+import { useProductEdit } from '../hooks/useProductEdit';
 
 interface Props {
   product: Product;
-  productList: Product[];
-  editingProduct: Product;
-  setEditingProduct: (product: Product | null) => void;
-  onProductUpdate: (updatedProduct: Product) => void;
+  productEdit: ReturnType<typeof useProductEdit> & {
+    editingProduct: Product;
+  };
   newDiscount: Discount;
   onDiscountAdd: (productId: string) => void;
   onDiscountRemove: (productId: string, index: number) => void;
@@ -13,47 +13,14 @@ interface Props {
 }
 export default function EditingProduct({
   product,
-  productList,
-  editingProduct,
-  setEditingProduct,
-  onProductUpdate,
+  productEdit,
   newDiscount,
   onDiscountAdd,
   onDiscountRemove,
   onDiscountUpdate,
 }: Props) {
-  const updateStock = (productId: string, newStock: number) => {
-    const updatedProduct = productList.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const updateProductName = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const updatePrice = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 수정 완료 핸들러 함수 추가
-  const completeEditing = () => {
-    if (editingProduct) {
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-    }
-  };
+  const { editingProduct, updateProductName, updatePrice, updateStock, completeEditing } =
+    productEdit;
 
   return (
     <div>

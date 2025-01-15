@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Product } from '../../types';
 import { useProductDiscount } from '../hooks/useProductDiscount';
+import { useProductEdit } from '../hooks/useProductEdit';
 import { getProductTitle, isProductEditing } from '../utils/productUtils';
 import DiscountsWithModifyButton from './DiscountsWithModifyButton';
 import EditingProduct from './EditingProduct';
@@ -13,17 +13,12 @@ interface Props {
   onProductAdd: (newProduct: Product) => void;
 }
 export default function ProductManagement({ productList, onProductUpdate, onProductAdd }: Props) {
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  // handleEditProduct 함수 수정
-  const onProductEdit = (product: Product) => {
-    setEditingProduct({ ...product });
-  };
-
+  const productEdit = useProductEdit(onProductUpdate, productList);
   const { newDiscount, addDiscount, removeDiscount, updateDiscount } = useProductDiscount(
-    editingProduct,
+    productEdit.editingProduct,
+    productEdit.setEditingProduct,
     productList,
     onProductUpdate,
-    setEditingProduct,
   );
 
   return (
@@ -39,20 +34,20 @@ export default function ProductManagement({ productList, onProductUpdate, onProd
             className='bg-white p-4 rounded shadow'
           >
             <ProductAccordion id={product.id} title={getProductTitle(product)}>
-              {isProductEditing(editingProduct, product.id) ? (
+              {isProductEditing(productEdit.editingProduct, product.id) ? (
                 <EditingProduct
                   product={product}
-                  productList={productList}
-                  editingProduct={editingProduct}
-                  setEditingProduct={setEditingProduct}
-                  onProductUpdate={onProductUpdate}
+                  productEdit={{ ...productEdit, editingProduct: productEdit.editingProduct }}
                   newDiscount={newDiscount}
                   onDiscountAdd={addDiscount}
                   onDiscountRemove={removeDiscount}
                   onDiscountUpdate={updateDiscount}
                 />
               ) : (
-                <DiscountsWithModifyButton product={product} onProductEdit={onProductEdit} />
+                <DiscountsWithModifyButton
+                  product={product}
+                  onProductEdit={productEdit.updateProduct}
+                />
               )}
             </ProductAccordion>
           </div>
