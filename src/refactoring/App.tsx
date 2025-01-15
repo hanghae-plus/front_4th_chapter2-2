@@ -49,7 +49,7 @@ const initialCouponList: CouponType[] = [
 
 const App = () => {
   const { productList, updateProduct, addProduct } = useProducts(initialProductList);
-  const { coupons, addCoupon } = useCoupons(initialCouponList);
+  const { couponList, addCoupon } = useCoupons(initialCouponList);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
@@ -62,13 +62,13 @@ const App = () => {
         {isAdmin ? (
           <AdminPage
             productList={productList}
-            coupons={coupons}
+            couponList={couponList}
             onProductUpdate={updateProduct}
             onProductAdd={addProduct}
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage productList={productList} coupons={coupons} />
+          <CartPage productList={productList} couponList={couponList} />
         )}
       </main>
     </div>
