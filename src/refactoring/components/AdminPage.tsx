@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Coupon, Discount, Product } from "../../types.ts";
+import { toggleProductInSet } from "../models/product.ts";
 
 interface Props {
   products: Product[];
@@ -16,6 +17,8 @@ export const AdminPage = ({
   onProductAdd,
   onCouponAdd,
 }: Props) => {
+  // AdminPage의 관심사: 상품 관리, 쿠폰 관리 모두 관리/보여주기
+  // 바꾼다면?
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({
@@ -37,15 +40,7 @@ export const AdminPage = ({
   });
 
   const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
+    setOpenProductIds((prev) => toggleProductInSet(prev, productId));
   };
 
   // handleEditProduct 함수 수정
@@ -111,16 +106,6 @@ export const AdminPage = ({
     }
   };
 
-  const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: "",
-      code: "",
-      discountType: "percentage",
-      discountValue: 0,
-    });
-  };
-
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
     onProductAdd(productWithId);
@@ -131,6 +116,16 @@ export const AdminPage = ({
       discounts: [],
     });
     setShowNewProductForm(false);
+  };
+
+  const handleAddCoupon = () => {
+    onCouponAdd(newCoupon);
+    setNewCoupon({
+      name: "",
+      code: "",
+      discountType: "percentage",
+      discountValue: 0,
+    });
   };
 
   return (

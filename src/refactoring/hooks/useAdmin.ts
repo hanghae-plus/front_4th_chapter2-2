@@ -1,14 +1,15 @@
 import { useState } from "react";
 
 export const useAdmin = () => {
-  const [isAdmin, setIsAdmin] = useState(false); // 흠... 고민이군.
+  // App 컴포넌트의 관심사는 아니므로 분리.
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const handleChangeRole = () => {
+  const changeRole = () => {
     setIsAdmin(!isAdmin);
   };
 
   return {
     isAdmin,
-    handleChangeRole,
+    changeRole,
   };
 };

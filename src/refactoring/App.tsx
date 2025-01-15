@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { CartPage } from "./components/CartPage.tsx";
 import { AdminPage } from "./components/AdminPage.tsx";
 import { useCoupons, useProducts } from "./hooks";
@@ -11,11 +10,11 @@ const App = () => {
   // App의 관심사: products, coupons, isAdmin을 통해 모든 ui를 관리하면서 렌더링한다.
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
-  const { isAdmin, handleChangeRole } = useAdmin();
+  const { isAdmin, changeRole } = useAdmin();
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navigation isAdmin={isAdmin} onChangeRole={handleChangeRole} />
+      <Navigation isAdmin={isAdmin} onRoleChange={changeRole} />
       <main className="container mx-auto mt-6">
         {isAdmin ? (
           <AdminPage
