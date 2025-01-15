@@ -6,7 +6,7 @@ interface ProductFormProps {
   setNewProduct: React.Dispatch<React.SetStateAction<Omit<ProductType, 'id'>>>;
   handleAddNewProduct: () => void;
   showNewProductForm: boolean;
-  setShowNewProductForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowNewProductForm: (show: boolean) => void;
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
@@ -18,10 +18,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 }) => {
   const handleChange =
     (field: keyof Omit<ProductType, 'id'>) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setNewProduct({
-        ...newProduct,
-        [field]: e.target.type === 'number' ? parseInt(e.target.value) : e.target.value,
-      });
+      const value = e.target.type === 'number' ? parseInt(e.target.value) : e.target.value;
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
+        [field]: value,
+      }));
     };
 
   return (
@@ -41,6 +42,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             value={newProduct.name}
             type='text'
             onChange={handleChange('name')}
+            className='w-full p-2 border rounded mb-2'
           />
           <InputField
             id='productPrice'
@@ -48,6 +50,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             value={newProduct.price}
             type='number'
             onChange={handleChange('price')}
+            className='w-full p-2 border rounded mb-2'
           />
           <InputField
             id='productStock'
@@ -55,6 +58,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             value={newProduct.stock}
             type='number'
             onChange={handleChange('stock')}
+            className='w-full p-2 border rounded mb-2'
           />
           <button
             onClick={handleAddNewProduct}

@@ -37,17 +37,27 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
       <InputField
         id='discount-quantity'
         placeholder='수량'
-        value={newDiscount.quantity}
+        value={newDiscount.quantity || ''}
         type='number'
-        onChange={(e) => setNewDiscount({ ...newDiscount, quantity: parseInt(e.target.value) })}
+        onChange={(e) =>
+          setNewDiscount({
+            ...newDiscount,
+            quantity: e.target.value ? parseInt(e.target.value) : 0,
+          })
+        }
         className='w-1/3 p-2 border rounded'
       />
       <InputField
         id='discount-rate'
         placeholder='할인율 (%)'
-        value={newDiscount.rate * 100}
+        value={newDiscount.rate ? newDiscount.rate * 100 : ''}
         type='number'
-        onChange={(e) => setNewDiscount({ ...newDiscount, rate: parseInt(e.target.value) / 100 })}
+        onChange={(e) =>
+          setNewDiscount({
+            ...newDiscount,
+            rate: e.target.value ? parseInt(e.target.value) / 100 : 0,
+          })
+        }
         className='w-1/3 p-2 border rounded'
       />
       <button
