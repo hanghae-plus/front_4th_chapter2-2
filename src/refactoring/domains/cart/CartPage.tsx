@@ -1,3 +1,5 @@
+import { CartItemCard } from './components/CartItemCard';
+import CouponSelector from './components/CouponSelector';
 import { OrderSummary } from './components/OrderSummary';
 import { useCart } from './hooks/useCart';
 
@@ -91,7 +93,7 @@ export const CartPage = ({ products, coupons }: Props) => {
             {cart.map((item) => {
               const appliedDiscount = getAppliedDiscount(item);
               return (
-                <div key={item.product.id} className="flex justify-between items-center bg-white p-3 rounded shadow">
+                <CartItemCard key={item.product.id}>
                   <div>
                     <span className="font-semibold">{item.product.name}</span>
                     <br />
@@ -122,35 +124,12 @@ export const CartPage = ({ products, coupons }: Props) => {
                       삭제
                     </button>
                   </div>
-                </div>
+                </CartItemCard>
               );
             })}
           </div>
 
-          <div className="mt-6 bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">쿠폰 적용</h2>
-            <select
-              onChange={(e) => applyCoupon(coupons[parseInt(e.target.value)])}
-              className="w-full p-2 border rounded mb-2"
-            >
-              <option value="">쿠폰 선택</option>
-              {coupons.map((coupon, index) => (
-                <option key={coupon.code} value={index}>
-                  {coupon.name} -{' '}
-                  {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
-                </option>
-              ))}
-            </select>
-            {selectedCoupon && (
-              <p className="text-green-600">
-                적용된 쿠폰: {selectedCoupon.name}(
-                {selectedCoupon.discountType === 'amount'
-                  ? `${selectedCoupon.discountValue}원`
-                  : `${selectedCoupon.discountValue}%`}{' '}
-                할인)
-              </p>
-            )}
-          </div>
+          <CouponSelector coupons={coupons} selectedCoupon={selectedCoupon} onApplyCoupon={applyCoupon} />
 
           <OrderSummary
             totalBeforeDiscount={totalBeforeDiscount}
