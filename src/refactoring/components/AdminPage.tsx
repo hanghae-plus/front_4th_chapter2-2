@@ -4,6 +4,7 @@ import { AdminNewProduct } from './admin/AdminNewProduct.tsx';
 import { AdminProductList } from './admin/AdminProductList.tsx';
 import { AdminNewCoupon } from './admin/AdminNewCoupon.tsx';
 import { AdminCouponList } from './admin/AdminCouponList.tsx';
+import { AdminCouponManagementWrapper } from './admin/AdminCouponManagementWrapper.tsx';
 
 interface Props {
   productList: Product[];
@@ -28,13 +29,10 @@ export const AdminPage = ({
           <AdminNewProduct onProductAdd={onProductAdd} />
           <AdminProductList onProductUpdate={onProductUpdate} productList={productList} />
         </AdminProductManagementWrapper>
-        <div>
-          <h2 className='text-2xl font-semibold mb-4'>쿠폰 관리</h2>
-          <div className='bg-white p-4 rounded shadow'>
-            <AdminNewCoupon onCouponAdd={onCouponAdd} />
-            <AdminCouponList couponList={couponList} />
-          </div>
-        </div>
+        <AdminCouponManagementWrapper>
+          <AdminNewCoupon onCouponAdd={onCouponAdd} />
+          <AdminCouponList couponList={couponList} />
+        </AdminCouponManagementWrapper>
       </div>
     </div>
   );
