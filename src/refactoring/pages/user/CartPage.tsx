@@ -1,13 +1,9 @@
-import { CartItem, Coupon, Product } from '../../shared/types/types.ts';
+import { CartItem, Product } from '../../shared/types/types.ts';
 import { useCart } from '../../hooks/index.ts';
 import CartSummaryWidget from '../../widgets/user/CartSummaryWidget.tsx';
 import ProductListWidget from '../../widgets/user/ProductListWidget.tsx';
 
-interface Props {
-  products: Product[];
-}
-
-export const CartPage = ({ products }: Props) => {
+export const CartPage = () => {
   const { cart, addToCart, removeFromCart, updateQuantity, calculateTotal } = useCart();
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
@@ -39,7 +35,6 @@ export const CartPage = ({ products }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 상품 목록 위젯 */}
         <ProductListWidget
-          products={products}
           onAddToCart={addToCart}
           getRemainingStock={getRemainingStock}
           getMaxDiscount={getMaxDiscount}

@@ -1,11 +1,10 @@
 import CartList from '../../features/cart/CartList';
 import OrderSummary from '../../features/cart/OrderSummary';
 import CouponSelector from '../../features/coupons/CouponSelector';
-import { CartItem, Coupon } from '../../shared/types/types';
+import { CartItem } from '../../shared/types/types';
 
 interface CartSummaryWidgetProps {
   cart: CartItem[];
-
   totalBeforeDiscount: number;
   totalAfterDiscount: number;
   totalDiscount: number;
@@ -17,7 +16,6 @@ interface CartSummaryWidgetProps {
 const CartSummaryWidget = (props: CartSummaryWidgetProps) => {
   const {
     cart,
-
     totalBeforeDiscount,
     totalAfterDiscount,
     totalDiscount,

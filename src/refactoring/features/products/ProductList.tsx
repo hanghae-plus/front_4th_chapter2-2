@@ -1,15 +1,15 @@
+import { useProductStore } from '../../entities/product/model/useProductStore';
 import { Product } from '../../shared/types/types';
 
 interface ProductListProps {
-  products: Product[];
   onAddToCart: (product: Product) => void;
   getRemainingStock: (product: Product) => number;
   getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
 function ProductList(props: ProductListProps) {
-  const { products, onAddToCart, getRemainingStock, getMaxDiscount } = props;
-
+  const { onAddToCart, getRemainingStock, getMaxDiscount } = props;
+  const { products } = useProductStore();
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
