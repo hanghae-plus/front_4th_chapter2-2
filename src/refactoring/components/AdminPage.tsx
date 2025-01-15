@@ -1,11 +1,7 @@
 import { useState } from 'react';
 
 import { Coupon, Discount, Product } from '../../types.ts';
-import {
-  validateCouponData,
-  validateDiscount,
-  validateProductData,
-} from '../utils/validateData.ts';
+import { useAdmin } from '../hooks/useAdmin.ts';
 
 interface Props {
   products: Product[];
@@ -23,6 +19,8 @@ export const AdminPage = ({
   onCouponAdd,
 }: Props) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+  const [showNewProductForm, setShowNewProductForm] = useState(false);
+
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
   const [newCoupon, setNewCoupon] = useState<Coupon>({
@@ -31,12 +29,18 @@ export const AdminPage = ({
     discountType: 'percentage',
     discountValue: 0,
   });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     price: 0,
     stock: 0,
     discounts: [],
+  });
+
+  const { updateProduct, addProduct, addCoupon, addDiscount, removeDiscount } = useAdmin({
+    products,
+    onProductUpdate,
+    onProductAdd,
+    onCouponAdd,
   });
 
   const toggleProductAccordion = (productId: string) => {
@@ -59,116 +63,86 @@ export const AdminPage = ({
 
   const handleProductNameUpdate = (productId: string, newName: string) => {
     if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-
-      setEditingProduct(updatedProduct);
+      setEditingProduct({ ...editingProduct, name: newName });
     }
   };
 
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
+      setEditingProduct({ ...editingProduct, price: newPrice });
+    }
+  };
 
-      setEditingProduct(updatedProduct);
+  const handleStockUpdate = (productId: string, newStock: number) => {
+    if (editingProduct && editingProduct.id === productId) {
+      setEditingProduct({ ...editingProduct, stock: newStock });
     }
   };
 
   const handleEditComplete = () => {
     if (editingProduct) {
-      const productToValidate = {
-        name: editingProduct.name,
-        price: editingProduct.price,
-        stock: editingProduct.stock,
-      };
+      const success = updateProduct(editingProduct);
 
-      if (!validateProductData(productToValidate)) {
-        return;
+      if (success) {
+        setEditingProduct(null);
       }
-
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-    }
-  };
-
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
     }
   };
 
   const handleAddDiscount = (productId: string) => {
-    if (!validateDiscount(newDiscount.quantity, newDiscount.rate * 100)) {
-      return;
-    }
+    const success = addDiscount(productId, newDiscount);
 
-    const updatedProduct = products.find((p) => p.id === productId);
+    if (success) {
+      const updatedProduct = products.find((p) => p.id === productId);
 
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
-      };
-
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+      setEditingProduct({
+        ...updatedProduct!,
+        discounts: [...updatedProduct!.discounts, newDiscount],
+      });
       setNewDiscount({ quantity: 0, rate: 0 });
     }
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const success = removeDiscount(productId, index);
 
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
+    if (success) {
+      const updatedProduct = products.find((p) => p.id === productId);
 
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+      if (updatedProduct) {
+        setEditingProduct({
+          ...updatedProduct,
+          discounts: updatedProduct.discounts.filter((_, i) => i !== index),
+        });
+      }
     }
   };
 
   const handleAddCoupon = () => {
-    if (!validateCouponData(newCoupon)) {
-      return;
-    }
+    const success = addCoupon(newCoupon);
 
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
+    if (success) {
+      setNewCoupon({
+        name: '',
+        code: '',
+        discountType: 'percentage',
+        discountValue: 0,
+      });
+    }
   };
 
   const handleAddNewProduct = () => {
-    if (
-      !validateProductData({
-        name: newProduct.name,
-        price: newProduct.price,
-        stock: newProduct.stock,
-      })
-    ) {
-      return;
+    const success = addProduct(newProduct);
+
+    if (success) {
+      setNewProduct({
+        name: '',
+        price: 0,
+        stock: 0,
+        discounts: [],
+      });
+      setShowNewProductForm(false);
     }
-
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-
-    onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
   };
 
   return (
