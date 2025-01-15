@@ -1,5 +1,11 @@
-import { CartItem, Coupon, Product } from "../../../types.ts";
+import { Coupon, Product } from "../../../types.ts";
 import { useCart } from "../../hooks";
+import {
+  getAppliedDiscount,
+  getMaxDiscount,
+  getRemainingStock,
+} from "../../models/cart.ts";
+
 import { CartItemCard } from "./CartItemCard.tsx";
 import { CartProductCard } from "./CartProductCard.tsx";
 
@@ -19,29 +25,8 @@ export const CartPage = ({ products, coupons }: Props) => {
     selectedCoupon,
   } = useCart();
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
     calculateTotal();
-
-  const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -54,7 +39,7 @@ export const CartPage = ({ products, coupons }: Props) => {
               <CartProductCard
                 key={product.id}
                 product={product}
-                remainingStock={getRemainingStock(product)}
+                remainingStock={getRemainingStock(cart, product)}
                 maxDiscount={getMaxDiscount(product.discounts)}
                 addToCart={addToCart}
               />
@@ -63,7 +48,6 @@ export const CartPage = ({ products, coupons }: Props) => {
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-
           <div className="space-y-2">
             {cart.map((item) => {
               return (
@@ -97,8 +81,8 @@ export const CartPage = ({ products, coupons }: Props) => {
               <p className="text-green-600">
                 적용된 쿠폰: {selectedCoupon.name}(
                 {selectedCoupon.discountType === "amount"
-                  ? `${selectedCoupon.discountValue}원`
-                  : `${selectedCoupon.discountValue}%`}{" "}
+                  ? `${selectedCoupon.discountValue}원 `
+                  : `${selectedCoupon.discountValue}% `}
                 할인)
               </p>
             )}
