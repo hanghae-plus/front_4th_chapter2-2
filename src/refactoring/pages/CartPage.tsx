@@ -1,9 +1,9 @@
 import { Coupon, Product } from '../../types';
 import { useCart } from '../hooks';
-import { ProductList } from './ProductList';
-import { CartList } from './CartList';
-import { CouponSelector } from './CouponSeletor';
-import { OrderSummary } from './OrderSummary';
+import { ProductList } from '../components/ProductList';
+import { CartList } from '../components/CartList';
+import { CouponSelector } from '../components/CouponSeletor';
+import { OrderSummary } from '../components/OrderSummary';
 
 interface Props {
   productList: Product[];
@@ -19,12 +19,8 @@ export const CartPage = ({ productList, couponList }: Props) => {
     applyCoupon,
     calculateTotal,
     selectedCoupon,
+    getRemainingStock,
   } = useCart();
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 

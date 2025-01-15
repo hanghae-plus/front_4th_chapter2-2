@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { CartPage } from './components/CartPage';
-import { AdminPage } from './components/AdminPage';
+import { CartPage } from './pages/CartPage';
+import { AdminPage } from './pages/AdminPage';
 import { Coupon, Product } from '../types';
 import { useCoupons, useProducts } from './hooks';
 
