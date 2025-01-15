@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Product } from '../../models/types/Product';
 
-const useEditProduct = () => {
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+type Arguments = {
+  currentProduct: Product;
+};
+const useEditProduct = ({ currentProduct }: Arguments) => {
+  const [editingProduct, setEditingProduct] = useState<Product>(currentProduct);
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
@@ -35,7 +38,6 @@ const useEditProduct = () => {
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = (onEdit: (product: Product) => void) => {
     if (editingProduct) {
-      setEditingProduct(null);
       onEdit(editingProduct);
     }
   };
