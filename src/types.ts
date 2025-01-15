@@ -16,6 +16,12 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface Membership {
+  name: string;
+  code: string;
+  discountValue: number;
+}
+
 export interface Coupon {
   name: string;
   code: string;

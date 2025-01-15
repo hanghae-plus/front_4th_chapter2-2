@@ -7,8 +7,8 @@ export const useProducts = (initialProducts: Product[]) => {
 
   const addProduct = usePreservedCallback((product: Product) => {
     setProducts((prev) => {
-      if (isExistProduct(prev, product)) return prev;
-      return [...prev, product];
+      const exist = prev.some((current) => current.id === product.id);
+      return exist ? prev : [...prev, product];
     });
   });
 
@@ -22,9 +22,4 @@ export const useProducts = (initialProducts: Product[]) => {
     addProduct,
     updateProduct,
   };
-};
-
-// Utils
-const isExistProduct = (products: Product[], product: Product) => {
-  return products.some((current) => current.id === product.id);
 };
