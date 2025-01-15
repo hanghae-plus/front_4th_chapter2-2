@@ -1,5 +1,6 @@
 import { CartItem, Coupon, Product } from '@/shared/types/';
 import { useCart } from '@/features/hooks';
+import { getMaxDiscount } from '@/entities/cart';
 
 interface Props {
   products: Product[];
@@ -8,10 +9,6 @@ interface Props {
 
 export function CartPage({ products, coupons }: Props) {
   const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
-
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
 
   const getRemainingStock = (product: Product) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
