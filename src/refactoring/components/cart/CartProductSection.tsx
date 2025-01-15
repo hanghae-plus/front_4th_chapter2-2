@@ -3,6 +3,7 @@ import { CartItem, Product } from "../../../types.ts";
 
 import { getMaxDiscount, getRemainingStock } from "../../models/cart.ts";
 import { CartProductCard } from "./CartProductCard.tsx";
+import { SectionHeader } from "../shared/SectionHeader.tsx";
 
 interface Props {
   products: Product[];
@@ -13,7 +14,7 @@ interface Props {
 const CartProductSection = ({ products, cart, addToCart }: Props) => {
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
+      <SectionHeader mb={4}>장바구니 목록</SectionHeader>
       <div className="space-y-2">
         {products.map((product) => (
           <CartProductCard

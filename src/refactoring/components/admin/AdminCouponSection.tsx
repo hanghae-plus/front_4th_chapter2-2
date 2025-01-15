@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Coupon } from "../../../types";
+import { CouponCard } from "./CouponCard";
+import { SectionHeader } from "../shared";
 
 interface Props {
   coupons: Coupon[];
@@ -26,7 +28,7 @@ const AdminCouponSection = ({ coupons, onCouponAdd }: Props) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
+      <SectionHeader mb={4}>쿠폰 관리</SectionHeader>
       <div className="bg-white p-4 rounded shadow">
         <div className="space-y-2 mb-4">
           <input
@@ -85,17 +87,7 @@ const AdminCouponSection = ({ coupons, onCouponAdd }: Props) => {
           <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>
           <div className="space-y-2">
             {coupons.map((coupon, index) => (
-              <div
-                key={index}
-                data-testid={`coupon-${index + 1}`}
-                className="bg-gray-100 p-2 rounded"
-              >
-                {coupon.name} ({coupon.code}):
-                {coupon.discountType === "amount"
-                  ? `${coupon.discountValue}원`
-                  : `${coupon.discountValue}%`}{" "}
-                할인
-              </div>
+              <CouponCard coupon={coupon} index={index} />
             ))}
           </div>
         </div>

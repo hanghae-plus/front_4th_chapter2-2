@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NewProduct, NewProductCard } from "./NewProductCard";
 import { AdminProductCard } from "./AdminProductCard";
 import { Product } from "../../../types";
+import { SectionHeader } from "../shared";
 
 interface Props {
   products: Product[];
@@ -22,7 +23,7 @@ const AdminProductSection = ({
   };
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
+      <SectionHeader mb={4}>상품 관리</SectionHeader>
       <button
         onClick={() => setShowNewProductForm(!showNewProductForm)}
         className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
