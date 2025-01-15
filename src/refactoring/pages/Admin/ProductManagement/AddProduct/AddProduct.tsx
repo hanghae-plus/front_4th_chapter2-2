@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { InputFieldWithLabel } from '@/refactoring/pages/Admin/ProductManagement/AddProduct/ui/InputFieldWithLabel';
 import type { Product } from '@/types';
 
 interface AddProductProps {
@@ -43,42 +44,36 @@ export const AddProduct = ({ onProductAdd }: AddProductProps) => {
           <h3 className="mb-2 text-xl font-semibold">새 상품 추가</h3>
 
           <div className="mb-2">
-            <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
-              상품명
-            </label>
-            <input
+            <InputFieldWithLabel
               id="productName"
               type="text"
               value={newProduct.name}
               onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
-              className="w-full rounded border p-2"
-            />
+            >
+              상품명
+            </InputFieldWithLabel>
           </div>
 
           <div className="mb-2">
-            <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">
-              가격
-            </label>
-            <input
+            <InputFieldWithLabel
               id="productPrice"
               type="number"
               value={newProduct.price}
               onChange={e => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
-              className="w-full rounded border p-2"
-            />
+            >
+              가격
+            </InputFieldWithLabel>
           </div>
 
           <div className="mb-2">
-            <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">
-              재고
-            </label>
-            <input
+            <InputFieldWithLabel
               id="productStock"
               type="number"
               value={newProduct.stock}
               onChange={e => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
-              className="w-full rounded border p-2"
-            />
+            >
+              재고
+            </InputFieldWithLabel>
           </div>
 
           <button onClick={handleAddNewProduct} className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600">
