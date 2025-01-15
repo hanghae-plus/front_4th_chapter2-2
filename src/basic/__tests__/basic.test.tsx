@@ -12,9 +12,9 @@ import { CartItem, Coupon, Product } from "../../types";
 import { useCoupons, useProducts } from "../../refactoring/hooks";
 import { AdminPage } from "../../origin/components/AdminPage";
 import { CartPage } from "../../origin/components/CartPage";
-import { useDiscountCalculator } from "../../refactoring/pages/admin/hooks/useDiscountCalculator";
-import { useCart } from "../../refactoring/pages/admin/hooks/useCart";
-import * as cartUtils from "../../refactoring/pages/admin/models/cart";
+import { useDiscountCalculator } from "../../refactoring/pages/cart/hooks/useDiscountCalculator";
+import { useCart } from "../../refactoring/pages/cart/hooks/useCart";
+import * as cartUtils from "../../refactoring/pages/cart/models/cart";
 
 const mockProducts: Product[] = [
   {
