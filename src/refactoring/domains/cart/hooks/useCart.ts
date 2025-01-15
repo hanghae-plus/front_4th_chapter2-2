@@ -1,38 +1,36 @@
-import { useState } from 'react';
-
+import { useLocalStorage } from '../../../hooks';
 import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../../../models/cart';
 
 import type { CartItem, Coupon, Product } from '../../../../types';
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const { storageItem: cart, setItem: setCart } = useLocalStorage<CartItem[]>('cart', []);
+  const { storageItem: selectedCoupon, setItem: setSelectedCoupon } = useLocalStorage<Coupon | null>(
+    'selectedCoupon',
+    null,
+  );
 
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(product, cart);
     if (remainingStock <= 0) return;
 
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.product.id === product.id);
-      if (existingItem) {
-        return prevCart.map((item) =>
+    const updatedCart = cart.find((item) => item.product.id === product.id)
+      ? cart.map((item) =>
           item.product.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) } : item,
-        );
-      }
-      return [...prevCart, { product, quantity: 1 }];
-    });
+        )
+      : [...cart, { product, quantity: 1 }];
+
+    setCart(updatedCart);
   };
 
   const removeFromCart = (productId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
+    const updatedCart = cart.filter((item) => item.product.id !== productId);
+    setCart(updatedCart);
   };
 
   const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart((prev) => {
-      const updateCart = updateCartItemQuantity(prev, productId, newQuantity);
-
-      return updateCart;
-    });
+    const updatedCart = updateCartItemQuantity(cart, productId, newQuantity);
+    setCart(updatedCart);
   };
 
   const applyCoupon = (coupon: Coupon) => {

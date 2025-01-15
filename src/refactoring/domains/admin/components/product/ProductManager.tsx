@@ -25,9 +25,10 @@ export const ProductManager = ({ products, onProductUpdate, onProductAdd }: Prod
       <button onClick={toggleProductForm} className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600">
         {showNewProductForm ? '취소' : '새 상품 추가'}
       </button>
+      {/* 상품 추가 폼 */}
       {showNewProductForm && <ProductForm onProductAdd={onProductAdd} onToggleShowProductForm={toggleProductForm} />}
-      {/* 상품 목록 */}
       <div className="space-y-2">
+        {/* 상품 목록 */}
         {products.map((product, index) => (
           <div key={product.id} data-testid={`product-${index + 1}`} className="bg-white p-4 rounded shadow">
             <ProductItemContainer

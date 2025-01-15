@@ -24,7 +24,6 @@ export const CartPage = ({ products, coupons }: Props) => {
           ))}
         </div>
       </Section>
-
       <Section title="장바구니 내역">
         <div className="space-y-2">
           {cart.map((item) => {
@@ -36,9 +35,9 @@ export const CartPage = ({ products, coupons }: Props) => {
             );
           })}
         </div>
-
+        {/* 쿠폰 적용 */}
         <CouponSelector coupons={coupons} selectedCoupon={selectedCoupon} onApplyCoupon={applyCoupon} />
-
+        {/* 주문요약 */}
         <OrderSummary
           totalBeforeDiscount={totalBeforeDiscount}
           totalDiscount={totalDiscount}
