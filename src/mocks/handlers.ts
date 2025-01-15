@@ -3,7 +3,7 @@ import mockProducts from "./data/products.json";
 import mockCoupons from "./data/coupons.json";
 import mockCartItems from "./data/cartItems.json";
 import { getHandlers } from "./utils/mockUtil";
-import { API } from "../const";
+import { API } from "../refactoring/hooks";
 
 export const handlers = [
   ...getHandlers<Product>(API.PRODUCT, mockProducts as Product[]),
