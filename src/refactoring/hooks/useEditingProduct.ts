@@ -13,5 +13,5 @@ export const useEditingProduct = () => {
     }
   };
 
-  return { editingProduct, startEditing, stopEditing, updateProductField};
+  return { editingProduct, startEditing, stopEditing, updateProductField, setEditingProduct };
 };

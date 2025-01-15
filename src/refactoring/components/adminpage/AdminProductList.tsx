@@ -1,51 +1,27 @@
 import { useState } from "react";
-import { Product, Discount, AdminProductListProps } from "../../../types";
+import { Product, AdminProductListProps } from "../../../types";
 import { ProductForm } from "./AdminProductForm";
+import { useProductAccordion } from "../../hooks/useProductAccordion";
+import { useEditingProduct } from "../../hooks/useEditingProduct";
+import { useDiscounts } from "../../hooks/useDiscounts";
+import { updateProduct, filterDiscounts } from "../../utils/productUtils";
 
 export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminProductListProps) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
+  const { openProductIds, toggleProductAccordion } = useProductAccordion();
+  const { editingProduct, startEditing, stopEditing, updateProductField, setEditingProduct } = useEditingProduct();
+  const { newDiscount, setNewDiscount, addDiscount, removeDiscount } = useDiscounts();
   
+  const [showNewProductForm, setShowNewProductForm] = useState(false);
   // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({...product});
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
+  const handleProductAdd = (newProduct: Product) => {
+    onProductAdd(newProduct);
   };
 
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
-      setEditingProduct(null);
+      stopEditing();
     }
   };
 
@@ -53,38 +29,34 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminPr
     const updatedProduct = products.find(p => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
+      // 이 부분에서 onProductUpdate 호출
       onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+      setEditingProduct(newProduct); // 수정된 제품을 state로 반영
     }
   };
 
   const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find(p => p.id === productId);
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount]
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
-    }
+    const updatedProduct = updateProduct(
+      products.find(p => p.id === productId)!,
+      { discounts: addDiscount(
+          products.find(p => p.id === productId)!.discounts, 
+          newDiscount
+        ) 
+      }
+    );
+    onProductUpdate(updatedProduct);
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find(p => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index)
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  const handleProductAdd = (newProduct: Product) => {
-    onProductAdd(newProduct);
+    const updatedProduct = updateProduct(
+      products.find(p => p.id === productId)!,
+      { discounts: removeDiscount(
+          products.find(p => p.id === productId)!.discounts, 
+          index
+        )
+      }
+    );
+    onProductUpdate(updatedProduct);
   };
 
   return (
@@ -119,7 +91,7 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminPr
                         id="productName"
                         type="text"
                         value={editingProduct.name}
-                        onChange={(e) => handleProductNameUpdate(product.id, e.target.value)}
+                        onChange={(e) => updateProductField("name", e.target.value)}
                         className="w-full p-2 border rounded"
                       />
                     </div>
@@ -129,7 +101,7 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminPr
                         id="productPrice"
                         type="number"
                         value={editingProduct.price}
-                        onChange={(e) => handlePriceUpdate(product.id, parseInt(e.target.value))}
+                        onChange={(e) => updateProductField("price", parseInt(e.target.value))}
                         className="w-full p-2 border rounded"
                       />
                     </div>
@@ -196,7 +168,7 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminPr
                     ))}
                     <button
                       data-testid="modify-button"
-                      onClick={() => handleEditProduct(product)}
+                      onClick={() => startEditing(product)}
                       className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
                     >
                       수정
