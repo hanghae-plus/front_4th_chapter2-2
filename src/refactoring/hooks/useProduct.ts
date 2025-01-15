@@ -12,18 +12,19 @@ export const useProducts = (initialProducts: Product[]) => {
 
   // 상품 업데이트
   const updateProduct = (product: Product) => {
-    const findIndex = products.findIndex(prod => prod.id === product.id);
-    const copyProducts = [...products];
-    copyProducts[findIndex] = product;
-    setProducts(copyProducts);
-  }
+    setProducts((prevProducts) =>
+      prevProducts.map((prod) =>   
+        prod.id === product.id ? { ...prod, stock: product.stock } : prod
+      )
+    );
+  };
 
   // 상품 추가
   const addProduct = (product: Product) => setProducts([...products, product])
 
   return {
-    products: products, 
-    updateProduct: updateProduct,
-    addProduct: addProduct
+    products, 
+    updateProduct,
+    addProduct
   };
 };
