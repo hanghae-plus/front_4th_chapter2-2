@@ -108,7 +108,15 @@ export const CartPage = ({ products, coupons }: Props) => {
     setSelectedCoupon(coupon);
   };
 
-  const changeQuantityBtn = (content: string, itemId: string, newQuantity: number) => {
+  const ChangeQuantityBtn = ({
+    content,
+    itemId,
+    newQuantity,
+  }: {
+    content: string;
+    itemId: string;
+    newQuantity: number;
+  }) => {
     return (
       <button
         onClick={() => updateQuantity(itemId, newQuantity)}
@@ -198,8 +206,8 @@ export const CartPage = ({ products, coupons }: Props) => {
                     </span>
                   </div>
                   <div>
-                    {changeQuantityBtn('-', itemId, itemQnt - 1)}
-                    {changeQuantityBtn('+', itemId, itemQnt + 1)}
+                    <ChangeQuantityBtn content="-" itemId={itemId} newQuantity={itemQnt - 1} />
+                    <ChangeQuantityBtn content="+" itemId={itemId} newQuantity={itemQnt + 1} />
                     <button
                       onClick={() => removeFromCart(itemId)}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
