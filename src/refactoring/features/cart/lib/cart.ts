@@ -1,4 +1,4 @@
-import { CartItem, Coupon, Product } from '../../types';
+import { CartItem, Coupon, Product } from '../../../../types.ts';
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
   return item.product.discounts

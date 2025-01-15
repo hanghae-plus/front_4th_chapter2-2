@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { CartPage } from './components/CartPage';
-import { AdminPage } from './components/AdminPage';
+
 import { Coupon, Product } from '../types';
-import { useCoupons, useProducts } from './hooks';
+import { AdminPage } from './pages/admin/ui';
+import { CartPage } from './pages/cart/ui';
+import { useCoupons } from './features/coupon/model/useCoupon';
+import { useProducts } from './features/product/model/useProduct';
 
 const initialProducts: Product[] = [
   {
@@ -60,7 +62,7 @@ function App() {
             onClick={() => setIsAdmin(!isAdmin)}
             className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-blue-100"
           >
-            {isAdmin ? '장바구니 페이지로' : '관리자 페이지로'}
+            {isAdmin ? '장바구니 페이지로' : '관리자 페이지로'}`1
           </button>
         </div>
       </nav>

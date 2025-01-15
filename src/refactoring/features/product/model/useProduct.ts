@@ -1,15 +1,5 @@
 import { useState } from 'react';
-import { Product } from '../../types';
-
-/**
- export interface Product {
- id: string;
- name: string;
- price: number;
- stock: number;
- discounts: Discount[];
- }
- */
+import { Product } from '../../../../types.ts';
 
 export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
