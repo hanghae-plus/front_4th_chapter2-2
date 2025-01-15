@@ -1,24 +1,18 @@
 import { CartItem } from 'src/types';
+import { getAppliedDiscount } from '../models/cart';
 
 interface CartListProps {
   cart: CartItem[];
   updateQuantity: (productId: string, newQuantity: number) => void;
   removeFromCart: (productId: string) => void;
-  getAppliedDiscount: (item: CartItem) => number;
 }
 
-export const CartList = ({
-  cart,
-  updateQuantity,
-  removeFromCart,
-  getAppliedDiscount,
-}: CartListProps) => (
+export const CartList = ({ cart, updateQuantity, removeFromCart }: CartListProps) => (
   <div>
     <h2 className='text-2xl font-semibold mb-4'>장바구니 내역</h2>
 
     <div className='space-y-2'>
       {cart.map((item) => {
-        // 원래 지웠다가 다시 만든 이유는? 2번 중복 호출이 되므로
         const appliedDiscount = getAppliedDiscount(item);
         return (
           <div

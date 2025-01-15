@@ -1,26 +1,18 @@
-// useCart.ts
 import { useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types';
-import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
+import {
+  calculateRemainingStock,
+  calculateCartTotal,
+  updateCartItemQuantity,
+} from '../models/cart';
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
-  // 항목의 남은 재고 확인
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
-  // 항목의 최대 할인율
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
   // 장바구니 항목 추가
   const addToCart = (product: Product) => {
-    const remainingStock = getRemainingStock(product);
+    const remainingStock = calculateRemainingStock(cart, product);
     if (remainingStock <= 0) return;
 
     setCart((prevCart) => {
@@ -46,19 +38,6 @@ export const useCart = () => {
     setSelectedCoupon(coupon);
   };
 
-  // 장바구니에 담긴 항목의 할인 적용 값 계산
-  const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
-
   return {
     cart,
     addToCart,
@@ -73,8 +52,5 @@ export const useCart = () => {
       return calculateCartTotal(cart, selectedCoupon);
     },
     selectedCoupon,
-    getRemainingStock,
-    getMaxDiscount,
-    getAppliedDiscount,
   };
 };

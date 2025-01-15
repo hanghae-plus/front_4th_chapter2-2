@@ -1,23 +1,18 @@
-import { Product } from '../../types';
+import { Product, CartItem } from '../../types';
+import { calculateRemainingStock, calculateMaxDiscount } from '../models/cart';
 
 interface ProductListProps {
   productList: Product[];
+  cart: CartItem[];
   addToCart: (product: Product) => void;
-  getRemainingStock: (product: Product) => number;
-  getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
-export const ProductList = ({
-  productList,
-  addToCart,
-  getRemainingStock,
-  getMaxDiscount,
-}: ProductListProps) => (
+export const ProductList = ({ productList, cart, addToCart }: ProductListProps) => (
   <div>
     <h2 className='text-2xl font-semibold mb-4'>상품 목록</h2>
     <div className='space-y-2'>
       {productList.map((product) => {
-        const remainingStock = getRemainingStock(product);
+        const remainingStock = calculateRemainingStock(cart, product);
         return (
           <div
             key={product.id}
@@ -36,7 +31,7 @@ export const ProductList = ({
               </span>
               {product.discounts.length > 0 && (
                 <span className='ml-2 font-medium text-blue-600'>
-                  최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
+                  최대 {(calculateMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
                 </span>
               )}
             </div>
