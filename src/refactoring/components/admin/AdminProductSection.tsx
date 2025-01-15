@@ -9,7 +9,11 @@ interface Props {
   onProductAdd: (newProduct: Product) => void;
 }
 
-const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
+const AdminProductSection = ({
+  products,
+  onProductUpdate,
+  onProductAdd,
+}: Props) => {
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   const addNewProduct = (newProduct: NewProduct) => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
@@ -40,4 +44,4 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
   );
 };
 
-export default React.memo(ProductSection);
+export default React.memo(AdminProductSection);

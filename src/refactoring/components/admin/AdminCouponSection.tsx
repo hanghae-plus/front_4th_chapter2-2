@@ -6,7 +6,7 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-const CouponSection = ({ coupons, onCouponAdd }: Props) => {
+const AdminCouponSection = ({ coupons, onCouponAdd }: Props) => {
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: "",
     code: "",
@@ -104,4 +104,4 @@ const CouponSection = ({ coupons, onCouponAdd }: Props) => {
   );
 };
 
-export default React.memo(CouponSection);
+export default React.memo(AdminCouponSection);

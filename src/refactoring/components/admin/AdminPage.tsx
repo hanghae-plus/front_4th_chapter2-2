@@ -1,6 +1,6 @@
 import { Coupon, Product } from "../../../types.ts";
-import ProductSection from "./ProductSection.tsx";
-import CouponSection from "./CouponSection.tsx";
+import AdminProductSection from "./AdminProductSection.tsx";
+import AdminCouponSection from "./AdminCouponSection.tsx";
 
 interface Props {
   products: Product[];
@@ -21,12 +21,12 @@ export const AdminPage = ({
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProductSection
+        <AdminProductSection
           products={products}
           onProductUpdate={onProductUpdate}
           onProductAdd={onProductAdd}
         />
-        <CouponSection coupons={coupons} onCouponAdd={onCouponAdd} />
+        <AdminCouponSection coupons={coupons} onCouponAdd={onCouponAdd} />
       </div>
     </div>
   );

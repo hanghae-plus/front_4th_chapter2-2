@@ -1,5 +1,5 @@
 export * from "./AdminPage";
 export * from "./AdminProductCard";
-export * from "./CouponSection";
+export * from "./AdminCouponSection";
 export * from "./NewProductCard";
-export * from "./ProductSection";
+export * from "./AdminProductSection";
