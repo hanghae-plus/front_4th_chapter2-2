@@ -5,27 +5,23 @@ import { CartItem, Coupon, Product } from '../../types';
 import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../models/cart';
 
 export const useCart = () => {
-  const { saveToStorage, getFromStorage, clearStorage } = useLocalStorage();
+  const { saveToStorage, getFromStorage } = useLocalStorage();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   useEffect(() => {
-    clearStorage();
-
     const loadCart = () => {
       const storedItems = getFromStorage();
-
       if (storedItems.length > 0) {
         setCart(storedItems);
       }
     };
 
     loadCart();
-  }, [getFromStorage, clearStorage]);
+  }, []);
 
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(cart, product);
-
     if (remainingStock <= 0) return;
 
     setCart((prevCart) => {
@@ -43,6 +39,7 @@ export const useCart = () => {
         return [...prevCart, { product, quantity: 1 }];
       })();
 
+      console.log(newCart);
       saveToStorage(newCart);
 
       return newCart;
@@ -60,7 +57,11 @@ export const useCart = () => {
   };
 
   const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart((prevCart) => updateCartItemQuantity(prevCart, productId, newQuantity));
+    setCart((prevCart) => {
+      const updatedCart = updateCartItemQuantity(prevCart, productId, newQuantity);
+      saveToStorage(updatedCart);
+      return updatedCart;
+    });
   };
 
   const applyCoupon = (coupon: Coupon) => {

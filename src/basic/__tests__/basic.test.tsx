@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
@@ -433,6 +433,12 @@ describe('basic > ', () => {
       discountType: 'percentage',
       discountValue: 10,
     };
+
+    beforeEach(() => {
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => null);
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+      vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {});
+    });
 
     test('장바구니에 제품을 추가해야 합니다', () => {
       const { result } = renderHook(() => useCart());
