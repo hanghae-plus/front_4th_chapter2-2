@@ -5,11 +5,10 @@ import ProductListWidget from '../../widgets/user/ProductListWidget.tsx';
 
 interface Props {
   products: Product[];
-  coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
-  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
+export const CartPage = ({ products }: Props) => {
+  const { cart, addToCart, removeFromCart, updateQuantity, calculateTotal } = useCart();
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
@@ -48,14 +47,11 @@ export const CartPage = ({ products, coupons }: Props) => {
         {/* 장바구니 요약 위젯 */}
         <CartSummaryWidget
           cart={cart}
-          coupons={coupons}
-          selectedCoupon={selectedCoupon}
           totalBeforeDiscount={totalBeforeDiscount}
           totalAfterDiscount={totalAfterDiscount}
           totalDiscount={totalDiscount}
           removeFromCart={removeFromCart}
           updateQuantity={updateQuantity}
-          onApplyCoupon={applyCoupon}
           getAppliedDiscount={getAppliedDiscount}
         />
       </div>

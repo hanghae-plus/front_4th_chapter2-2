@@ -5,28 +5,24 @@ import { CartItem, Coupon } from '../../shared/types/types';
 
 interface CartSummaryWidgetProps {
   cart: CartItem[];
-  coupons: Coupon[];
-  selectedCoupon: Coupon | null;
+
   totalBeforeDiscount: number;
   totalAfterDiscount: number;
   totalDiscount: number;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, newQuantity: number) => void;
-  onApplyCoupon: (coupon: Coupon) => void;
   getAppliedDiscount: (item: CartItem) => number;
 }
 
 const CartSummaryWidget = (props: CartSummaryWidgetProps) => {
   const {
     cart,
-    coupons,
-    selectedCoupon,
+
     totalBeforeDiscount,
     totalAfterDiscount,
     totalDiscount,
     removeFromCart,
     updateQuantity,
-    onApplyCoupon,
     getAppliedDiscount,
   } = props;
 
@@ -39,7 +35,7 @@ const CartSummaryWidget = (props: CartSummaryWidgetProps) => {
         updateQuantity={updateQuantity}
         getAppliedDiscount={getAppliedDiscount}
       />
-      <CouponSelector coupons={coupons} selectedCoupon={selectedCoupon} onApplyCoupon={onApplyCoupon} />
+      <CouponSelector />
       <OrderSummary
         totalBeforeDiscount={totalBeforeDiscount}
         totalAfterDiscount={totalAfterDiscount}
