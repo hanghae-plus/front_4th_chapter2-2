@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ProductDetails } from '@/refactoring/pages/Admin/ProductManagement/ProductEditor/ProductDetails/ProductDetails';
 import { ProductUpdateForm } from '@/refactoring/pages/Admin/ProductManagement/ProductEditor/ProductUpdateForm/ProductUpdateForm';
+import { Collapsible } from '@/refactoring/pages/Admin/ProductManagement/ui/Collapsible';
 import type { Product } from '@/types';
 
 interface ProductEditorProps {
@@ -11,12 +12,7 @@ interface ProductEditorProps {
 }
 
 export const ProductEditor = ({ product, testId, onProductUpdate }: ProductEditorProps) => {
-  const [openProductId, setOpenProductId] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState(false);
-
-  const toggleProductAccordion = () => {
-    setOpenProductId(prev => !prev);
-  };
 
   const handleEditComplete = () => {
     setIsEditing(false);
@@ -27,13 +23,12 @@ export const ProductEditor = ({ product, testId, onProductUpdate }: ProductEdito
   };
 
   return (
-    // 아코디언 컴포넌트로 분리
-    <div data-testid={`product-${testId}`} className="rounded bg-white p-4 shadow">
-      <button data-testid="toggle-button" onClick={toggleProductAccordion} className="w-full text-left font-semibold">
+    <Collapsible data-testid={`product-${testId}`} className="rounded bg-white p-4 shadow">
+      <Collapsible.Toggle data-testid="toggle-button" className="w-full text-left font-semibold">
         {product.name} - {product.price}원 (재고: {product.stock})
-      </button>
+      </Collapsible.Toggle>
 
-      {openProductId && (
+      <Collapsible.Content>
         <div className="mt-2">
           {isEditing ? (
             <ProductUpdateForm
@@ -45,7 +40,7 @@ export const ProductEditor = ({ product, testId, onProductUpdate }: ProductEdito
             <ProductDetails product={product} onEditStart={handleEditStart} />
           )}
         </div>
-      )}
-    </div>
+      </Collapsible.Content>
+    </Collapsible>
   );
 };

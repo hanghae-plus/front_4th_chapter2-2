@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { InputFieldWithLabel } from '@/refactoring/pages/Admin/ProductManagement/ProductAddForm/ui/InputFieldWithLabel';
+import { Collapsible } from '@/refactoring/pages/Admin/ProductManagement/ui/Collapsible';
 import type { Product } from '@/types';
 
 interface ProductAddFormProps {
@@ -8,7 +9,6 @@ interface ProductAddFormProps {
 }
 
 export const ProductAddForm = ({ onProductAdd }: ProductAddFormProps) => {
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     price: 0,
@@ -26,20 +26,15 @@ export const ProductAddForm = ({ onProductAdd }: ProductAddFormProps) => {
       stock: 0,
       discounts: []
     });
-
-    setShowNewProductForm(false);
   };
 
   return (
-    <div>
-      <button
-        onClick={() => setShowNewProductForm(!showNewProductForm)}
-        className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-      >
-        {showNewProductForm ? '취소' : '새 상품 추가'}
-      </button>
+    <Collapsible>
+      <Collapsible.Toggle className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600">
+        {isOpen => (isOpen ? '취소' : '새 상품 추가')}
+      </Collapsible.Toggle>
 
-      {showNewProductForm && (
+      <Collapsible.Content>
         <div className="mb-4 rounded bg-white p-4 shadow">
           <h3 className="mb-2 text-xl font-semibold">새 상품 추가</h3>
 
@@ -76,11 +71,14 @@ export const ProductAddForm = ({ onProductAdd }: ProductAddFormProps) => {
             </InputFieldWithLabel>
           </div>
 
-          <button onClick={handleAddNewProduct} className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600">
+          <Collapsible.Toggle
+            onClick={handleAddNewProduct}
+            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
+          >
             추가
-          </button>
+          </Collapsible.Toggle>
         </div>
-      )}
-    </div>
+      </Collapsible.Content>
+    </Collapsible>
   );
 };

@@ -30,27 +30,32 @@ const CollapsibleProvider = ({ children }: CollapsibleProviderProps) => {
   return <CollapsibleContext.Provider value={{ isOpen, toggle }}>{children}</CollapsibleContext.Provider>;
 };
 
-interface CollapsibleProps {
+interface CollapsibleProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
-export const Collapsible = ({ children }: CollapsibleProps) => {
-  return <CollapsibleProvider>{children}</CollapsibleProvider>;
+export const Collapsible = ({ children, ...props }: CollapsibleProps) => {
+  return (
+    <CollapsibleProvider>
+      <div {...props}>{children}</div>
+    </CollapsibleProvider>
+  );
 };
 
-interface CollapsibleToggleProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
+interface CollapsibleToggleProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  children: ReactNode | ((isOpen: boolean) => ReactNode);
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
-const CollapsibleToggle = ({ children, ...props }: CollapsibleToggleProps) => {
-  const { toggle } = useCollapsible();
+const CollapsibleToggle = ({ children, onClick, ...props }: CollapsibleToggleProps) => {
+  const { isOpen, toggle } = useCollapsible();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(e);
     toggle();
-    props.onClick?.(e);
   };
 
   return (
     <button onClick={handleClick} {...props}>
-      {children}
+      {typeof children === 'function' ? children(isOpen) : children}
     </button>
   );
 };
