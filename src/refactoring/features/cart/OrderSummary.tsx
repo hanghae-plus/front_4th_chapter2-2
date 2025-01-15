@@ -1,11 +1,11 @@
 interface OrderSummaryProps {
-  totalBeforeDiscount: number;
-  totalDiscount: number;
-  totalAfterDiscount: number;
+  calculateTotal: () => { totalBeforeDiscount: number; totalAfterDiscount: number; totalDiscount: number };
 }
 
 function OrderSummary(props: OrderSummaryProps) {
-  const { totalBeforeDiscount, totalDiscount, totalAfterDiscount } = props;
+  const { calculateTotal } = props;
+
+  const { totalBeforeDiscount, totalDiscount, totalAfterDiscount } = calculateTotal();
 
   return (
     <div className="mt-6 bg-white p-4 rounded shadow">

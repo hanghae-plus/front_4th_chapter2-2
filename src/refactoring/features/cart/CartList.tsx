@@ -1,14 +1,14 @@
 import { CartItem } from '../../shared/types/types';
+import { getAppliedDiscount } from './lib';
 
 interface CartListProps {
   cart: CartItem[];
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, newQuantity: number) => void;
-  getAppliedDiscount: (item: CartItem) => number;
 }
 
 function CartList(props: CartListProps) {
-  const { cart, removeFromCart, updateQuantity, getAppliedDiscount } = props;
+  const { cart, removeFromCart, updateQuantity } = props;
 
   return (
     <div className="space-y-2">
