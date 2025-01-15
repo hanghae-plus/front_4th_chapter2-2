@@ -6,12 +6,10 @@ import ProductList from "../components/cart/ProductList.tsx";
 import ItemList from "../components/cart/ItemList.tsx";
 import DetailInfoCard from "../components/cart/DetailInfoCard.tsx";
 import { initialCoupons } from "../../store/globalStore.ts";
+import CouponSelect from "../components/cart/CouponSelect.tsx";
+import { Text } from "../components/shared/Text.tsx";
 
-interface Props {
-  products: Product[];
-}
-
-export const CartPage = ({ products }: Props) => {
+export const CartPage = ({ products }: { products: Product[] }) => {
   const {
     cart,
     removeFromCart,
@@ -51,39 +49,35 @@ export const CartPage = ({ products }: Props) => {
           />
         ))}
         <DetailInfoCard cardTitle="쿠폰 적용">
-          <select
-            onChange={(e) => applyCoupon(coupons[parseInt(e.target.value)])}
-            className="w-full p-2 border rounded mb-2"
-          >
-            <option value="">쿠폰 선택</option>
-            {coupons.map((coupon, index) => (
-              <option key={coupon.code} value={index}>
-                {coupon.name} -{" "}
-                {coupon.discountType === "amount"
-                  ? `${coupon.discountValue}원`
-                  : `${coupon.discountValue}%`}
-              </option>
-            ))}
-          </select>
+          <CouponSelect coupons={coupons} onSelect={applyCoupon} />
           {selectedCoupon && (
-            <p className="text-green-600">
-              적용된 쿠폰: {selectedCoupon.name}(
-              {selectedCoupon.discountType === "amount"
-                ? `${selectedCoupon.discountValue}원`
-                : `${selectedCoupon.discountValue}%`}{" "}
-              할인)
-            </p>
+            <Text
+              type="green"
+              title="적용된 쿠폰"
+              value={`${selectedCoupon.name}(${
+                selectedCoupon.discountType === "amount"
+                  ? `${selectedCoupon.discountValue}원`
+                  : `${selectedCoupon.discountValue}%`
+              } 할인)`}
+            />
           )}
         </DetailInfoCard>
         <DetailInfoCard cardTitle="주문 요약">
           <div className="space-y-1">
-            <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
-            <p className="text-green-600">
-              할인 금액: {totalDiscount.toLocaleString()}원
-            </p>
-            <p className="text-xl font-bold">
-              최종 결제 금액: {totalAfterDiscount.toLocaleString()}원
-            </p>
+            <Text
+              title="상품 금액"
+              value={`${totalBeforeDiscount.toLocaleString()}원`}
+            />
+            <Text
+              type="green"
+              title="할인 금액"
+              value={`${totalDiscount.toLocaleString()}원`}
+            />
+            <Text
+              type="xlBold"
+              title="최종 결제 금액"
+              value={`${totalAfterDiscount.toLocaleString()}원`}
+            />
           </div>
         </DetailInfoCard>
       </PageSection>
