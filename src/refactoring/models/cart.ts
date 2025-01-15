@@ -1,55 +1,59 @@
-import { CartItem, Coupon } from "../../types";
+import { CartItem, Coupon, Discount } from "../../types";
+import { useDiscountCalculator } from "../hooks/useDiscountCalculator";
+
+const calculateMaxDiscount = (discounts: Discount[], quantity: number) => {
+  return discounts.reduce((max, discount) => {
+    return quantity >= discount.quantity ? Math.max(max, discount.rate) : max;
+  }, 0);
+};
+
+const calculateItemTotalPrice = (
+  price: number,
+  quantity: number,
+  discountRate: number
+) => {
+  return price * quantity * (1 - discountRate);
+};
 
 export const calculateItemTotal = (item: CartItem) => {
   const { product, quantity } = item;
-  const discountRate = product.discounts.reduce((max, discount) => {
-    return quantity >= discount.quantity ? Math.max(max, discount.rate) : max;
-  }, 0);
-  return product.price * quantity * (1 - discountRate);
+  const discountRate = calculateMaxDiscount(product.discounts, quantity);
+  return calculateItemTotalPrice(product.price, quantity, discountRate);
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
   const { product, quantity } = item;
-
-  return product.discounts.reduce((max, discount) => {
-    return quantity >= discount.quantity ? Math.max(max, discount.rate) : max;
-  }, 0);
+  return calculateMaxDiscount(product.discounts, quantity);
 };
 
 export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null
 ) => {
-  let totalBeforeDiscount = 0;
-  let totalAfterDiscount = 0;
+  const calculateTotals = useDiscountCalculator(cart, selectedCoupon);
+  return calculateTotals();
+};
 
-  cart.forEach((item) => {
-    const itemTotal = item.product.price * item.quantity;
-    const itemDiscountedTotal = calculateItemTotal(item);
+export const validateQuantity = (
+  newQuantity: number,
+  maxStock: number
+): number => {
+  return Math.max(0, Math.min(newQuantity, maxStock));
+};
 
-    totalBeforeDiscount += itemTotal;
-    totalAfterDiscount += itemDiscountedTotal;
-  });
-
-  let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
-
-  if (selectedCoupon) {
-    if (selectedCoupon.discountType === "amount") {
-      totalAfterDiscount = Math.max(
-        0,
-        totalAfterDiscount - selectedCoupon.discountValue
-      );
-    } else if (selectedCoupon.discountType === "percentage") {
-      totalAfterDiscount =
-        totalAfterDiscount * (1 - selectedCoupon.discountValue / 100);
-    }
-    totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+export const updateItemQuantity = (
+  item: CartItem,
+  productId: string,
+  newQuantity: number
+): CartItem | null => {
+  if (item.product.id !== productId) {
+    return item;
   }
-  return {
-    totalBeforeDiscount: Math.round(totalBeforeDiscount),
-    totalAfterDiscount: Math.round(totalAfterDiscount),
-    totalDiscount: Math.round(totalDiscount),
-  };
+
+  const validatedQuantity = validateQuantity(newQuantity, item.product.stock);
+  return validatedQuantity > 0
+    ? { ...item, quantity: validatedQuantity }
+    : null;
 };
 
 export const updateCartItemQuantity = (
@@ -58,15 +62,6 @@ export const updateCartItemQuantity = (
   newQuantity: number
 ): CartItem[] => {
   return cart
-    .map((item) => {
-      if (item.product.id === productId) {
-        const maxQuantity = item.product.stock;
-        const updateQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
-        return updateQuantity > 0
-          ? { ...item, quantity: updateQuantity }
-          : null;
-      }
-      return item;
-    })
+    .map((item) => updateItemQuantity(item, productId, newQuantity))
     .filter((item): item is CartItem => item !== null);
 };
