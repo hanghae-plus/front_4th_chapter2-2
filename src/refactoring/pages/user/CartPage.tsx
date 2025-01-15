@@ -1,19 +1,10 @@
-import { CartItem, Product } from '../../shared/types/types.ts';
+import { CartItem } from '../../shared/types/types.ts';
 import { useCart } from '../../hooks/index.ts';
 import CartSummaryWidget from '../../widgets/user/CartSummaryWidget.tsx';
 import ProductListWidget from '../../widgets/user/ProductListWidget.tsx';
 
 export const CartPage = () => {
   const { cart, addToCart, removeFromCart, updateQuantity, calculateTotal } = useCart();
-
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
@@ -34,11 +25,7 @@ export const CartPage = () => {
       <h1 className="text-3xl font-bold mb-6">장바구니</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 상품 목록 위젯 */}
-        <ProductListWidget
-          onAddToCart={addToCart}
-          getRemainingStock={getRemainingStock}
-          getMaxDiscount={getMaxDiscount}
-        />
+        <ProductListWidget cart={cart} onAddToCart={addToCart} />
         {/* 장바구니 요약 위젯 */}
         <CartSummaryWidget
           cart={cart}

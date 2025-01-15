@@ -1,17 +1,16 @@
 import ProductList from '../../features/products/ProductList';
-import { Product } from '../../shared/types/types';
+import { CartItem, Product } from '../../shared/types/types';
 
 interface ProductListWidgetProps {
+  cart: CartItem[];
   onAddToCart: (product: Product) => void;
-  getRemainingStock: (product: Product) => number;
-  getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
 const ProductListWidget = (props: ProductListWidgetProps) => {
-  const { onAddToCart, getRemainingStock, getMaxDiscount } = props;
+  const { cart, onAddToCart } = props;
   return (
     <div>
-      <ProductList onAddToCart={onAddToCart} getRemainingStock={getRemainingStock} getMaxDiscount={getMaxDiscount} />
+      <ProductList cart={cart} onAddToCart={onAddToCart} />
     </div>
   );
 };

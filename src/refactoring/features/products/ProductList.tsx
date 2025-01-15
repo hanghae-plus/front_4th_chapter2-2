@@ -1,21 +1,23 @@
 import { useProductStore } from '../../entities/product/model/useProductStore';
-import { Product } from '../../shared/types/types';
+import { CartItem, Product } from '../../shared/types/types';
+import { calculateMaxDiscount, getRemainingStock } from './lib';
 
 interface ProductListProps {
+  cart: CartItem[];
   onAddToCart: (product: Product) => void;
-  getRemainingStock: (product: Product) => number;
-  getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
 function ProductList(props: ProductListProps) {
-  const { onAddToCart, getRemainingStock, getMaxDiscount } = props;
+  const { cart, onAddToCart } = props;
   const { products } = useProductStore();
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
       <div className="space-y-2">
         {products.map((product) => {
-          const remainingStock = getRemainingStock(product);
+          const remainingStock = getRemainingStock(product, cart);
+          const maxDiscount = calculateMaxDiscount(product.discounts);
           return (
             <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
               <div className="flex justify-between items-center mb-2">
@@ -27,9 +29,7 @@ function ProductList(props: ProductListProps) {
                   재고: {remainingStock}개
                 </span>
                 {product.discounts.length > 0 && (
-                  <span className="ml-2 font-medium text-blue-600">
-                    최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
-                  </span>
+                  <span className="ml-2 font-medium text-blue-600">최대 {(maxDiscount * 100).toFixed(0)}% 할인</span>
                 )}
               </div>
               {product.discounts.length > 0 && (
