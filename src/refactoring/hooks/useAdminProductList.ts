@@ -1,27 +1,13 @@
 import { useState } from 'react';
 import { Discount, Product } from '../../types';
 
-interface AdminPageProps {
+interface AdminProductListProps {
   onProductUpdate: (updatedProduct: Product) => void;
   productList: Product[];
 }
 
-export const useAdmin = ({ onProductUpdate, productList }: AdminPageProps) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+export const useAdminProductList = ({ onProductUpdate, productList }: AdminProductListProps) => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
@@ -61,6 +47,20 @@ export const useAdmin = ({ onProductUpdate, productList }: AdminPageProps) => {
     }
   };
 
+  const handleRemoveDiscount = (productId: string, index: number) => {
+    const updatedProduct = productList.find((p) => p.id === productId);
+    if (updatedProduct) {
+      const newProduct = {
+        ...updatedProduct,
+        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
+      };
+      onProductUpdate(newProduct);
+      setEditingProduct(newProduct);
+    }
+  };
+
+  const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
+
   const handleAddDiscount = (productId: string) => {
     const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct && editingProduct) {
@@ -71,18 +71,6 @@ export const useAdmin = ({ onProductUpdate, productList }: AdminPageProps) => {
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
-    }
-  };
-
-  const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = productList.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
     }
   };
 
@@ -98,10 +86,8 @@ export const useAdmin = ({ onProductUpdate, productList }: AdminPageProps) => {
   };
 
   return {
-    openProductIds,
     editingProduct,
     newDiscount,
-    toggleProductAccordion,
     handleEditProduct,
     handleEditComplete,
     handleProductNameUpdate,
