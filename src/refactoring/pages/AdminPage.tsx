@@ -3,8 +3,8 @@ import { Coupon, Discount, Product } from "../../types.ts";
 import Button from "../components/shared/Button.tsx";
 import Input from "../components/shared/Input.tsx";
 import PageContainer from "../components/shared/PageContainer.tsx";
-import { useCoupons } from "../hooks";
-import { initialCoupons } from "../../store/globalStore.ts";
+import { useCoupons, useProducts } from "../hooks";
+import { initialCoupons, initialProducts } from "../../store/globalStore.ts";
 
 interface Props {
   products: Product[];
@@ -17,39 +17,29 @@ export const AdminPage = ({
   onProductUpdate,
   onProductAdd,
 }: Props) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+  const { coupons, addCoupon } = useCoupons(initialCoupons);
+  const { openProductIds, toggleProductAccordion } =
+    useProducts(initialProducts);
+
+  const [showNewProductForm, setShowNewProductForm] = useState(false);
+
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({
     quantity: 0,
     rate: 0,
   });
-
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: "",
     code: "",
     discountType: "percentage",
     discountValue: 0,
   });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
     name: "",
     price: 0,
     stock: 0,
     discounts: [],
   });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
