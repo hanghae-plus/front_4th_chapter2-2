@@ -27,7 +27,7 @@ export const calculateCartTotal = (
   cart.forEach((item) => {
     const { price } = item.product;
     const { quantity } = item;
-    totalBeforeDiscount += price * quantity;
+    totalBeforeDiscount += price * quantity; // -> 이것도 뺄 수 있다. 아 순수해~~
     totalAfterDiscount += calculateItemTotal(item);
   });
 

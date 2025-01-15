@@ -106,7 +106,6 @@ export const CartPage = ({ products, coupons }: Props) => {
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-
           <div className="space-y-2">
             {cart.map((item) => {
               const appliedDiscount = getAppliedDiscount(item);
@@ -200,3 +199,5 @@ export const CartPage = ({ products, coupons }: Props) => {
     </div>
   );
 };
+
+// 철희님 왈: '분리는 어드밴스드 영역이다.' => 조금은 후회중일지도?
