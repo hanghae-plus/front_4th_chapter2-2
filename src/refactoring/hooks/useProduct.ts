@@ -14,7 +14,7 @@ export const useProducts = (initialProducts: Product[]) => {
   const updateProduct = (product: Product) => {
     setProducts((prevProducts) =>
       prevProducts.map((prod) =>   
-        prod.id === product.id ? { ...prod, stock: product.stock } : prod
+        prod.id === product.id ? { ...prod, ...product } : prod
       )
     );
   };
