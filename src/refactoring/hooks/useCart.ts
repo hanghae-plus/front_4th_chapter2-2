@@ -2,11 +2,12 @@ import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
 import { useStateByMode } from "./useStateByMode";
-import { LOCAL_KEYS } from "../utils";
+import { API, LOCAL_KEYS } from "../../const";
 
 export const useCart = () => {
   const [cart, setCart] = useStateByMode<CartItem[]>(
-    LOCAL_KEYS.CART_ITEM_KEY,
+    LOCAL_KEYS.CART_ITEM,
+    API.CART_ITEM,
     [],
   );
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);

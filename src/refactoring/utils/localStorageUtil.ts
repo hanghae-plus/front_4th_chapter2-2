@@ -1,9 +1,3 @@
-export const LOCAL_KEYS = Object.freeze({
-  COUPON_KEY: "coupon_key",
-  PRODUCT_KEY: "product_key",
-  CART_ITEM_KEY: "cart_item_key",
-});
-
 export const localStorageUtil = {
   get: <T>(key: string): T | null => {
     const value = localStorage.getItem(key);

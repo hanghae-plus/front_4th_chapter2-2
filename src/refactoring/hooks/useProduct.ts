@@ -1,10 +1,11 @@
 import { Product } from "../../types.ts";
 import { useStateByMode } from "./useStateByMode.ts";
-import { LOCAL_KEYS } from "../utils/localStorageUtil.ts";
+import { API, LOCAL_KEYS } from "../../const.ts";
 
 export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useStateByMode<Product[]>(
-    LOCAL_KEYS.PRODUCT_KEY,
+    LOCAL_KEYS.PRODUCT,
+    API.PRODUCT,
     initialProducts,
   );
 
