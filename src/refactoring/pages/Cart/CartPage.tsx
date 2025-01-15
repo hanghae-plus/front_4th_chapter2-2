@@ -1,9 +1,9 @@
-import { useCart } from '@/refactoring/hooks/useCart';
 import { AppliedCoupon } from '@/refactoring/pages/Cart/components/AppliedCoupon';
 import { CartItem } from '@/refactoring/pages/Cart/components/CartItem';
 import { CouponSelect } from '@/refactoring/pages/Cart/components/CouponSelect';
 import { OrderSummary } from '@/refactoring/pages/Cart/components/OrderSummary';
 import { ProductItem } from '@/refactoring/pages/Cart/components/ProductItem';
+import { useCart } from '@/refactoring/pages/Cart/hooks/useCart';
 import type { Coupon, Product } from '@/types';
 
 interface Props {

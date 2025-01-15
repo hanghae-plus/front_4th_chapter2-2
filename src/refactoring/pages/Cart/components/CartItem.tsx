@@ -1,4 +1,4 @@
-import { getMaxApplicableDiscount } from '@/refactoring/models/cart';
+import { getMaxApplicableDiscount } from '@/refactoring/pages/Cart/model/cart';
 import type { CartItem as CartItemType } from '@/types';
 
 export interface CartItemProps {
