@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CartItem, Coupon, Product } from "../../types";
+import { CartItem, Coupon, Product } from "../../../../types";
 import { updateCartItemQuantity } from "../models/cart";
 import { useDiscountCalculator } from "./useDiscountCalculator";
 

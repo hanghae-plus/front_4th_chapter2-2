@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Coupon, Product } from '../../types.ts';
-import { AddNewProduct } from '../components/AddNewProduct.tsx';
-import ProductToggleButton from '../components/ProductToggleButton.tsx';
+import { Coupon, Product } from '../../../types.ts';
+import { AddNewProduct } from './components/AddNewProduct.tsx';
+import ProductToggleButton from './components/ProductToggleButton.tsx';
 
 interface Props {
   products: Product[];

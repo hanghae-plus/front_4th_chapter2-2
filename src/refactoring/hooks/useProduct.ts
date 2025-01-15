@@ -14,7 +14,6 @@ export const useProducts = (initialProducts: Product[]) => {
     setProducts(prevProducts => [...prevProducts, newProduct]);
   };
 
-
   return { 
     products, 
     updateProduct, 
