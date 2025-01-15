@@ -1,19 +1,15 @@
-import { CartItem } from '../../types';
-import { LOCAL_STORAGE_KEY } from '../constants/localStorage';
-
-export const useLocalStorage = () => {
-  const saveToStorage = (cart: CartItem[]) => {
-    localStorage.setItem(LOCAL_STORAGE_KEY['CART'], JSON.stringify(cart));
+export const useLocalStorage = <T>(key: string) => {
+  const saveToStorage = (data: T) => {
+    localStorage.setItem(key, JSON.stringify(data));
   };
 
-  const getFromStorage = (): CartItem[] => {
-    const items = localStorage.getItem(LOCAL_STORAGE_KEY['CART']);
-
-    return items ? JSON.parse(items) : [];
+  const getFromStorage = (): T | null => {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
   };
 
   const clearStorage = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY['CART']);
+    localStorage.removeItem(key);
   };
 
   return {

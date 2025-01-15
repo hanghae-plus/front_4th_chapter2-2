@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { CartItem, Coupon, Product } from '../../types';
 import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../models/cart';
+import { LOCAL_STORAGE_KEY } from '../constants/localStorage';
 
 export const useCart = () => {
-  const { saveToStorage, getFromStorage } = useLocalStorage();
+  const { saveToStorage, getFromStorage } = useLocalStorage<CartItem[]>(LOCAL_STORAGE_KEY['CART']);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
@@ -13,7 +14,7 @@ export const useCart = () => {
     const loadCart = () => {
       const storedItems = getFromStorage();
 
-      if (storedItems.length > 0) {
+      if (storedItems) {
         setCart(storedItems);
       }
     };
