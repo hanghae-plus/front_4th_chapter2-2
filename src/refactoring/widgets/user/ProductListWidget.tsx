@@ -8,6 +8,7 @@ interface ProductListWidgetProps {
 
 const ProductListWidget = (props: ProductListWidgetProps) => {
   const { cart, onAddToCart } = props;
+
   return (
     <div>
       <ProductList cart={cart} onAddToCart={onAddToCart} />
