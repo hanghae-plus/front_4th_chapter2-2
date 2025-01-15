@@ -4,12 +4,11 @@ import { ProductForm } from "./AdminProductForm";
 import { useProductAccordion } from "../../hooks/useProductAccordion";
 import { useEditingProduct } from "../../hooks/useEditingProduct";
 import { useDiscounts } from "../../hooks/useDiscounts";
-import { updateProduct, filterDiscounts } from "../../utils/productUtils";
 
 export const ProductList = ({ products, onProductUpdate, onProductAdd }: AdminProductListProps) => {
   const { openProductIds, toggleProductAccordion } = useProductAccordion();
   const { editingProduct, startEditing, stopEditing, updateProductField, setEditingProduct } = useEditingProduct();
-  const { newDiscount, setNewDiscount, addDiscount, removeDiscount } = useDiscounts();
+  const { newDiscount, setNewDiscount, addDiscount } = useDiscounts();
   
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   // handleEditProduct 함수 수정
