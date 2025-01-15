@@ -1,22 +1,12 @@
-import { Product } from "../../types"; 
-import { useCart } from "../hooks";
+import { Product } from "../../../types"; 
+import { useCart } from "../../hooks";
 
 interface ListProps {
     product: Product;
 }
 
 const CartList = ({ product }: ListProps) => {
-    const { cart, addToCart } = useCart();
-
-    const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-        return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-    };
-
-    const getRemainingStock = (product: Product) => {
-        const cartItem = cart.find(item => item.product.id === product.id);
-        
-        return product.stock - (cartItem?.quantity || 0);
-    };
+    const { addToCart, getRemainingStock, getMaxDiscount } = useCart();
 
     return (
       <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
