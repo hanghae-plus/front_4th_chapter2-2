@@ -24,8 +24,6 @@ export const CartPage = ({ productList, couponList }: Props) => {
     getAppliedDiscount,
   } = useCart();
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
-
   return (
     <div className='container mx-auto p-4'>
       <h1 className='text-3xl font-bold mb-6'>장바구니</h1>
@@ -36,22 +34,20 @@ export const CartPage = ({ productList, couponList }: Props) => {
           getRemainingStock={getRemainingStock}
           getMaxDiscount={getMaxDiscount}
         />
-        <CartList
-          cart={cart}
-          updateQuantity={updateQuantity}
-          removeFromCart={removeFromCart}
-          getAppliedDiscount={getAppliedDiscount}
-        />
-        <CouponSelector
-          couponList={couponList}
-          selectedCoupon={selectedCoupon}
-          applyCoupon={applyCoupon}
-        />
-        <OrderSummary
-          totalBeforeDiscount={totalBeforeDiscount}
-          totalAfterDiscount={totalAfterDiscount}
-          totalDiscount={totalDiscount}
-        />
+        <div>
+          <CartList
+            cart={cart}
+            updateQuantity={updateQuantity}
+            removeFromCart={removeFromCart}
+            getAppliedDiscount={getAppliedDiscount}
+          />
+          <CouponSelector
+            couponList={couponList}
+            selectedCoupon={selectedCoupon}
+            applyCoupon={applyCoupon}
+          />
+          <OrderSummary calculateTotal={calculateTotal} />
+        </div>
       </div>
     </div>
   );

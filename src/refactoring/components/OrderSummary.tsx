@@ -1,14 +1,14 @@
 interface OrderSummaryProps {
-  totalBeforeDiscount: number;
-  totalAfterDiscount: number;
-  totalDiscount: number;
+  calculateTotal: () => {
+    totalBeforeDiscount: number;
+    totalAfterDiscount: number;
+    totalDiscount: number;
+  };
 }
 
-export const OrderSummary = ({
-  totalBeforeDiscount,
-  totalAfterDiscount,
-  totalDiscount,
-}: OrderSummaryProps) => {
+export const OrderSummary = ({ calculateTotal }: OrderSummaryProps) => {
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+
   return (
     <div className='mt-6 bg-white p-4 rounded shadow'>
       <h2 className='text-2xl font-semibold mb-2'>주문 요약</h2>
