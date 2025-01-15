@@ -17,7 +17,7 @@ export const ProductManagement = ({ products, onProductAdd, onProductUpdate }: P
 
       <div className="space-y-2">
         {products.map((product, index) => (
-          <ProductEditor product={product} testId={`${index + 1}`} onProductUpdate={onProductUpdate} />
+          <ProductEditor key={product.id} product={product} testId={`${index + 1}`} onProductUpdate={onProductUpdate} />
         ))}
       </div>
     </div>
