@@ -1,9 +1,9 @@
 import { Coupon, Product } from '../../types';
 import { useCart } from '../hooks';
-import { ProductList } from '../components/ProductList';
-import { CartList } from '../components/CartList';
-import { CouponSelector } from '../components/CouponSeletor';
-import { OrderSummary } from '../components/OrderSummary';
+import { ProductList } from '../components/Cart/ProductList';
+import { CartList } from '../components/Cart/CartList';
+import { CouponSelector } from '../components/Cart/CouponSeletor';
+import { OrderSummary } from '../components/Cart/OrderSummary';
 
 interface Props {
   productList: Product[];
