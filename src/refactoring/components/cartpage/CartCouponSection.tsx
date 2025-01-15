@@ -1,4 +1,4 @@
-import { CouponSectionProps } from "../../types";
+import { CouponSectionProps } from "../../../types";
 
 export const CouponSection = ({ coupons, selectedCoupon, handleApplyCoupon }: CouponSectionProps) => {
 

@@ -1,4 +1,4 @@
-import { OrderSummaryProps } from "../../types";
+import { OrderSummaryProps } from "../../../types";
 
 export const OrderSummary = ({ summary }: OrderSummaryProps) => {
   return (

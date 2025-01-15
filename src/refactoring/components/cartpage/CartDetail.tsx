@@ -1,4 +1,4 @@
-import { CartDetailsProps } from "../../types";
+import { CartDetailsProps } from "../../../types";
 
 export const CartDetail = ({ cart, updateQuantity, removeFromCart, getAppliedDiscount }: CartDetailsProps) => {
   

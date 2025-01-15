@@ -1,4 +1,4 @@
-import { ProductListProps } from "../../types";
+import { ProductListProps } from "../../../types";
 
 export const ProductList = ({ products, addToCart, getRemainingStock, getMaxDiscount }: ProductListProps) => {
 

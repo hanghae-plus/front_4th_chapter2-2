@@ -53,3 +53,23 @@ export interface CouponSectionProps {
   selectedCoupon: Coupon | null;
   handleApplyCoupon: (index: number) => void;
 }
+
+export interface ProductFormProps {
+  onProductAdd: (newProduct: Product) => void;
+}
+
+export interface AdminProductListProps {
+  products: Product[];
+  onProductUpdate: (updatedProduct: Product) => void;
+}
+
+export interface CouponListProps {
+  coupons: Coupon[];
+}
+
+export interface CouponFormProps {
+  onCouponAdd: (newCoupon: Coupon) => void;
+}
+
+
+

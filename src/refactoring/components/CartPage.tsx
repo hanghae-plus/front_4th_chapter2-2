@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useCart } from "../hooks/useCart.ts";
 import { useProducts } from "../hooks/useProducts.ts";
 import { Coupon, Product, CartTotal } from "../../types.ts";
-import { ProductList } from "./ProductList.tsx";
-import { CartDetail } from "./CartDetail.tsx";
-import { CouponSection } from "./CouponSection.tsx";
-import { OrderSummary } from "./OrderSummary.tsx";
+import { ProductList } from "./cartpage/CartProductList.tsx";
+import { CartDetail } from "./cartpage/CartDetail.tsx";
+import { CouponSection } from "./cartpage/CartCouponSection.tsx";
+import { OrderSummary } from "./cartpage/CartOrderSummary.tsx";
 
 interface Props {
   products: Product[];
