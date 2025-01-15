@@ -2,7 +2,7 @@ import { Coupon, Product } from '../../../../types.ts';
 import { useCart } from '../model/useCart.ts';
 import { Layout } from '../../../widgets/layout/Layout.tsx';
 import { ProductList } from '../../../widgets/product/ui/ProductList.tsx';
-import { CartList } from '../../../widgets/cart/ui/CartList.tsx';
+import { CartView } from '../../../widgets/cart/ui/CartView.tsx';
 
 interface Props {
   products: Product[];
@@ -39,7 +39,7 @@ export const CartPage = ({ products, coupons }: Props) => {
   return (
     <Layout title={'장바구니'}>
       <ProductList {...productListProps} />
-      <CartList {...cartListProps} />
+      <CartView {...cartListProps} />
     </Layout>
   );
 };
