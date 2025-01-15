@@ -1,6 +1,6 @@
 import CartList from '../../features/cart/CartList';
 import OrderSummary from '../../features/cart/OrderSummary';
-import CouponSelector from '../../features/coupons/CouponSelector';
+import CouponSelector from '../../features/coupons/user/CouponSelector';
 import { CartItem } from '../../shared/types/types';
 
 interface CartSummaryWidgetProps {

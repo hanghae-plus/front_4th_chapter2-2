@@ -1,4 +1,4 @@
-import { useCouponStore } from '../../entities/coupon/model/useCouponStore.ts';
+import { useCouponStore } from '../../../entities/coupon/model/useCouponStore.ts';
 
 function CouponSelector() {
   const { coupons, selectedCoupon, selectCoupon } = useCouponStore();

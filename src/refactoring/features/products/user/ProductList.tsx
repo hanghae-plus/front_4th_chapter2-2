@@ -1,6 +1,6 @@
-import { useProductStore } from '../../entities/product/model/useProductStore';
-import { CartItem, Product } from '../../shared/types/types';
-import { calculateMaxDiscount, getRemainingStock } from './lib';
+import { useProductStore } from '../../../entities/product/model/useProductStore';
+import { CartItem, Product } from '../../../shared/types/types';
+import { calculateMaxDiscount, getRemainingStock } from '../lib';
 import ProductItem from './ProductItem';
 
 interface ProductListProps {

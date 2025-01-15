@@ -1,4 +1,4 @@
-import ProductList from '../../features/products/ProductList';
+import ProductList from '../../features/products/user/ProductList';
 import { CartItem, Product } from '../../shared/types/types';
 
 interface ProductListWidgetProps {

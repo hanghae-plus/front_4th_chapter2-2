@@ -62,15 +62,7 @@ const TestAdminPage = () => {
     setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
   };
 
-  return (
-    <AdminPage
-      products={products}
-      coupons={coupons}
-      onProductUpdate={handleProductUpdate}
-      onProductAdd={handleProductAdd}
-      onCouponAdd={handleCouponAdd}
-    />
-  );
+  return <AdminPage />;
 };
 
 describe('advanced > ', () => {
