@@ -1,5 +1,5 @@
-import { CartItem, Coupon, Product } from '../../types.ts';
-import { useCart } from "../hooks";
+import { Coupon, Product } from '../../types.ts';
+import { useCart, useDiscountCalculator } from "../hooks";
 
 interface Props {
   products: Product[];
@@ -18,23 +18,12 @@ export const CartPage = ({ products, coupons }: Props) => {
     getRemainingStock,
   } = useCart();
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
+  const {
+    getMaxDiscount,
+    getAppliedDiscount
+  } = useDiscountCalculator();
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
-
-  const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   return (
     <div className="container mx-auto p-4">
