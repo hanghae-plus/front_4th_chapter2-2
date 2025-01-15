@@ -1,11 +1,11 @@
-import { Coupon } from '../../../../types.ts';
 import { SectionTitle } from '../../../shared/ui/typography';
 import { CouponForm } from '../../../features/coupon/ui/CouponForm.tsx';
 import { CouponList } from '../../../features/coupon/ui/CouponList.tsx';
+import { ICoupon } from '../../../app/types';
 
 interface CouponManagementProps {
-  coupons: Coupon[];
-  onCouponAdd: (newCoupon: Coupon) => void;
+  coupons: ICoupon[];
+  onCouponAdd: (newCoupon: ICoupon) => void;
 }
 
 export function CouponManagement({

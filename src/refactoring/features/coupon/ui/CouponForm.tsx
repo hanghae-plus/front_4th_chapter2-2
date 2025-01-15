@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Coupon } from '../../../../types.ts';
+import { ICoupon } from '../../../app/types';
 
 interface CouponFormProps {
-  onCouponAdd: (newCoupon: Coupon) => void;
+  onCouponAdd: (newCoupon: ICoupon) => void;
 }
 
 export function CouponForm({ onCouponAdd }: CouponFormProps) {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
+  const [newCoupon, setNewCoupon] = useState<ICoupon>({
     name: '',
     code: '',
     discountType: 'percentage',

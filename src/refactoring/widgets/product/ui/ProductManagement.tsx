@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Discount, Product } from '../../../../types.ts';
 import { SectionTitle } from '../../../shared/ui/typography';
 import { Input } from '../../../shared/ui/inputs';
+import { IDiscount, IProduct } from '../../../app/types';
 
 interface ProductManagementProps {
-  products: Product[];
-  onProductUpdate: (product: Product) => void;
-  onProductAdd: (newProduct: Product) => void;
+  products: IProduct[];
+  onProductUpdate: (product: IProduct) => void;
+  onProductAdd: (newProduct: IProduct) => void;
 }
 
 export function ProductManagement({
@@ -15,12 +15,12 @@ export function ProductManagement({
   onProductAdd,
 }: ProductManagementProps) {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({
+  const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
+  const [newDiscount, setNewDiscount] = useState<IDiscount>({
     quantity: 0,
     rate: 0,
   });
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
+  const [newProduct, setNewProduct] = useState<Omit<IProduct, 'id'>>({
     name: '',
     price: 0,
     stock: 0,
@@ -53,7 +53,7 @@ export function ProductManagement({
   };
 
   // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
+  const handleEditProduct = (product: IProduct) => {
     setEditingProduct({ ...product });
   };
 
