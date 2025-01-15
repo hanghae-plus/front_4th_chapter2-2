@@ -1,0 +1,4 @@
+src/main.original.js
+src/basic/**/__tests__/**
+src/advanced/**/__tests__/**
+*.md
