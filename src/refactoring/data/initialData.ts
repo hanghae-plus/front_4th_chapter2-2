@@ -1,5 +1,6 @@
-import { Product, Coupon } from "../../types";
+import { Product, Coupon, Discount } from '../../types';
 
+// 초기 상품 리스트
 export const initialProductList: Product[] = [
   {
     id: 'p1',
@@ -27,6 +28,7 @@ export const initialProductList: Product[] = [
   },
 ];
 
+// 초기 쿠폰 리스트
 export const initialCouponList: Coupon[] = [
   {
     name: '5000원 할인 쿠폰',
@@ -41,3 +43,25 @@ export const initialCouponList: Coupon[] = [
     discountValue: 10,
   },
 ];
+
+// 초기 할인 값
+export const INITIAL_DISCOUNT_STATE: Discount = {
+  quantity: 0,
+  rate: 0,
+};
+
+// 초기 상품 값
+export const INITIAL_PRODUCT_STATE: Omit<Product, 'id'> = {
+  name: '',
+  price: 0,
+  stock: 0,
+  discounts: [],
+};
+
+// 초기 쿠폰 값
+export const INITIAL_COUPON_STATE: Coupon = {
+  name: '',
+  code: '',
+  discountType: 'percentage',
+  discountValue: 0,
+};
