@@ -5,6 +5,7 @@ import { AdminPage } from './pages/admin/ui';
 import { CartPage } from './pages/cart/ui';
 import { useCoupons } from './features/coupon/model/useCoupon';
 import { useProducts } from './features/product/model/useProduct';
+import { TextButton } from './shared/ui';
 
 const initialProducts: Product[] = [
   {
@@ -58,12 +59,10 @@ function App() {
       <nav className="bg-blue-600 text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">쇼핑몰 관리 시스템</h1>
-          <button
+          <TextButton
+            title={isAdmin ? '장바구니 페이지로' : '관리자 페이지로'}
             onClick={() => setIsAdmin(!isAdmin)}
-            className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-blue-100"
-          >
-            {isAdmin ? '장바구니 페이지로' : '관리자 페이지로'}`1
-          </button>
+          />
         </div>
       </nav>
       <main className="container mx-auto mt-6">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../../../types';
+import { TextButton } from '../../../shared/ui';
 
 interface Props {
   products: Product[];
@@ -134,16 +135,15 @@ export function AdminPage({
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
-          <button
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold">상품 관리</h2>
+          <TextButton
+            variant="add"
+            title={showNewProductForm ? '취소' : '새 상품 추가'}
             onClick={() => setShowNewProductForm(!showNewProductForm)}
-            className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
-          >
-            {showNewProductForm ? '취소' : '새 상품 추가'}
-          </button>
+          />
           {showNewProductForm && (
-            <div className="bg-white p-4 rounded shadow mb-4">
+            <div className="bg-white p-4 rounded shadow">
               <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
               <div className="mb-2">
                 <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
@@ -185,12 +185,7 @@ export function AdminPage({
                   className="w-full p-2 border rounded"
                 />
               </div>
-              <button
-                onClick={handleAddNewProduct}
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                추가
-              </button>
+              <TextButton variant="add" title="추가" onClick={handleAddNewProduct} fullWidth />
             </div>
           )}
           <div className="space-y-2">
@@ -210,8 +205,8 @@ export function AdminPage({
                 {openProductIds.has(product.id) && (
                   <div className="mt-2">
                     {editingProduct && editingProduct.id === product.id ? (
-                      <div>
-                        <div className="mb-4">
+                      <div className="space-y-4">
+                        <div>
                           <label className="block mb-1">상품명: </label>
                           <input
                             type="text"
@@ -220,7 +215,7 @@ export function AdminPage({
                             className="w-full p-2 border rounded"
                           />
                         </div>
-                        <div className="mb-4">
+                        <div>
                           <label className="block mb-1">가격: </label>
                           <input
                             type="number"
@@ -231,7 +226,7 @@ export function AdminPage({
                             className="w-full p-2 border rounded"
                           />
                         </div>
-                        <div className="mb-4">
+                        <div>
                           <label className="block mb-1">재고: </label>
                           <input
                             type="number"
@@ -243,21 +238,21 @@ export function AdminPage({
                           />
                         </div>
                         {/* 할인 정보 수정 부분 */}
-                        <div>
-                          <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
+                        <div className="space-y-2">
+                          <h4 className="text-lg font-semibold">할인 정보</h4>
                           {editingProduct.discounts.map((discount, index) => {
                             const key = `${index}-${discount.rate}`;
                             return (
-                              <div key={key} className="flex justify-between items-center mb-2">
+                              <div key={key} className="flex justify-between items-center">
                                 <span>
                                   {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
                                 </span>
-                                <button
+                                <TextButton
+                                  variant="danger"
+                                  title="삭제"
                                   onClick={() => handleRemoveDiscount(product.id, index)}
-                                  className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                >
-                                  삭제
-                                </button>
+                                  className="px-2 py-1"
+                                />
                               </div>
                             );
                           })}
@@ -272,7 +267,7 @@ export function AdminPage({
                                   quantity: parseInt(e.target.value, 10),
                                 })
                               }
-                              className="w-1/3 p-2 border rounded"
+                              className="w-full p-2 border rounded"
                             />
                             <input
                               type="number"
@@ -284,22 +279,22 @@ export function AdminPage({
                                   rate: parseInt(e.target.value, 10) / 100,
                                 })
                               }
-                              className="w-1/3 p-2 border rounded"
+                              className="w-full p-2 border rounded"
                             />
-                            <button
+                            <TextButton
+                              variant="add"
+                              title="할인 추가"
                               onClick={() => handleAddDiscount(product.id)}
-                              className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                            >
-                              할인 추가
-                            </button>
+                              fullWidth
+                            />
                           </div>
                         </div>
-                        <button
+                        <TextButton
+                          variant="complete"
+                          title="수정 완료"
                           onClick={handleEditComplete}
-                          className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
-                        >
-                          수정 완료
-                        </button>
+                          className="px-2 py-1"
+                        />
                       </div>
                     ) : (
                       <div>
@@ -313,13 +308,13 @@ export function AdminPage({
                             </div>
                           );
                         })}
-                        <button
-                          data-testid="modify-button"
+                        <TextButton
+                          testId="modify-button"
+                          variant="add"
+                          title="수정"
                           onClick={() => handleEditProduct(product)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2"
-                        >
-                          수정
-                        </button>
+                          className="px-2 py-1"
+                        />
                       </div>
                     )}
                   </div>
@@ -370,12 +365,12 @@ export function AdminPage({
                   className="w-full p-2 border rounded"
                 />
               </div>
-              <button
+              <TextButton
+                variant="complete"
+                title="쿠폰 추가"
                 onClick={handleAddCoupon}
-                className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-              >
-                쿠폰 추가
-              </button>
+                fullWidth
+              />
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>

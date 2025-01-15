@@ -44,5 +44,11 @@ module.exports = {
     ],
     'jsx-a11y/label-has-associated-control': 'off',
     'import/no-extraneous-dependencies': 'off',
+    'react/require-default-props': [
+      'error',
+      {
+        functions: 'defaultArguments',
+      },
+    ],
   },
 };

@@ -1,5 +1,6 @@
 import { CartItem, Coupon, Product } from '../../../../types';
 import { useCart } from '../../../features/cart/model/useCart';
+import { TextButton } from '../../../shared/ui';
 
 interface Props {
   products: Product[];
@@ -80,17 +81,13 @@ export function CartPage({ products, coupons }: Props) {
                       })}
                     </ul>
                   )}
-                  <button
+                  <TextButton
+                    variant="add"
+                    title={remainingStock > 0 ? '장바구니에 추가' : '품절'}
                     onClick={() => addToCart(product)}
-                    className={`w-full px-3 py-1 rounded ${
-                      remainingStock > 0
-                        ? 'bg-blue-500 text-white hover:bg-blue-600'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                    disabled={remainingStock <= 0}
-                  >
-                    {remainingStock > 0 ? '장바구니에 추가' : '품절'}
-                  </button>
+                    isDisabled={remainingStock <= 0}
+                    fullWidth
+                  />
                 </div>
               );
             })}
@@ -132,12 +129,12 @@ export function CartPage({ products, coupons }: Props) {
                     >
                       +
                     </button>
-                    <button
+                    <TextButton
+                      variant="danger"
+                      title="삭제"
                       onClick={() => removeFromCart(item.product.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                    >
-                      삭제
-                    </button>
+                      className="px-2 py-1"
+                    />
                   </div>
                 </div>
               );
