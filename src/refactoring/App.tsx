@@ -5,7 +5,7 @@ import { AdminPage } from './pages/admin/ui';
 import { CartPage } from './pages/cart/ui';
 import { useCoupons } from './features/coupon/model/useCoupon';
 import { useProducts } from './features/product/model/useProduct';
-import { TextButton } from './shared/ui';
+import { Header } from './widgets';
 
 const initialProducts: Product[] = [
   {
@@ -54,17 +54,13 @@ function App() {
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const toggleAdmin = () => {
+    setIsAdmin(!isAdmin);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <nav className="bg-blue-600 text-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">쇼핑몰 관리 시스템</h1>
-          <TextButton
-            title={isAdmin ? '장바구니 페이지로' : '관리자 페이지로'}
-            onClick={() => setIsAdmin(!isAdmin)}
-          />
-        </div>
-      </nav>
+      <Header isAdmin={isAdmin} onToggleAdmin={toggleAdmin} />
       <main className="container mx-auto mt-6">
         {isAdmin ? (
           <AdminPage
