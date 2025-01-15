@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Product } from '../../types';
+import { getProductTitle, isProductEditing } from '../utils/productUtils';
 import EditingProduct from './EditingProduct';
 import NewProductForm from './NewProductForm';
 import ProductAccordion from './ProductAccordion';
@@ -17,9 +18,6 @@ export default function ProductManagement({ productList, onProductUpdate, onProd
     setEditingProduct({ ...product });
   };
 
-  const getProductTitle = (product: Product) =>
-    `${product.name} - ${product.price}원 (재고: ${product.stock})`;
-
   return (
     <div>
       <h2 className='text-2xl font-semibold mb-4'>상품 관리</h2>
@@ -33,7 +31,7 @@ export default function ProductManagement({ productList, onProductUpdate, onProd
             className='bg-white p-4 rounded shadow'
           >
             <ProductAccordion id={product.id} title={getProductTitle(product)}>
-              {editingProduct && editingProduct.id === product.id ? (
+              {isProductEditing(editingProduct, product.id) ? (
                 <EditingProduct
                   product={product}
                   productList={productList}
