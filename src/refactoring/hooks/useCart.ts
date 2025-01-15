@@ -12,6 +12,7 @@ export const useCart = () => {
   useEffect(() => {
     const loadCart = () => {
       const storedItems = getFromStorage();
+
       if (storedItems.length > 0) {
         setCart(storedItems);
       }
@@ -22,6 +23,7 @@ export const useCart = () => {
 
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(cart, product);
+
     if (remainingStock <= 0) return;
 
     setCart((prevCart) => {
@@ -39,7 +41,6 @@ export const useCart = () => {
         return [...prevCart, { product, quantity: 1 }];
       })();
 
-      console.log(newCart);
       saveToStorage(newCart);
 
       return newCart;
@@ -59,7 +60,9 @@ export const useCart = () => {
   const updateQuantity = (productId: string, newQuantity: number) => {
     setCart((prevCart) => {
       const updatedCart = updateCartItemQuantity(prevCart, productId, newQuantity);
+
       saveToStorage(updatedCart);
+
       return updatedCart;
     });
   };

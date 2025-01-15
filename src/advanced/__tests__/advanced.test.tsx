@@ -229,6 +229,16 @@ describe('advanced > ', () => {
   });
 
   describe('추가된 테스트 코드', () => {
-    describe('useLocalStorage > ', () => {});
+    const testProduct: Product = {
+      id: "1",
+      name: "Test Product",
+      price: 100,
+      stock: 10,
+      discounts: [],
+    };
+    
+    describe('useLocalStorage > ', () => {
+
+    });
   });
 });
