@@ -1,3 +1,5 @@
+import { Coupon } from "../../types";
+
 interface CouponSectionProps {
   coupons: Coupon[];
   selectedCoupon: Coupon | null;

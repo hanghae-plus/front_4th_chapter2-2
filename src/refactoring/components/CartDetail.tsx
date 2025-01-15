@@ -1,3 +1,5 @@
+import { Product } from "../../types";
+
 interface CartDetailsProps {
   cart: { product: Product; quantity: number }[];
   updateQuantity: (productId: string, quantity: number) => void;

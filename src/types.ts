@@ -22,3 +22,14 @@ export interface Coupon {
   discountType: "amount" | "percentage";
   discountValue: number;
 }
+
+// 계산 결과를 위한 인터페이스 정의
+export interface CartTotal {
+  totalBeforeDiscount: number;
+  totalAfterDiscount: number;
+  totalDiscount: number;
+}
+
+export interface OrderSummaryProps {
+  summary: CartTotal;
+}

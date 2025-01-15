@@ -1,10 +1,10 @@
-import React from "react";
+import { Product } from "../../types";
 
 interface ProductListProps {
   products: Product[];
   addToCart: (product: Product) => void;
   getRemainingStock: (product: Product) => number;
-  getMaxDiscount: (discount: { quantity: number; rate: number }[]) => number;
+  getMaxDiscount: Record<string, number>;
 }
 
 export const ProductList = ({ products, addToCart, getRemainingStock, getMaxDiscount }: ProductListProps) => {
@@ -29,7 +29,7 @@ export const ProductList = ({ products, addToCart, getRemainingStock, getMaxDisc
                   </span>
                   {product.discounts.length > 0 && (
                     <span className="ml-2 font-medium text-blue-600">
-                      최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
+                      최대 {(getMaxDiscount[product.id] * 100).toFixed(0)}% 할인
                     </span>
                   )}
                 </div>
