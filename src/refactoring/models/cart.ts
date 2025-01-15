@@ -1,4 +1,5 @@
 import { CartItem, Coupon, Product } from '../../types';
+import { getCouponDiscount } from './coupon';
 
 export const checkExistingItem = (cart: CartItem[], product: Product) => {
   return cart.find((item) => item.product.id === product.id);
@@ -19,7 +20,7 @@ export const updateCartWithNewItem = (cart: CartItem[], product: Product) => {
 
 export const filterCartItems = (cart: CartItem[], productId: string) => {
   return cart.filter((item) => item.product.id !== productId);
-}
+};
 
 export const calculateItemTotal = (item: CartItem) => {
   const { quantity, product } = item;
@@ -40,7 +41,7 @@ export const calculateCartTotal = (
 ) => {
   let totalBeforeDiscount = 0;
   let totalAfterDiscount = 0;
-  let totalDiscount;
+  // let totalDiscount;
 
   cart.forEach((item) => {
     const { price } = item.product;
@@ -52,18 +53,10 @@ export const calculateCartTotal = (
 
   // 쿠폰 적용
   if (selectedCoupon) {
-    if (selectedCoupon.discountType === 'amount') {
-      totalAfterDiscount = Math.max(
-        0,
-        totalAfterDiscount - selectedCoupon.discountValue,
-      );
-    } else {
-      totalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
-    }
-    totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+    totalAfterDiscount = getCouponDiscount(selectedCoupon, totalAfterDiscount);
   }
 
-  totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+  const totalDiscount = totalBeforeDiscount - totalAfterDiscount;
 
   return {
     totalBeforeDiscount: Math.round(totalBeforeDiscount),
