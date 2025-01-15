@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Coupon, Discount, Product } from "../../types.ts";
-import Button from "../components/shared/Button.tsx";
-import Input from "../components/shared/Input.tsx";
-import PageContainer from "../components/shared/PageContainer.tsx";
+import { Button, Input, PageContainer } from "../components/shared";
 import { useCoupons, useProducts } from "../hooks";
 import { initialCoupons, initialProducts } from "../../store/globalStore.ts";
 

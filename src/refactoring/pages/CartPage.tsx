@@ -1,13 +1,13 @@
 import { Product } from "../../types.ts";
 import { useCart, useCoupons } from "../hooks";
-import PageContainer from "../components/shared/PageContainer.tsx";
-import PageSection from "../components/shared/PageSection.tsx";
-import ProductList from "../components/cart/ProductList.tsx";
-import ItemList from "../components/cart/ItemList.tsx";
-import DetailInfoCard from "../components/cart/DetailInfoCard.tsx";
 import { initialCoupons } from "../../store/globalStore.ts";
-import CouponSelect from "../components/cart/CouponSelect.tsx";
-import { Text } from "../components/shared/Text.tsx";
+import {
+  CouponSelect,
+  DetailInfoCard,
+  ItemList,
+  ProductList,
+} from "../components/cart";
+import { PageContainer, PageSection, Text } from "../components/shared";
 
 export const CartPage = ({ products }: { products: Product[] }) => {
   const {

@@ -3,7 +3,7 @@ import { CartPage } from "./pages/CartPage.tsx";
 import { AdminPage } from "./pages/AdminPage.tsx";
 import { Product } from "../types.ts";
 import { useProducts } from "./hooks";
-import Navigation from "./components/Navigation.tsx";
+import { Navigation } from "./components/shared";
 
 const initialProducts: Product[] = [
   {
