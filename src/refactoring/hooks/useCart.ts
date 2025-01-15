@@ -46,7 +46,7 @@ export const useCart = () => {
     );
   };
  
-  const applyCoupon = (coupon: Coupon) => {
+  const applyCoupon = (coupon: Coupon | null) => {
     setSelectedCoupon(coupon);
   };
 

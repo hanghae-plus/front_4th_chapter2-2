@@ -1,10 +1,4 @@
-import { Coupon } from "../../types";
-
-interface CouponSectionProps {
-  coupons: Coupon[];
-  selectedCoupon: Coupon | null;
-  handleApplyCoupon: (index: number) => void;
-}
+import { CouponSectionProps } from "../../types";
 
 export const CouponSection = ({ coupons, selectedCoupon, handleApplyCoupon }: CouponSectionProps) => {
 
@@ -14,6 +8,7 @@ export const CouponSection = ({ coupons, selectedCoupon, handleApplyCoupon }: Co
       <select
         onChange={(e) => handleApplyCoupon(parseInt(e.target.value))}
         className="w-full p-2 border rounded mb-2"
+        aria-label="쿠폰 선택"
       >
         <option value="-1">쿠폰 선택</option>
         {coupons.map((coupon, index) => (

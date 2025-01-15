@@ -1,11 +1,4 @@
-import { Product } from "../../types";
-
-interface CartDetailsProps {
-  cart: { product: Product; quantity: number }[];
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeFromCart: (productId: string) => void;
-  getAppliedDiscount: (item: { product: Product; quantity: number }) => number;
-}
+import { CartDetailsProps } from "../../types";
 
 export const CartDetail = ({ cart, updateQuantity, removeFromCart, getAppliedDiscount }: CartDetailsProps) => {
   

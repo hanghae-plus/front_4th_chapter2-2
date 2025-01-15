@@ -224,8 +224,9 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                     {editingProduct && editingProduct.id === product.id ? (
                       <div>
                         <div className="mb-4">
-                          <label className="block mb-1">상품명: </label>
+                          <label htmlFor="productName" className="block mb-1">상품명: </label>
                           <input
+                            id="productName"
                             type="text"
                             value={editingProduct.name}
                             onChange={(e) => handleProductNameUpdate(product.id, e.target.value)}
@@ -233,8 +234,9 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block mb-1">가격: </label>
+                          <label htmlFor="productPrice" className="block mb-1">가격: </label>
                           <input
+                            id="productPrice"
                             type="number"
                             value={editingProduct.price}
                             onChange={(e) => handlePriceUpdate(product.id, parseInt(e.target.value))}
@@ -242,8 +244,9 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                           />
                         </div>
                         <div className="mb-4">
-                          <label className="block mb-1">재고: </label>
+                          <label htmlFor="productStock" className="block mb-1">재고: </label>
                           <input
+                            id="productStock"
                             type="number"
                             value={editingProduct.stock}
                             onChange={(e) => handleStockUpdate(product.id, parseInt(e.target.value))}
@@ -339,6 +342,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                   value={newCoupon.discountType}
                   onChange={(e) => setNewCoupon({ ...newCoupon, discountType: e.target.value as "amount" | "percentage" })}
                   className="w-full p-2 border rounded"
+                  aria-label="할인 선택"
                 >
                   <option value="amount">금액(원)</option>
                   <option value="percentage">할인율(%)</option>

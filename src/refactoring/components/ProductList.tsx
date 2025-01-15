@@ -1,11 +1,4 @@
-import { Product } from "../../types";
-
-interface ProductListProps {
-  products: Product[];
-  addToCart: (product: Product) => void;
-  getRemainingStock: (product: Product) => number;
-  getMaxDiscount: Record<string, number>;
-}
+import { ProductListProps } from "../../types";
 
 export const ProductList = ({ products, addToCart, getRemainingStock, getMaxDiscount }: ProductListProps) => {
 

@@ -33,3 +33,23 @@ export interface CartTotal {
 export interface OrderSummaryProps {
   summary: CartTotal;
 }
+
+export interface ProductListProps {
+  products: Product[];
+  addToCart: (product: Product) => void;
+  getRemainingStock: (product: Product) => number;
+  getMaxDiscount: Record<string, number>;
+}
+
+export interface CartDetailsProps {
+  cart: { product: Product; quantity: number }[];
+  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: string) => void;
+  getAppliedDiscount: (item: { product: Product; quantity: number }) => number;
+}
+
+export interface CouponSectionProps {
+  coupons: Coupon[];
+  selectedCoupon: Coupon | null;
+  handleApplyCoupon: (index: number) => void;
+}
