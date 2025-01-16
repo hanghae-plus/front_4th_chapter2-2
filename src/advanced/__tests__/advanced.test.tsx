@@ -1,5 +1,5 @@
-import { ChangeEvent, useState } from 'react';
-import { describe, expect, test, vi } from 'vitest';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/Cart/CartPage.tsx';
 import { AdminPage } from '../../refactoring/components/Admin/AdminPage.tsx';
@@ -58,10 +58,51 @@ const mockCoupons: Coupon[] = [
     discountValue: 10,
   },
 ];
+/**
+ * const TestAdminPage = () => {
+ *   const products = JSON.parse(localStorage.getItem('productList')!) as Product[];
+ *   const coupons = JSON.parse(localStorage.getItem('couponList')!) as Coupon[];
+ *
+ *   const handleProductUpdate = (updatedProduct: Product) => {
+ *     const mockProductList = JSON.parse(localStorage.getItem('productList')!) as Product[];
+ *     localStorage.setItem(
+ *       'productList',
+ *       JSON.stringify(mockProductList.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))),
+ *     );
+ *   };
+ *
+ *   const handleProductAdd = (newProduct: Product) => {
+ *     const mockProductList = JSON.parse(localStorage.getItem('productList')!) as Product[];
+ *     localStorage.setItem('productList', JSON.stringify([...mockProductList, newProduct]));
+ *   };
+ *
+ *   const handleCouponAdd = (newCoupon: Coupon) => {
+ *     const mockCouponList = JSON.parse(localStorage.getItem('couponList')!) as Coupon[];
+ *     localStorage.setItem('couponList', JSON.stringify([...mockCouponList, newCoupon]));
+ *   };
+ *
+ *   return (
+ *     <AdminPage
+ *       productList={products}
+ *       couponList={coupons}
+ *       onProductUpdate={handleProductUpdate}
+ *       onProductAdd={handleProductAdd}
+ *       onCouponAdd={handleCouponAdd}
+ *     />
+ *   );
+ * };
+ * @constructor
+ */
 
 const TestAdminPage = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
+  const [products, setProducts] = useState<Product[]>(() => {
+    const savedProducts = localStorage.getItem('productList');
+    return savedProducts ? JSON.parse(savedProducts) : mockProducts;
+  });
+  const [coupons, setCoupons] = useState<Coupon[]>(() => {
+    const savedCoupons = localStorage.getItem('couponList');
+    return savedCoupons ? JSON.parse(savedCoupons) : mockCoupons;
+  });
 
   const handleProductUpdate = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
@@ -77,6 +118,14 @@ const TestAdminPage = () => {
     setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
   };
 
+  useEffect(() => {
+    localStorage.setItem('productList', JSON.stringify(products));
+  }, [products]);
+
+  useEffect(() => {
+    localStorage.setItem('couponList', JSON.stringify(coupons));
+  }, [coupons]);
+
   return (
     <AdminPage
       productList={products}
@@ -90,6 +139,10 @@ const TestAdminPage = () => {
 
 describe('advanced > ', () => {
   describe('시나리오 테스트 > ', () => {
+    beforeEach(() => {
+      localStorage.setItem('productList', JSON.stringify(mockProducts));
+      localStorage.setItem('couponList', JSON.stringify(mockCoupons));
+    });
     test('장바구니 페이지 테스트 > ', async () => {
       render(<CartPage productList={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
