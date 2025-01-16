@@ -7,6 +7,7 @@ import { CartPage } from '../../refactoring/domains/cart/CartPage';
 import { useSearchProduct } from '../../refactoring/domains/cart/hooks/useSearchProduct';
 import { useForm, useStorage } from '../../refactoring/hooks';
 import { debounce } from '../../refactoring/utils/debounce';
+import { formatCurrency } from '../../refactoring/utils/fotmatCurrency';
 
 import type { Coupon, Product } from '../../types';
 import type { Mock } from 'vitest';
@@ -181,7 +182,7 @@ describe('advanced > ', () => {
       const $product4 = screen.getByTestId('product-4');
 
       expect($product4).toHaveTextContent('상품4');
-      expect($product4).toHaveTextContent('15000원');
+      expect($product4).toHaveTextContent('15,000원');
       expect($product4).toHaveTextContent('재고: 30');
 
       // 2. 상품 선택 및 수정
@@ -198,7 +199,7 @@ describe('advanced > ', () => {
       fireEvent.click(within($product1).getByText('수정 완료'));
 
       expect($product1).toHaveTextContent('수정된 상품1');
-      expect($product1).toHaveTextContent('12000원');
+      expect($product1).toHaveTextContent('12,000원');
       expect($product1).toHaveTextContent('재고: 25');
 
       // 3. 상품 할인율 추가 및 삭제
@@ -275,6 +276,18 @@ describe('advanced > ', () => {
       expect(mockCallback).toHaveBeenCalledTimes(1);
 
       vi.useRealTimers();
+    });
+  });
+
+  describe('formatCurrency', () => {
+    test('기본 원화 포맷팅', () => {
+      expect(formatCurrency(1000)).toBe('1,000원');
+      expect(formatCurrency(1000000)).toBe('1,000,000원');
+      expect(formatCurrency(1234567)).toBe('1,234,567원');
+    });
+
+    test('음수 처리', () => {
+      expect(formatCurrency(-1000)).toBe('-1,000원');
     });
   });
 
