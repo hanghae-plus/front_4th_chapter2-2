@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { useProductForm } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/components/ProductUpdateForm/hooks/useProductForm';
 import type { Discount, Product } from '@/types';
 
 interface ProductUpdateFormProps {
@@ -9,42 +10,16 @@ interface ProductUpdateFormProps {
 }
 
 export const ProductUpdateForm = ({ initProduct, onProductUpdate, onEditComplete }: ProductUpdateFormProps) => {
-  const [editingProduct, setEditingProduct] = useState<Product>(initProduct);
+  const { editingProduct, updateName, updatePrice, updateStock, updateDiscounts } = useProductForm({ initProduct });
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
 
-  const handleProductNameUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
-    const updatedProduct = { ...editingProduct, name: newName };
-    setEditingProduct(updatedProduct);
-  };
-
-  const handlePriceUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrice = parseInt(e.target.value);
-    const updatedProduct = { ...editingProduct, price: newPrice };
-    setEditingProduct(updatedProduct);
-  };
-
-  const handleStockUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newStock = parseInt(e.target.value);
-    const updatedProduct = { ...editingProduct, stock: newStock };
-    setEditingProduct(updatedProduct);
-  };
-
   const handleAddDiscount = () => {
-    const newProduct = {
-      ...editingProduct,
-      discounts: [...editingProduct.discounts, newDiscount]
-    };
-    setEditingProduct(newProduct);
+    updateDiscounts([...editingProduct.discounts, newDiscount]);
     setNewDiscount({ quantity: 0, rate: 0 });
   };
 
   const handleRemoveDiscount = (index: number) => {
-    const newProduct = {
-      ...editingProduct,
-      discounts: editingProduct.discounts.filter((_, i) => i !== index)
-    };
-    setEditingProduct(newProduct);
+    updateDiscounts(editingProduct.discounts.filter((_, i) => i !== index));
   };
 
   const handleEditComplete = () => {
@@ -59,7 +34,7 @@ export const ProductUpdateForm = ({ initProduct, onProductUpdate, onEditComplete
         <input
           type="text"
           value={editingProduct.name}
-          onChange={handleProductNameUpdate}
+          onChange={e => updateName(e.target.value)}
           className="w-full rounded border p-2"
         />
       </div>
@@ -68,7 +43,7 @@ export const ProductUpdateForm = ({ initProduct, onProductUpdate, onEditComplete
         <input
           type="number"
           value={editingProduct.price}
-          onChange={handlePriceUpdate}
+          onChange={e => updatePrice(parseInt(e.target.value))}
           className="w-full rounded border p-2"
         />
       </div>
@@ -77,7 +52,7 @@ export const ProductUpdateForm = ({ initProduct, onProductUpdate, onEditComplete
         <input
           type="number"
           value={editingProduct.stock}
-          onChange={handleStockUpdate}
+          onChange={e => updateStock(parseInt(e.target.value))}
           className="w-full rounded border p-2"
         />
       </div>
