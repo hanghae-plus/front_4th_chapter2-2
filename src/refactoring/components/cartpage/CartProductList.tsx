@@ -1,13 +1,24 @@
 import { ProductListProps } from "../../../types";
+import { useSearch } from "../../hooks/useSearch";
 
 export const ProductList = ({ products, addToCart, getRemainingStock, getMaxDiscount }: ProductListProps) => {
+
+  const { searchTerm, setSearchTerm, filteredItems } = useSearch(products, "name");
 
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
+      {/* 검색 입력창 */}
+      <input 
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="검색어를 입력하세요"
+        className="w-full mb-4 p-2 border rounded"
+      />
       <div className="space-y-2">
-        {products.length > 0 ? (
-          products.map((product) => {
+        {filteredItems.length > 0 ? (
+          filteredItems.map((product) => {
             const remainingStock = getRemainingStock(product);
             
             return (
