@@ -191,7 +191,10 @@ export const CartPage = ({ products, coupons }: Props) => {
             )}
           </div>
 
-          <div className="mt-6 bg-white p-4 rounded shadow">
+          <div
+            className="mt-6 bg-white p-4 rounded shadow"
+            data-testid="cart-summary"
+          >
             <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
             <div className="space-y-1">
               <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
