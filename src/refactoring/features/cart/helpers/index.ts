@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from '../../../../types';
+import { CartItem, Coupon, Discount, Product } from '../../../../types';
 
 export const calculateItemTotal = (item: CartItem): number => {
   const baseTotal = item.product.price * item.quantity;
@@ -100,4 +100,19 @@ export const updateCartItemQuantity = (cart: CartItem[], productId: string, newQ
     }
     return item;
   });
+};
+
+export const calculateAppliedDiscount = (item: CartItem, discounts: Discount[]): number => {
+  let appliedDiscount = 0;
+  for (const discount of discounts) {
+    if (item.quantity >= discount.quantity) {
+      appliedDiscount = Math.max(appliedDiscount, discount.rate);
+    }
+  }
+  return appliedDiscount;
+};
+
+export const getRemainingStock = (product: Product, cartItems: CartItem[]): number => {
+  const cartItem = cartItems.find((item) => item.product.id === product.id);
+  return product.stock - (cartItem?.quantity || 0);
 };

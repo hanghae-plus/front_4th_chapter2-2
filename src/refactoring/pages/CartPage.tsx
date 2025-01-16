@@ -1,9 +1,10 @@
-import { Product, Coupon, CartItem as CartItemType } from '../../types';
+import { Product, Coupon } from '../../types';
 import { CartItem } from '../features/cart/components/Item';
 import { CouponSelector } from '../features/coupon/components/Selector';
 import { useCart } from '../features/cart/hooks/useCart';
 import { ProductItem } from '../features/product/components/Item';
 import { ProductSortType, useProductSort } from '../features/product/hooks/useProductSort';
+import { calculateAppliedDiscount, getRemainingStock } from '../features/cart/helpers';
 
 interface CartPageProps {
   products: Product[];
@@ -13,27 +14,10 @@ interface CartPageProps {
 export const CartPage = ({ products, coupons }: CartPageProps) => {
   const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
 
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
   const { sortType, setSortType, sortOptions, sortedProducts } = useProductSort({
     products,
-    getRemaining: getRemainingStock,
+    getRemaining: (product) => getRemainingStock(product, cart),
   });
-
-  const getAppliedDiscount = (item: CartItemType) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
@@ -59,7 +43,7 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
               <ProductItem
                 key={product.id}
                 product={product}
-                remainingStock={getRemainingStock(product)}
+                remainingStock={getRemainingStock(product, cart)}
                 onAddToCart={addToCart}
               />
             ))}
@@ -73,7 +57,7 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
               <CartItem
                 key={item.product.id}
                 item={item}
-                appliedDiscount={getAppliedDiscount(item)}
+                appliedDiscount={calculateAppliedDiscount(item, item.product.discounts)}
                 onUpdateQuantity={updateQuantity}
                 onRemoveFromCart={removeFromCart}
               />
