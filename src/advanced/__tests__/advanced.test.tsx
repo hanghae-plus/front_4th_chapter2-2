@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AdminPage } from '../../refactoring/domains/admin/AdminPage';
 import { CartPage } from '../../refactoring/domains/cart/CartPage';
+import { useSearchProduct } from '../../refactoring/domains/cart/hooks/useSearchProduct';
 import { useForm, useStorage } from '../../refactoring/hooks';
 import { debounce } from '../../refactoring/utils/debounce';
 
@@ -435,6 +436,42 @@ describe('advanced > ', () => {
       });
 
       expect(result.current.values).toEqual(mockProduct);
+    });
+  });
+
+  describe('useSearchProducts', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.clearAllTimers();
+      vi.useRealTimers();
+    });
+
+    test('검색을 하지 않았다면 모든 제품이 표시되어야 한다.', () => {
+      const { result } = renderHook(() => useSearchProduct(mockProducts));
+
+      expect(result.current.filteredProducts).toEqual(mockProducts);
+    });
+
+    test('검색어에 맞는 제품만 필터링되어야 한다.', () => {
+      const { result } = renderHook(() => useSearchProduct(mockProducts));
+
+      act(() => {
+        result.current.handleSearch('상품4');
+        vi.advanceTimersByTime(300);
+      });
+
+      expect(result.current.filteredProducts).toHaveLength(0);
+
+      act(() => {
+        result.current.handleSearch('상품1');
+        vi.advanceTimersByTime(300);
+      });
+
+      expect(result.current.filteredProducts).toHaveLength(1);
+      expect(result.current.filteredProducts).toEqual([mockProduct]);
     });
   });
 });
