@@ -1,5 +1,5 @@
-import { useCart } from '../hooks';
-import { CartItemType, CouponType, ProductType } from '../types';
+import { useCart, useDiscountCalculator } from '../hooks';
+import { CouponType, ProductType } from '../types';
 import { CartPageUI } from './cart/CartPageUI';
 
 interface Props {
@@ -18,27 +18,7 @@ export const CartPage = ({ productList, couponList }: Props) => {
     selectedCoupon,
   } = useCart();
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) =>
-    discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-
-  const getRemainingStock = (product: ProductType) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
-
-  const getAppliedDiscount = (item: CartItemType) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
+  const { getMaxDiscount, getRemainingStock, getAppliedDiscount } = useDiscountCalculator(cart);
 
   return (
     <CartPageUI
@@ -50,9 +30,7 @@ export const CartPage = ({ productList, couponList }: Props) => {
       updateQuantity={updateQuantity}
       applyCoupon={applyCoupon}
       selectedCoupon={selectedCoupon}
-      totalBeforeDiscount={totalBeforeDiscount}
-      totalAfterDiscount={totalAfterDiscount}
-      totalDiscount={totalDiscount}
+      calculateTotal={calculateTotal}
       getMaxDiscount={getMaxDiscount}
       getRemainingStock={getRemainingStock}
       getAppliedDiscount={getAppliedDiscount}

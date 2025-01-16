@@ -13,11 +13,13 @@ interface Props {
   updateQuantity: (productId: string, quantity: number) => void;
   applyCoupon: (coupon: CouponType) => void;
   selectedCoupon: CouponType | null;
-  totalBeforeDiscount: number;
-  totalAfterDiscount: number;
-  totalDiscount: number;
+  calculateTotal: () => {
+    totalBeforeDiscount: number;
+    totalAfterDiscount: number;
+    totalDiscount: number;
+  };
   getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
-  getRemainingStock: (product: ProductType) => number;
+  getRemainingStock: (product: ProductType, cart: CartItemType[]) => number;
   getAppliedDiscount: (item: CartItemType) => number;
 }
 
@@ -30,9 +32,7 @@ export const CartPageUI = ({
   updateQuantity,
   applyCoupon,
   selectedCoupon,
-  totalBeforeDiscount,
-  totalAfterDiscount,
-  totalDiscount,
+  calculateTotal,
   getMaxDiscount,
   getRemainingStock,
   getAppliedDiscount,
@@ -47,7 +47,7 @@ export const CartPageUI = ({
             <ProductItem
               key={product.id}
               product={product}
-              remainingStock={getRemainingStock(product)}
+              remainingStock={getRemainingStock(product, cart)}
               addToCart={addToCart}
               getMaxDiscount={getMaxDiscount}
             />
@@ -75,11 +75,7 @@ export const CartPageUI = ({
           selectedCoupon={selectedCoupon}
         />
 
-        <OrderSummary
-          totalBeforeDiscount={totalBeforeDiscount}
-          totalAfterDiscount={totalAfterDiscount}
-          totalDiscount={totalDiscount}
-        />
+        <OrderSummary calculateTotal={calculateTotal} />
       </div>
     </div>
   </div>
