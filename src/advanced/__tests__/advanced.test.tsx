@@ -280,6 +280,69 @@ describe('advanced > ', () => {
 
   describe('커스텀 훅 > ', () => {
     describe('useCart > ', () => {
+      describe('카트에 상품 추가 > ', () => {
+        test('새로운 상품을 카트에 추가할 수 있습니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          act(() => {
+            result.current.addToCart(mockProductList[0]);
+          });
+
+          expect(result.current.cart).toHaveLength(1);
+          expect(result.current.cart[0].product.id).toBe(mockProductList[0].id);
+          expect(result.current.cart[0].quantity).toBe(1);
+        });
+
+        test('이미 있는 상품을 추가하면 수량이 증가합니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          act(() => {
+            result.current.addToCart(mockProductList[0]);
+            result.current.addToCart(mockProductList[0]);
+          });
+
+          expect(result.current.cart).toHaveLength(1);
+          expect(result.current.cart[0].quantity).toBe(2);
+        });
+
+        test('다른 상품을 추가하면 새로운 아이템이 추가됩니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          act(() => {
+            result.current.addToCart(mockProductList[0]);
+            result.current.addToCart(mockProductList[1]);
+          });
+
+          expect(result.current.cart).toHaveLength(2);
+        });
+      });
+
+      describe('카트에서 상품 제거 > ', () => {
+        test('상품을 카트에서 제거할 수 있습니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          act(() => {
+            result.current.addToCart(mockProductList[0]);
+            result.current.addToCart(mockProductList[1]);
+            result.current.removeFromCart(mockProductList[0].id);
+          });
+
+          expect(result.current.cart).toHaveLength(1);
+          expect(result.current.cart[0].product.id).toBe(mockProductList[1].id);
+        });
+
+        test('존재하지 않는 상품을 제거하려고 해도 에러가 발생하지 않습니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          act(() => {
+            result.current.addToCart(mockProductList[0]);
+            result.current.removeFromCart('non-existent-id');
+          });
+
+          expect(result.current.cart).toHaveLength(1);
+        });
+      });
+
       describe('카트 수량 업데이트 > ', () => {
         test('상품 수량을 업데이트해야 합니다.', () => {
           const { result } = renderHook(() => useCart());
