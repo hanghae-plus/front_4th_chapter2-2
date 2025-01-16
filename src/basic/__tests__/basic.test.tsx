@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, beforeEach } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '@/pages/CartPage/';
 import { AdminPage } from '@/pages/AdminPage/';
 import { CartItem, Coupon, Product } from '@/shared/types/';
-import { useCart, useCoupons, useProducts } from '@/features/hooks';
+import { useCoupons, useProducts } from '@/features/hooks';
 import * as cartUtils from '@/entities/cart/model/';
+import { useCartStore } from '@/entities/cart';
+
+beforeEach(() => {
+  useCartStore.setState({ cart: [], selectedCoupon: null });
+});
 
 const mockProducts: Product[] = [
   {
@@ -415,7 +420,7 @@ describe('basic > ', () => {
     });
   });
 
-  describe('useCart > ', () => {
+  describe('useCartStore > ', () => {
     const testProduct: Product = {
       id: '1',
       name: 'Test Product',
@@ -431,7 +436,7 @@ describe('basic > ', () => {
     };
 
     test('장바구니에 제품을 추가해야 합니다', () => {
-      const { result } = renderHook(() => useCart());
+      const { result } = renderHook(() => useCartStore());
 
       act(() => {
         result.current.addToCart(testProduct);
@@ -445,7 +450,7 @@ describe('basic > ', () => {
     });
 
     test('장바구니에서 제품을 제거해야 합니다', () => {
-      const { result } = renderHook(() => useCart());
+      const { result } = renderHook(() => useCartStore());
 
       act(() => {
         result.current.addToCart(testProduct);
@@ -456,7 +461,7 @@ describe('basic > ', () => {
     });
 
     test('제품 수량을 업데이트해야 합니다', () => {
-      const { result } = renderHook(() => useCart());
+      const { result } = renderHook(() => useCartStore());
 
       act(() => {
         result.current.addToCart(testProduct);
@@ -467,7 +472,7 @@ describe('basic > ', () => {
     });
 
     test('쿠폰을 적용해야지', () => {
-      const { result } = renderHook(() => useCart());
+      const { result } = renderHook(() => useCartStore());
 
       act(() => {
         result.current.applyCoupon(testCoupon);
@@ -477,7 +482,7 @@ describe('basic > ', () => {
     });
 
     test('합계를 정확하게 계산해야 합니다', () => {
-      const { result } = renderHook(() => useCart());
+      const { result } = renderHook(() => useCartStore());
 
       act(() => {
         result.current.addToCart(testProduct);

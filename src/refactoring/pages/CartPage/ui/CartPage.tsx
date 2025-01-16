@@ -1,6 +1,5 @@
 import { Coupon, Product } from '@/shared/types/';
-import { useCart } from '@/features/hooks';
-import { getMaxDiscount } from '@/entities/cart';
+import { getMaxDiscount, useCartStore } from '@/entities/cart';
 import { getAppliedDiscount } from '@/entities/cart';
 
 interface Props {
@@ -18,7 +17,7 @@ export function CartPage({ products, coupons }: Props) {
     calculateTotal,
     selectedCoupon,
     getRemainingStock,
-  } = useCart();
+  } = useCartStore();
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
