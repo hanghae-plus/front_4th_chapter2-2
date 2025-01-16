@@ -30,6 +30,7 @@ export interface IProductContext {
   products: IProduct[];
   updateProduct: (product: IProduct) => void;
   addProduct: (product: IProduct) => void;
+  findProduct: (productId: string) => IProduct | undefined;
 }
 
 export const ProductContext = createContext<IProductContext | undefined>(

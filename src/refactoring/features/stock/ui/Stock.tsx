@@ -1,6 +1,7 @@
 import { IProduct } from '../../../shared/types';
 import { useCartContext } from '../../../entities/cart/model';
 import { getMaxDiscount, getRemainingStock } from '../lib';
+import { Ul } from '../../../shared/ui/list';
 
 interface StockProps {
   product: IProduct;
@@ -11,9 +12,13 @@ export function Stock({ product }: StockProps): JSX.Element {
 
   const remainingStock = getRemainingStock(cart, product);
 
+  const discountDatas = product.discounts.map(
+    (discount) =>
+      `${discount.quantity}개 이상: ${(discount.rate * 100).toFixed(0)}% 할인`,
+  );
+
   return (
     <div
-      key={product.id}
       data-testid={`product-${product.id}`}
       className="bg-white p-3 rounded shadow"
     >
@@ -35,16 +40,7 @@ export function Stock({ product }: StockProps): JSX.Element {
           </span>
         )}
       </div>
-      {product.discounts.length > 0 && (
-        <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
-          {product.discounts.map((discount, index) => (
-            <li key={index}>
-              {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}%
-              할인
-            </li>
-          ))}
-        </ul>
-      )}
+      {product.discounts.length > 0 && <Ul dataList={discountDatas} />}
       <button
         onClick={() => addToCart(product)}
         className={`w-full px-3 py-1 rounded ${

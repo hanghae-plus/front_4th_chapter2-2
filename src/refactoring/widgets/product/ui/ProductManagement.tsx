@@ -4,7 +4,7 @@ import { useProductContext } from '../../../entities/product/model';
 import { Product } from '../../../features/product/ui/Product.tsx';
 
 export function ProductManagement() {
-  const { products, updateProduct, addProduct } = useProductContext();
+  const { products, addProduct } = useProductContext();
 
   return (
     <div>
@@ -12,12 +12,7 @@ export function ProductManagement() {
       <ProductForm onProductAdd={addProduct} />
       <div className="space-y-2">
         {products.map((product, index) => (
-          <Product
-            key={product.id}
-            index={index}
-            product={product}
-            updateProduct={updateProduct}
-          />
+          <Product key={product.id} index={index} productId={product.id} />
         ))}
       </div>
     </div>
