@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-nested-functions */
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
