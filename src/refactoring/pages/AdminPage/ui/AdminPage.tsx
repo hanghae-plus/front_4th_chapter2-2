@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '@/shared/types/';
 import { GridContainer, GridItem } from '@/widgets/CartItem';
+import { useProductsStore } from '@/entities/product';
 
 interface Props {
-  products: Product[];
   coupons: Coupon[];
-  onProductUpdate: (updatedProduct: Product) => void;
-  onProductAdd: (newProduct: Product) => void;
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) {
+export function AdminPage({ coupons, onCouponAdd }: Props) {
+  const { handleProductUpdate, handleProductAdd, products } = useProductsStore();
+
   // 항상 state가 많으면 의심하게 되는 부분이 굳이 이런 자료가 필요한가이다.
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -69,7 +69,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
-      onProductUpdate(editingProduct);
+      handleProductUpdate(editingProduct);
       setEditingProduct(null);
     }
   };
@@ -78,7 +78,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
+      handleProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
   };
@@ -90,7 +90,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount],
       };
-      onProductUpdate(newProduct);
+      handleProductUpdate(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
     }
@@ -103,7 +103,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
         ...updatedProduct,
         discounts: updatedProduct.discounts.filter((_, i) => i !== index),
       };
-      onProductUpdate(newProduct);
+      handleProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
   };
@@ -120,7 +120,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
+    handleProductAdd(productWithId);
     setNewProduct({
       name: '',
       price: 0,
@@ -199,7 +199,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
         )}
         <div className="space-y-2">
           {products.map((product, index) => (
-            <div key={product.id} data-testid={`product-${index + 1}`} className="bg-white p-4 rounded shadow">
+            <div key={product.id} data-testid={`product-p${index + 1}`} className="bg-white p-4 rounded shadow">
               <button
                 data-testid="toggle-button"
                 onClick={() => toggleProductAccordion(product.id)}

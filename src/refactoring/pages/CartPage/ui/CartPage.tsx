@@ -1,14 +1,15 @@
-import { Coupon, Product } from '@/shared/types/';
+import { Coupon } from '@/shared/types/';
 import { useCartStore } from '@/entities/cart';
 import { CartItem, GridContainer, GridItem } from '@/widgets/CartItem';
 import { SelectedItem } from '@/widgets/SelectedItem';
+import { useProductsStore } from '@/entities/product';
 
 interface Props {
-  products: Product[];
   coupons: Coupon[];
 }
 
-export function CartPage({ products, coupons }: Props) {
+export function CartPage({ coupons }: Props) {
+  const { products } = useProductsStore();
   const { cart, applyCoupon, calculateTotal, selectedCoupon } = useCartStore();
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
@@ -27,7 +28,7 @@ export function CartPage({ products, coupons }: Props) {
       <GridItem title={'장바구니 내역'}>
         <div className="space-y-2">
           {cart.map((item) => {
-            return <SelectedItem item={item} />;
+            return <SelectedItem item={item} key={item.product.id} />;
           })}
         </div>
 
