@@ -1,4 +1,4 @@
-import { useCart } from '@/refactoring/pages/Cart/hooks/useCart';
+import { useCartLocalStorage } from '@/refactoring/pages/Cart/hooks/useCartLocalStorage';
 import { ProductList } from '@/refactoring/pages/Cart/ProductList';
 import { ShoppingCart } from '@/refactoring/pages/Cart/ShoppingCart';
 import type { Coupon, Product } from '@/types';
@@ -9,7 +9,8 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
-  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
+  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } =
+    useCartLocalStorage();
 
   return (
     <div className="container mx-auto p-4">
