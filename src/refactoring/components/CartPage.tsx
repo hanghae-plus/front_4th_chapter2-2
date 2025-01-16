@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from "../../types.ts";
+import { Coupon } from "../../types.ts";
 import { useProductsContext } from "../contexts/ProductsContext.tsx";
 import { useCart } from "../hooks";
 import { getAppliedDiscount, getRemainingStock } from "../models/cart.ts";
@@ -25,9 +25,8 @@ export const CartPage = ({ coupons }: Props) => {
     calculateTotal,
     selectedCoupon,
   } = useCart();
-  // useCoupon / coupons context를 만드느냐 마느냐 그것이 문제로다.
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
-    calculateTotal();
+  // coupons context를 만드느냐 마느냐 그것이 문제로다.
+  // useSelectedCoupon으로 분리할 수 없음... calculateTotal 때문에.
 
   return (
     <div className="container mx-auto p-4">
@@ -65,11 +64,7 @@ export const CartPage = ({ coupons }: Props) => {
             onCouponApply={applyCoupon}
             selectedCoupon={selectedCoupon}
           />
-          <OrderSummary
-            totalAfterDiscount={totalAfterDiscount}
-            totalBeforeDiscount={totalBeforeDiscount}
-            totalDiscount={totalDiscount}
-          />
+          <OrderSummary {...calculateTotal()} />
         </div>
       </div>
     </div>
