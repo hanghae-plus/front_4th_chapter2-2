@@ -1,21 +1,17 @@
-import { useState } from "react";
 import { Product } from "../../types";
+import { useNewProduct } from "../hooks/useNewProduct";
 
 interface Props {
   onProductAdd: (newProduct: Product) => void;
-  onShowNewProductForm: (isShow: boolean) => void;
+  onChangeShowNewProductForm: (isShow: boolean) => void;
 }
 
 export const ProductAddForm = ({
   onProductAdd,
-  onShowNewProductForm,
+  onChangeShowNewProductForm,
 }: Props) => {
-  const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
-    name: "",
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
+  // 관련된 ui를 보여주고 이벤트에 반응한다.
+  const { newProduct, setNewProduct } = useNewProduct();
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
@@ -26,8 +22,9 @@ export const ProductAddForm = ({
       stock: 0,
       discounts: [],
     });
-    onShowNewProductForm(false);
+    onChangeShowNewProductForm(false);
   };
+
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
       <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>

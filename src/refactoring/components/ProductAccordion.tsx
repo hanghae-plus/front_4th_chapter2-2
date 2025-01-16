@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Discount, Product } from "../../types";
+import { Product } from "../../types";
 import { ProductEditForm } from "./ProductEditForm";
-import { toggleProductInSet } from "../models/product";
 import { ProductDiscounts } from "./ProductDiscounts";
+import { useOpenProductIds } from "../hooks/useOpenProductIds";
+import { useNewDiscount } from "../hooks/useNewDiscount";
+import { useEditingProduct } from "../hooks/useEditingProduct";
 
 interface Props {
   product: Product;
@@ -18,42 +19,35 @@ export const ProductAccordion = ({
   index,
   onProductUpdate,
 }: Props) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({
-    quantity: 0,
-    rate: 0,
-  });
+  // 아코디언 나열 + 아코디언 열려서 정보 보여줌 + 수정 버튼 누를 시 수정 폼 보여줌 + 수정 과정 및 완료 이벤트까지 다룸
+  const { openProductIds, toggleProductAccordion } = useOpenProductIds();
+  const { newDiscount, setNewDiscount } = useNewDiscount();
+  const {
+    editingProduct,
+    updateProductName,
+    updateProductPrice,
+    completeProductEdit,
+    setEditingProduct,
+  } = useEditingProduct();
 
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => toggleProductInSet(prev, productId));
-  };
-
-  // 새로운 핸들러 함수 추가
   const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
+    updateProductName(productId, newName);
   };
 
-  // 새로운 핸들러 함수 추가
   const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
+    updateProductPrice(productId, newPrice);
   };
 
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
-      setEditingProduct(null);
+      completeProductEdit();
     }
   };
 
   const handleStockUpdate = (productId: string, newStock: number) => {
+    // 얘를 통째로 훅으로 집어넣기엔 좀 그렇다. 뭐가 그렇지? 뭐가 찝찝한거지?
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
@@ -114,7 +108,7 @@ export const ProductAccordion = ({
               onProductNameUpdate={handleProductNameUpdate}
               onDiscountAdd={handleAddDiscount}
               onEditComplete={handleEditComplete}
-              onNewDiscountSet={(newDiscount) => setNewDiscount(newDiscount)}
+              onNewDiscountSet={setNewDiscount}
               onProductPriceUpdate={handlePriceUpdate}
               onRemoveDiscount={handleRemoveDiscount}
               onStockUpdate={handleStockUpdate}
