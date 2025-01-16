@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
 import InvalidQuantityError from '../../refactoring/errors/InvalidQuantityError';
 import { useCart } from '../../refactoring/hooks/useCart';
+import * as cartEntity from '../../refactoring/models/cart';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { fromPercentage, isNegativeNumber, updateKey } from '../../refactoring/utils';
@@ -275,6 +276,230 @@ describe('advanced > ', () => {
         const obj = { a: 1, b: 2, c: 3 };
         updateKey(obj, 'b', 10);
         expect(obj).toEqual({ a: 1, b: 2, c: 3 });
+      });
+    });
+
+    describe('cart > ', () => {
+      describe('calculateItemTotal >', () => {
+        test('할인이 없는 상품은 정가로 계산되어야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 2000,
+              stock: 10,
+              discounts: [],
+            },
+            quantity: 2,
+          };
+          expect(cartEntity.calculateItemTotal(item)).toBe(4000); // 2000 * 2
+        });
+
+        test('수량별 할인이 적용되어야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.1,
+                },
+              ],
+            },
+            quantity: 2,
+          };
+          expect(cartEntity.calculateItemTotal(item)).toBe(1800); // (1000 * 2) * 0.9
+        });
+
+        test('여러 할인 중 최대 할인이 적용되어야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.1,
+                },
+                {
+                  quantity: 3,
+                  rate: 0.2,
+                },
+                {
+                  quantity: 4,
+                  rate: 0.3,
+                },
+                {
+                  quantity: 5,
+                  rate: 0.4,
+                },
+              ],
+            },
+            quantity: 8,
+          };
+          expect(cartEntity.calculateItemTotal(item)).toBe(1000 * 8 * 0.6);
+        });
+
+        test('할인 조건을 만족하지 않으면 정가로 계산되어야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.1,
+                },
+              ],
+            },
+            quantity: 1,
+          };
+          expect(cartEntity.calculateItemTotal(item)).toBe(1000);
+        });
+      });
+
+      describe('getMaxApplicableDiscount >', () => {
+        test('적용 가능한 할인이 없으면 0을 반환해야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.1,
+                },
+              ],
+            },
+            quantity: 1,
+          };
+          expect(cartEntity.getMaxApplicableDiscount(item)).toBe(0);
+        });
+
+        test('여러 할인 중 최대 할인율을 반환해야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.1,
+                },
+                {
+                  quantity: 3,
+                  rate: 0.2,
+                },
+                {
+                  quantity: 4,
+                  rate: 0.3,
+                },
+                {
+                  quantity: 5,
+                  rate: 0.4,
+                },
+              ],
+            },
+            quantity: 3,
+          };
+          expect(cartEntity.getMaxApplicableDiscount(item)).toBe(0.2);
+        });
+
+        test('할인이 없는 상품은 0을 반환해야 합니다.', () => {
+          const item: CartItem = {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [],
+            },
+            quantity: 5,
+          };
+          expect(cartEntity.getMaxApplicableDiscount(item)).toBe(0);
+        });
+      });
+
+      describe('calculateCartTotal >', () => {
+        const cart: CartItem[] = [
+          {
+            product: {
+              id: 'p1',
+              name: '상품1',
+              price: 1000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.2,
+                },
+              ],
+            },
+            quantity: 3,
+          }, // 1000 * 3 * 0.8 = 2400
+          {
+            product: {
+              id: 'p2',
+              name: '상품2',
+              price: 2000,
+              stock: 10,
+              discounts: [
+                {
+                  quantity: 2,
+                  rate: 0.1,
+                },
+              ],
+            },
+            quantity: 2,
+          }, // 2000 * 2 * 0.9 = 3600
+        ];
+
+        test('쿠폰 없이 계산되어야 합니다.', () => {
+          const result = cartEntity.calculateCartTotal(cart, null);
+          expect(result.totalBeforeDiscount).toBe(3000 + 4000);
+          expect(result.totalAfterDiscount).toBe(2400 + 3600);
+          expect(result.totalDiscount).toBe(1000);
+        });
+
+        test('정액 쿠폰이 적용되어야 합니다.', () => {
+          const coupon: Coupon = {
+            name: '1000원 할인',
+            code: 'FIXED1000',
+            discountType: 'amount',
+            discountValue: 1000,
+          };
+          const result = cartEntity.calculateCartTotal(cart, coupon);
+          expect(result.totalAfterDiscount).toBe(2400 + 3600 - 1000);
+          expect(result.totalDiscount).toBe(7000 - (2400 + 3600 - 1000));
+        });
+
+        test('퍼센트 쿠폰이 적용되어야 합니다.', () => {
+          const coupon: Coupon = {
+            name: '10% 할인',
+            code: 'PERCENT10',
+            discountType: 'percentage',
+            discountValue: 10,
+          };
+          const result = cartEntity.calculateCartTotal(cart, coupon);
+          expect(result.totalAfterDiscount).toBe((2400 + 3600) * 0.9);
+          expect(result.totalDiscount).toBe(7000 - (2400 + 3600) * 0.9);
+        });
+
+        test('빈 카트는 0으로 계산되어야 합니다.', () => {
+          const result = cartEntity.calculateCartTotal([], null);
+          expect(result).toEqual(cartEntity.getDefaultCartTotal());
+        });
       });
     });
   });
