@@ -1,5 +1,5 @@
 import { CartItem, Coupon, Product } from '../../../../types';
-import { calculateCartTotal, updateCartItemQuantity } from '../../../models/cart';
+import { calculateCartTotal, updateCartItemQuantity } from '../helpers';
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 
 export const useCart = () => {

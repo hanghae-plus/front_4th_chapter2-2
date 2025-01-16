@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 
 import { CartItem, Coupon, Product } from '../../types';
-import * as cartUtils from '../../refactoring/models/cart';
+import * as cartUtils from '../../refactoring/features/cart/helpers';
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { useCoupons } from '../../refactoring/features/coupon/hooks/useCoupon';
