@@ -41,14 +41,15 @@ export const updateCartItemQuantity = (
   cart: CartItem[],
   productId: string,
   newQuantity: number,
-): CartItem[] =>
-  cart
-    .map((item) =>
-      item.product.id === productId
-        ? { ...item, quantity: Math.max(0, Math.min(newQuantity, item.product.stock)) }
-        : item,
-    )
-    .filter((item) => item.quantity > 0);
+): CartItem[] => {
+  const newCartList = cart.map((item) => {
+    const isSameProduct = item.product.id === productId;
+    return isSameProduct
+      ? { ...item, quantity: Math.max(0, Math.min(newQuantity, item.product.stock)) }
+      : item;
+  });
+  return newCartList.filter((item) => item.quantity > 0);
+};
 
 const getCartItem = (product: Product, cart: CartItem[]) =>
   cart.find((item) => item.product.id === product.id);
