@@ -10,6 +10,7 @@
     "test:origin": "vitest src/origin",
     "test:basic": "vitest src/basic",
     "test:advanced": "vitest src/advanced",
+    "test:api-mock": "vitest src/api-mock",
     "test:ui": "vitest --ui",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
