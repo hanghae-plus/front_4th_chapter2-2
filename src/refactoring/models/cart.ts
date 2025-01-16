@@ -4,13 +4,10 @@ export const calculateItemTotal = (item: CartItem) => {
   const { price } = item.product;
   const { quantity } = item;
 
-  const discount = item.product.discounts.reduce((maxDiscount, d) => {
-    return quantity >= d.quantity && d.rate > maxDiscount
-      ? d.rate
-      : maxDiscount;
-  }, 0);
-
-  console.log(discount);
+  const discount = item.product.discounts.reduce(
+    (maxDiscount, d) => (quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount),
+    0,
+  );
 
   let totalAfterDiscount = price * quantity * (1 - discount);
 
@@ -21,18 +18,14 @@ export const calculateItemTotal = (item: CartItem) => {
   return totalAfterDiscount;
 };
 
-export const getMaxApplicableDiscount = (item: CartItem) => {
-  return item.product.discounts.reduce((maxDiscount, d) => {
-    return item.quantity >= d.quantity && d.rate > maxDiscount
-      ? d.rate
-      : maxDiscount;
-  }, 0);
-};
+export const getMaxApplicableDiscount = (item: CartItem) =>
+  item.product.discounts.reduce(
+    (maxDiscount, d) =>
+      item.quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount,
+    0,
+  );
 
-export const calculateCartTotal = (
-  cart: CartItem[],
-  selectedCoupon: Coupon | null
-) => {
+export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
   let totalBeforeDiscount = 0;
   let totalAfterDiscount = 0;
 
@@ -41,11 +34,10 @@ export const calculateCartTotal = (
     const { quantity } = item;
     totalBeforeDiscount += price * quantity;
 
-    const discount = item.product.discounts.reduce((maxDiscount, d) => {
-      return quantity >= d.quantity && d.rate > maxDiscount
-        ? d.rate
-        : maxDiscount;
-    }, 0);
+    const discount = item.product.discounts.reduce(
+      (maxDiscount, d) => (quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount),
+      0,
+    );
 
     totalAfterDiscount += price * quantity * (1 - discount);
   });
@@ -55,10 +47,7 @@ export const calculateCartTotal = (
   // 쿠폰 적용
   if (selectedCoupon) {
     if (selectedCoupon.discountType === 'amount') {
-      totalAfterDiscount = Math.max(
-        0,
-        totalAfterDiscount - selectedCoupon.discountValue
-      );
+      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
     } else {
       totalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
     }
@@ -75,18 +64,15 @@ export const calculateCartTotal = (
 export const updateCartItemQuantity = (
   cart: CartItem[],
   productId: string,
-  newQuantity: number
-): CartItem[] => {
-  return cart
+  newQuantity: number,
+): CartItem[] =>
+  cart
     .map((item) => {
       if (item.product.id === productId) {
         const maxQuantity = item.product.stock;
         const updatedQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
-        return updatedQuantity > 0
-          ? { ...item, quantity: updatedQuantity }
-          : null;
+        return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
       }
       return item;
     })
     .filter((item): item is CartItem => item !== null);
-};
