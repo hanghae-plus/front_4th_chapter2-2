@@ -36,9 +36,9 @@ export const calculateAddToCart = (cart: CartItem[], product: Product) => {
 // 선택한 상품 수량 업데이트 함수
 export const updateItemQuantity = (item: CartItem, newQuantity: number): CartItem | null => {
   const maxQuantity = item.product.stock;
-  const updatedQuantity = Math.min(newQuantity, maxQuantity);
+  const updatedQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
 
-  return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
+  return { ...item, quantity: updatedQuantity };
 };
 
 // 장바구니 내역 업데이트 함수
@@ -54,7 +54,6 @@ export const updateCartItemQuantity = (
 // 장바구니 총액 계산 함수 분리
 // 장바구니 상품 계산 함수
 export const calculateTotalDiscount = (cart: CartItem[]) => {
-  console.log(cart);
   let totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   let totalAfterDiscount = cart.reduce((sum, item) => {

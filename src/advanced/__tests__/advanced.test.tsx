@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { CartItem, Coupon, Product } from '../../types';
+import { useLocalStorage } from '../../refactoring/hooks';
 import * as cartUtils from '../../refactoring/models/cart';
+import { L } from 'vitest/dist/chunks/reporters.C4ZHgdxQ.js';
 
 const mockProducts: Product[] = [
   {
@@ -230,9 +232,7 @@ describe('advanced > ', () => {
   });
 
   describe('자유롭게 작성해보세요.', () => {
-    // test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-    //   expect(true).toBe(false);
-    // })
+    // 유틸 함수 테스트 코드
     describe('cartUtils', () => {
       const testProduct: Product = {
         id: '1',
@@ -334,9 +334,65 @@ describe('advanced > ', () => {
       });
     });
 
-    // test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-    //   expect(true).toBe(false);
-    // })
-    describe('useLocalStorage', () => {});
+    // 커스텀 훅 테스트 코드
+    describe('useLocalStorage', () => {
+      const key = 'testKey';
+      const initialValue = { name: 'Test', quantity: 1 };
+
+      beforeEach(() => {
+        vi.stubGlobal('localStorage', {
+          getItem: vi.fn(),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+        });
+      });
+
+      afterEach(() => {
+        vi.clearAllMocks();
+      });
+
+      test('초기값이 올바르게 설정되어야 합니다.', () => {
+        (localStorage.getItem as Mock).mockReturnValueOnce(null);
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        expect(result.current.storedItem).toEqual(initialValue);
+        expect(localStorage.getItem).toHaveBeenCalledWith(key);
+      });
+
+      test('로컬 스토리지에 데이터가 있으면 해당 값을 반환해야 합니다.', () => {
+        const storedValue = JSON.stringify({ name: 'stored', quantity: 2 });
+        (localStorage.getItem as Mock).mockReturnValueOnce(storedValue);
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        expect(result.current.storedItem).toEqual(JSON.parse(storedValue));
+        expect(localStorage.getItem).toHaveBeenCalledWith(key);
+      });
+
+      test('setCartItem 호출 시 상태와 로컬 스토리지가 업데이트 되어야 합니다.', () => {
+        const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+        const newValue = { name: 'Updated', quantity: 3 };
+        act(() => {
+          result.current.setCartItem(newValue);
+        });
+
+        expect(result.current.storedItem).toEqual(newValue);
+        expect(localStorage.setItem).toHaveBeenCalledWith(key, JSON.stringify(newValue));
+      });
+
+      test('updateCartItem 호출 시 상태와 로컬 스토리지가 병합되어야 합니다.', () => {
+        const initial = { name: 'initial', quantity: 1 };
+        (localStorage.getItem as Mock).mockReturnValueOnce(JSON.stringify(initial));
+
+        const { result } = renderHook(() => useLocalStorage(key, initial));
+        act(() => {
+          result.current.updateCartItem({ quantity: 5 });
+        });
+
+        const updatedValue = { name: 'initial', quantity: 5 };
+        expect(result.current.storedItem).toEqual(updatedValue);
+        expect(localStorage.setItem).toHaveBeenCalledWith(key, JSON.stringify(updatedValue));
+      });
+    });
   });
 });
