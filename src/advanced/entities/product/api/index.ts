@@ -1,5 +1,4 @@
-import { Product } from '@types';
-import { UpdateProduct } from '..';
+import { Product, UpdateProduct } from '..';
 
 export const getProducts = async () => {
   const response = await fetch('/api/products', { method: 'GET' });
@@ -10,6 +9,17 @@ export const getProducts = async () => {
 
   const data = (await response.json()) as { products: Product[] };
   return data.products;
+};
+
+export const getProductById = async (productId: string) => {
+  const response = await fetch(`/api/products/${productId}`, { method: 'GET' });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = (await response.json()) as Product;
+  return data;
 };
 
 export const addProduct = async (product: UpdateProduct) => {

@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-query';
 import {
   addProduct,
+  getProductById,
   getProducts,
   UpdateProduct,
   updateProduct,
@@ -17,27 +18,43 @@ export const useGetProductsQuery = () => {
   });
 };
 
-export const useAddProductMutation = (product: UpdateProduct) => {
+export const useGetProductByIdQuery = (productId: string) => {
+  return useSuspenseQuery({
+    queryKey: ['/api/products', productId],
+    queryFn: () => getProductById(productId),
+  });
+};
+
+export const useAddProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ['/api/products'],
-    mutationFn: () => addProduct(product),
+    mutationFn: (product: UpdateProduct) => addProduct(product),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/products'],
+        exact: false,
+      });
     },
   });
 };
 
-export const useUpdateProductMutation = (
-  productId: string,
-  product: Partial<UpdateProduct>,
-) => {
+export const useUpdateProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ['/api/products'],
-    mutationFn: () => updateProduct(productId, product),
+    mutationFn: ({
+      productId,
+      product,
+    }: {
+      productId: string;
+      product: Partial<UpdateProduct>;
+    }) => updateProduct(productId, product),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/products'],
+        exact: false,
+      });
     },
   });
 };

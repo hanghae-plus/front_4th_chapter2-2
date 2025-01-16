@@ -32,6 +32,33 @@ const getProducts = http.get('/api/products', () => {
   return HttpResponse.json({ products });
 });
 
+interface getProductByIdParams {
+  productId: string;
+}
+
+const getProductById = http.get<getProductByIdParams>(
+  '/api/products/:productId',
+  async ({ params }) => {
+    const { productId } = params;
+
+    const existingProduct = products.find(
+      (product) => product.id === productId,
+    );
+
+    if (!existingProduct) {
+      return HttpResponse.json(
+        {
+          products: null,
+          message: '없는 상품입니다.',
+        },
+        { status: 404 },
+      );
+    }
+
+    return HttpResponse.json(existingProduct);
+  },
+);
+
 const addProducts = http.put<never, UpdateProduct>(
   '/api/products',
   async ({ request }) => {
@@ -80,4 +107,9 @@ const updateProduct = http.patch<UpdateProductParams, UpdateProduct>(
   },
 );
 
-export const productHandlers = [getProducts, addProducts, updateProduct];
+export const productHandlers = [
+  getProducts,
+  getProductById,
+  addProducts,
+  updateProduct,
+];
