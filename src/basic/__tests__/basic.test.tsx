@@ -460,7 +460,7 @@ describe("basic > ", () => {
       act(() => {
         result.current.addToCart(testProduct);
       });
-
+      console.log("result :", result.current.cart);
       expect(result.current.cart).toHaveLength(1);
       expect(result.current.cart[0]).toEqual({
         product: testProduct,
