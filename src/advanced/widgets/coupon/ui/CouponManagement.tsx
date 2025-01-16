@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { CouponForm, CouponList } from '@advanced/features/coupon';
 import { Heading } from '@advanced/shared/ui';
 
@@ -9,7 +10,9 @@ export function CouponManagement() {
       </Heading>
       <div className="bg-white p-4 rounded shadow">
         <CouponForm />
-        <CouponList />
+        <Suspense fallback={<>loading...</>}>
+          <CouponList />
+        </Suspense>
       </div>
     </div>
   );

@@ -1,2 +1,2 @@
 export * from './model';
-export { CouponSelect, CouponForm, CouponList } from './ui';
+export { CouponForm, CouponList } from './ui';

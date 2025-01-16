@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { CartList, CartSummary } from '@advanced/features/cart';
 import { Heading } from '@advanced/shared/ui';
 import { CouponApply } from './CouponApply';
@@ -9,7 +10,9 @@ export function CartDetail() {
         장바구니 내역
       </Heading>
       <CartList />
-      <CouponApply />
+      <Suspense fallback={<>loading...</>}>
+        <CouponApply />
+      </Suspense>
       <CartSummary />
     </div>
   );
