@@ -1,4 +1,5 @@
 import { getRemainingStock } from '../../../../models/cart';
+import { formatCurrency } from '../../../../utils/fotmatCurrency';
 import { getMaxDiscount } from '../models/getMaxDiscount';
 
 import type { CartItem, Product } from '../../../../../types';
@@ -16,7 +17,7 @@ export const ProductItem = ({ product, cart, onAddToCart }: ProductItemProps) =>
     <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
       <div className="flex justify-between items-center mb-2">
         <span className="font-semibold">{product.name}</span>
-        <span className="text-gray-600">{product.price.toLocaleString()}원</span>
+        <span className="text-gray-600">{formatCurrency(product.price)}</span>
       </div>
       <div className="text-sm text-gray-500 mb-2">
         <span className={`font-medium ${remainingStock > 0 ? 'text-green-600' : 'text-red-600'}`}>

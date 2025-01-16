@@ -4,6 +4,7 @@ import { ProductEditForm } from './ProductEditForm';
 import { ProductForm } from './ProductForm';
 import { ProductItemContainer } from './ProductItemContainer';
 import { ProductItemDetail } from './ProductItemDetail';
+import { formatCurrency } from '../../../../utils/fotmatCurrency';
 
 import type { Product } from '../../../../../types';
 
@@ -74,7 +75,7 @@ const ProductItem = ({
       onClick={() => toggleProductAccordion(product.id)}
       className="w-full text-left font-semibold"
     >
-      {product.name} - {product.price}원 (재고: {product.stock})
+      {product.name} - {formatCurrency(product.price)} (재고: {product.stock})
     </button>
   );
 };

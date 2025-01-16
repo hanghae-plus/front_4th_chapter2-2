@@ -1,4 +1,5 @@
 import type { Coupon } from '../../../../../types';
+import { formatCurrency } from '../../../../utils/fotmatCurrency';
 
 interface CouponSelectorProps {
   coupons: Coupon[];
@@ -18,7 +19,7 @@ export const CouponSelector = ({ coupons, selectedCoupon, onApplyCoupon }: Coupo
         {coupons.map((coupon, index) => (
           <option key={coupon.code + index} value={index}>
             {coupon.name} -{' '}
-            {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
+            {coupon.discountType === 'amount' ? `${formatCurrency(coupon.discountValue)}` : `${coupon.discountValue}%`}
           </option>
         ))}
       </select>
