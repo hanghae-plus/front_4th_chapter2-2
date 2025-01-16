@@ -19,7 +19,6 @@ const ProductList = ({
   onStartEdit,
   onProductUpdate,
 }: ProductListProps) => {
-  console.log("editingProductId", editingProductId);
   return (
     <div className="space-y-2">
       {products.map((product, index) => (

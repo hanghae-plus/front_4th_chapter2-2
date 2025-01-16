@@ -5,7 +5,7 @@ import Button from "../../common/Button";
 interface ProductDiscountFormProps {
   discounts: Array<Discount>;
   newDiscount: Discount;
-  onNewDiscountChange: React.Dispatch<React.SetStateAction<Discount>>;
+  onNewDiscountChange: (newDiscount: Discount) => void;
   onAddDiscount: () => void;
   onRemoveDiscount: (index: number) => void;
 }
@@ -59,7 +59,7 @@ const ProductDiscountForm = ({
           }
           className="w-1/3 p-2 border rounded"
         />
-        <Button onClick={() => onAddDiscount()} className="w-1/3 p-2">
+        <Button onClick={onAddDiscount} type="button" className="w-1/3 p-2">
           할인 추가
         </Button>
       </div>
