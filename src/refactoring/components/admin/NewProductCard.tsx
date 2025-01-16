@@ -1,5 +1,6 @@
 import { Product } from "../../../types";
 import { useNewProduct } from "../../hooks";
+import { validateData } from "../../utils";
 
 export type NewProduct = Omit<Product, "id">;
 
@@ -15,6 +16,9 @@ export const NewProductCard = ({ addNewProduct }: Props) => {
   } = useNewProduct();
 
   const handleAddNewProduct = (newProduct: NewProduct) => {
+    const isValid = validateData(newProduct, ["discounts"]);
+    if (!isValid) return;
+
     addNewProduct(newProduct);
     initializeNewProduct();
   };

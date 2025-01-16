@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Product } from "../../../types";
 import { useEditingProduct } from "../../hooks";
+import { validateData } from "../../utils";
 
 interface Props {
   index: number;
@@ -28,6 +29,10 @@ export const AdminProductCard = ({
 
   const handleEditComplete = () => {
     if (!editingProduct) return;
+
+    const isValid = validateData(editingProduct, ["discounts"]);
+    if (!isValid) return;
+
     onProductUpdate(editingProduct);
     clearEditingProduct();
   };

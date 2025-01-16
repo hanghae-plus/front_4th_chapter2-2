@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Coupon } from "../../../types";
 import { CouponCard } from "./CouponCard";
 import { SectionHeader } from "../shared";
+import { validateData } from "../../utils";
 
 interface Props {
   coupons: Coupon[];
@@ -17,6 +18,9 @@ const AdminCouponSection = ({ coupons, onCouponAdd }: Props) => {
   });
 
   const handleAddCoupon = () => {
+    const isValid = validateData(newCoupon);
+    if (!isValid) return;
+
     onCouponAdd(newCoupon);
     setNewCoupon({
       name: "",

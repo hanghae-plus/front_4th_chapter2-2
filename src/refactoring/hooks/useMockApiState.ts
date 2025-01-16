@@ -1,4 +1,4 @@
-import { apiUtil } from "../utils/apiUtil";
+import { apiUtil } from "../utils";
 import { useEffect, useState } from "react";
 
 export const API = Object.freeze({

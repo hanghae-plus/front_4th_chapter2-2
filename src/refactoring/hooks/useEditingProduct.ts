@@ -1,6 +1,7 @@
 import { ChangeEvent, useMemo, useState } from "react";
 import { Discount, Product } from "../../types";
 import { ValueOf } from "next/dist/shared/lib/constants";
+import { validateData } from "../utils";
 
 type ProductInputData = {
   label: string;
@@ -108,6 +109,9 @@ export const useEditingProduct = () => {
   };
 
   const handleAddDiscount = (productId: string, newDiscount: Discount) => {
+    const isValid = validateData(newDiscount);
+    if (!isValid) return;
+
     const prevDiscounts = getEditingProduct(productId)?.discounts;
     if (!prevDiscounts) return;
 
