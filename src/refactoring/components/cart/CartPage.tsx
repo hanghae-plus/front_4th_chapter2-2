@@ -46,6 +46,7 @@ export const CartPage = ({ products, coupons }: Props) => {
 
               return (
                 <ProductItem
+                  key={product.id}
                   product={product}
                   remainingStock={remainingStock}
                   maxDiscount={maxDiscount}

@@ -16,7 +16,6 @@ export const ProductItem = ({
 }: Props) => {
   return (
     <div
-      key={product.id}
       data-testid={`product-${product.id}`}
       className="bg-white p-3 rounded shadow"
     >
