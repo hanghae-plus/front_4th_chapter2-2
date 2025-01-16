@@ -20,9 +20,6 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
 
 // 장바구니 내역에 상품을 담는 함수
 export const calculateAddToCart = (cart: CartItem[], product: Product) => {
-  // const remainingStock = getRemainingStock(product);
-  // if (remainingStock <= 0) return cart;
-
   const exisitingItem = cart.find((item) => item.product.id === product.id);
   if (exisitingItem) {
     return cart.map((item) =>
@@ -37,34 +34,24 @@ export const calculateAddToCart = (cart: CartItem[], product: Product) => {
 
 // 장바구니 내역 업데이트 계산 함수 분리
 // 선택한 상품 수량 업데이트 함수
-const updateItemQuantity = (item: CartItem, newQuantity: number): CartItem | null => {
+export const updateItemQuantity = (item: CartItem, newQuantity: number): CartItem | null => {
   const maxQuantity = item.product.stock;
-  const updatedQuantity = Math.min(newQuantity, maxQuantity)
+  const updatedQuantity = Math.min(newQuantity, maxQuantity);
 
-  return updatedQuantity > 0 ? {...item, quantity: updatedQuantity} : null;
-}
+  return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
+};
 
 // 장바구니 내역 업데이트 함수
 export const updateCartItemQuantity = (
   cart: CartItem[],
   productId: string,
   newQuantity: number
-): CartItem[] => cart.map((item) => item.product.id === productId ? updateItemQuantity(item, newQuantity) : item).filter((item): item is CartItem => item !== null);
-  
-//   {
-//   return cart
-//     .map((item) => {
-//       if (item.product.id === productId) {
-//         const maxQuantity = item.product.stock;
-//         const updatedQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
-//         return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
-//       }
-//       return item;
-//     })
-//     .filter((item): item is CartItem => item !== null);
-// }
+): CartItem[] =>
+  cart
+    .map((item) => (item.product.id === productId ? updateItemQuantity(item, newQuantity) : item))
+    .filter((item): item is CartItem => item !== null);
 
-// 쿠폰 적용하기 계산 함수 분리
+// 장바구니 총액 계산 함수 분리
 // 쿠폰 할인 금액 계산 함수
 export const applyCouponDiscount = (
   totalAfterDiscount: number,
