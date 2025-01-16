@@ -1,18 +1,17 @@
 import { Product } from "../../../types.ts";
 import Button from "../shared/Button.tsx";
+import { getMaxDiscount } from "../../utils/getMaxDiscount.ts";
 
 interface ProductListProps {
   product: Product;
   addToCart: (product: Product) => void;
   getRemainingStock: (product: Product) => number | undefined;
-  getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
 const ProductList = ({
   product,
   addToCart,
   getRemainingStock,
-  getMaxDiscount,
 }: ProductListProps) => {
   const remainingStock = getRemainingStock(product) ?? product.stock;
 

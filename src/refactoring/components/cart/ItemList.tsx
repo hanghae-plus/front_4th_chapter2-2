@@ -1,19 +1,13 @@
 import Button from "../shared/Button.tsx";
 import { CartItem } from "../../../types.ts";
-
+import { getAppliedDiscount } from "../../utils/cartUtils.ts";
 interface ItemListProps {
   item: CartItem;
   updateQuantity: (productId: string, quantity: number) => void;
   removeFromCart: (productId: string) => void;
-  getAppliedDiscount: (item: CartItem) => number;
 }
 
-const ItemList = ({
-  item,
-  updateQuantity,
-  removeFromCart,
-  getAppliedDiscount,
-}: ItemListProps) => {
+const ItemList = ({ item, updateQuantity, removeFromCart }: ItemListProps) => {
   const appliedDiscount = getAppliedDiscount(item);
 
   return (

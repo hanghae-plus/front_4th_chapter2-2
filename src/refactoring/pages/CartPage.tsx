@@ -8,6 +8,7 @@ import {
   ProductList,
 } from "../components/cart";
 import { PageContainer, PageSection, Text } from "../components/shared";
+import { calculateTotal } from "../utils/cartUtils.ts";
 
 export const CartPage = ({ products }: { products: Product[] }) => {
   const {
@@ -15,18 +16,15 @@ export const CartPage = ({ products }: { products: Product[] }) => {
     removeFromCart,
     updateQuantity,
     applyCoupon,
-    getAppliedDiscount,
     getRemainingStock,
-    getMaxDiscount,
     addToCart,
     selectedCoupon,
-    totalBeforeDiscount,
-    totalAfterDiscount,
-    totalDiscount,
   } = useCart();
-
   const { coupons } = useCoupons(initialCoupons);
 
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
+    calculateTotal(cart, selectedCoupon);
+    
   return (
     <PageContainer pageTitle="장바구니">
       <PageSection title="상품 목록">
@@ -35,7 +33,6 @@ export const CartPage = ({ products }: { products: Product[] }) => {
             product={product}
             addToCart={addToCart}
             getRemainingStock={getRemainingStock}
-            getMaxDiscount={getMaxDiscount}
           />
         ))}
       </PageSection>
@@ -45,7 +42,6 @@ export const CartPage = ({ products }: { products: Product[] }) => {
             item={item}
             updateQuantity={updateQuantity}
             removeFromCart={removeFromCart}
-            getAppliedDiscount={getAppliedDiscount}
           />
         ))}
         <DetailInfoCard cardTitle="쿠폰 적용">

@@ -3,9 +3,7 @@ import { Product } from "../../types.ts";
 
 export const useProducts = (initialProducts: Product[]) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
-
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const handleEditProduct = (product: Product | null) =>
