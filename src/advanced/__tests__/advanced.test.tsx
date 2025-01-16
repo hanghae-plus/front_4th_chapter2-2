@@ -4,7 +4,7 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { Coupon, Product, CartItem } from '../../types';
-import { useAppState } from '../../refactoring/hooks';
+import { useAppState, useAdminProduct } from '../../refactoring/hooks';
 import {
   calculateItemMaxDiscount,
   calculateItemTotal,
@@ -310,6 +310,72 @@ describe('advanced > ', () => {
             result.current.toggleAdmin();
           });
           expect(result.current.isAdmin).toBe(false);
+        });
+      });
+
+      describe('useAdminProduct > ', () => {
+        const mockOnProductAdd = jest.fn();
+        test('초기값이 올바르게 설정되는지 테스트', () => {
+          const { result } = renderHook(() => useAdminProduct(mockProducts, mockOnProductAdd));
+
+          expect(result.current.newProduct).toEqual({
+            name: '',
+            price: 0,
+            stock: 0,
+            discounts: [],
+          });
+        });
+
+        test('handleInputChange가 newProduct를 업데이트하는지 테스트', () => {
+          const { result } = renderHook(() => useAdminProduct(mockProducts, mockOnProductAdd));
+
+          act(() => {
+            result.current.handleInputChange('name', '새 상품');
+          });
+          expect(result.current.newProduct.name).toBe('새 상품');
+
+          act(() => {
+            result.current.handleInputChange('price', 150);
+          });
+          expect(result.current.newProduct.price).toBe(150);
+        });
+
+        test('handleAddNewProduct가 새로운 상품을 추가하고 newProduct를 초기화하는지 테스트', () => {
+          const { result } = renderHook(() => useAdminProduct(mockProducts, mockOnProductAdd));
+
+          act(() => {
+            result.current.handleInputChange('name', '새 상품');
+            result.current.handleInputChange('price', 300);
+            result.current.handleInputChange('stock', 20);
+          });
+
+          expect(result.current.newProduct).toEqual({
+            name: '새 상품',
+            price: 300,
+            stock: 20,
+            discounts: [],
+          });
+
+          act(() => {
+            result.current.handleAddNewProduct();
+          });
+
+          // 새로운 상품이 mockOnProductAdd를 통해 추가되었는지 확인
+          expect(mockOnProductAdd).toHaveBeenCalledWith({
+            id: 'p3', // mockProductList의 길이에 따라 ID가 부여됨
+            name: '새 상품',
+            price: 300,
+            stock: 20,
+            discounts: [],
+          });
+
+          // newProduct가 초기값으로 리셋되었는지 확인
+          expect(result.current.newProduct).toEqual({
+            name: '',
+            price: 0,
+            stock: 0,
+            discounts: [],
+          });
         });
       });
     });
