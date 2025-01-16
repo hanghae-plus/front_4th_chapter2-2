@@ -13,6 +13,7 @@ import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { storageManager } from "../../refactoring/utils";
 import { useForm, useLocalStorage } from "../../refactoring/hooks";
+import { formatCurrency } from "../../refactoring/utils/formatCurrency.ts";
 
 const mockProducts: Product[] = [
   {
@@ -469,6 +470,16 @@ describe("advanced > ", () => {
       });
 
       expect(result.current.values).toEqual(initialValues);
+    });
+  });
+
+  describe("formatCurrency 함수 테스트 >", () => {
+    test("숫자를 한국 통화로 변경하는지 테스트 >", () => {
+      const result1 = formatCurrency(10000);
+      const result2 = formatCurrency(1000000);
+
+      expect(result1).toBe("10,000원");
+      expect(result2).toBe("1,000,000원");
     });
   });
 });
