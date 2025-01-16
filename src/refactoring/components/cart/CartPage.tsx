@@ -6,7 +6,7 @@ import {
 } from '../../models/index.ts';
 import {
   CartItemCard,
-  ProductItem,
+  CartProductItem,
   CartSelectCoupon,
   CartOrderSummary,
 } from './index.ts';
@@ -45,7 +45,7 @@ export const CartPage = ({ products, coupons }: Props) => {
               ).toFixed(0);
 
               return (
-                <ProductItem
+                <CartProductItem
                   key={product.id}
                   product={product}
                   remainingStock={remainingStock}
@@ -79,7 +79,7 @@ export const CartPage = ({ products, coupons }: Props) => {
             selectedCoupon={selectedCoupon}
             applyCoupon={applyCoupon}
           />
-          
+
           <CartOrderSummary
             totalBeforeDiscount={totalBeforeDiscount}
             totalDiscount={totalDiscount}

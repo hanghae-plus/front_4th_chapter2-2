@@ -8,7 +8,7 @@ interface Props {
 }
 
 // 상품 컴포넌트
-export const ProductItem = ({
+export const CartProductItem = ({
   product,
   remainingStock,
   maxDiscount,

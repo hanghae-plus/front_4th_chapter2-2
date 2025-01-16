@@ -32,16 +32,18 @@ export const AdminEditingProduct = ({
     handleClearDiscount,
   } = useAdminEditingProduct();
 
+  const toggleSetItem = (set: Set<string>, itemId: string): Set<string> => {
+    const newSet = new Set(set);
+    if (newSet.has(itemId)) {
+      newSet.delete(itemId);
+    } else {
+      newSet.add(itemId);
+    }
+    return newSet;
+  };
+
   const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
+    setOpenProductIds((prev) => toggleSetItem(prev, productId));
   };
 
   // 상품 수정 완료 핸들러 함수
