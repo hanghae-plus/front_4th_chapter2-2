@@ -53,7 +53,7 @@ export const updateCartItemQuantity = (
 
 // 장바구니 총액 계산 함수 분리
 // 장바구니 상품 계산 함수
-const calculateTotalDiscount = (cart: CartItem[]) => {
+export const calculateTotalDiscount = (cart: CartItem[]) => {
   let totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   let totalAfterDiscount = cart.reduce((sum, item) => {
