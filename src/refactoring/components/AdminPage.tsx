@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../types.ts';
+import { useCoupons } from '../hooks/useCoupon.ts';
 
 interface Props {
   products: Product[];
@@ -9,16 +10,24 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
+export const AdminPage = ({
+  products,
+  coupons: initialCoupons,
+  onProductUpdate,
+  onProductAdd,
+  onCouponAdd,
+}: Props) => {
+  const { coupons, newCoupon, addCoupon, updateNewCoupon } = useCoupons(initialCoupons);
+
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
+  // const [newCoupon, setNewCoupon] = useState<Coupon>({
+  //   name: '',
+  //   code: '',
+  //   discountType: 'percentage',
+  //   discountValue: 0,
+  // });
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
@@ -104,7 +113,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
-    setNewCoupon({
+    addCoupon({
       name: '',
       code: '',
       discountType: 'percentage',
@@ -310,21 +319,21 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                 type="text"
                 placeholder="쿠폰 이름"
                 value={newCoupon.name}
-                onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
+                onChange={(e) => updateNewCoupon({ name: e.target.value })}
                 className="w-full p-2 border rounded"
               />
               <input
                 type="text"
                 placeholder="쿠폰 코드"
                 value={newCoupon.code}
-                onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
+                onChange={(e) => updateNewCoupon({ code: e.target.value })}
                 className="w-full p-2 border rounded"
               />
               <div className="flex gap-2">
                 <select
                   value={newCoupon.discountType}
                   onChange={(e) =>
-                    setNewCoupon({ ...newCoupon, discountType: e.target.value as 'amount' | 'percentage' })
+                    updateNewCoupon({ discountType: e.target.value as 'amount' | 'percentage' })
                   }
                   className="w-full p-2 border rounded"
                 >
@@ -335,7 +344,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                   type="number"
                   placeholder="할인 값"
                   value={newCoupon.discountValue}
-                  onChange={(e) => setNewCoupon({ ...newCoupon, discountValue: parseInt(e.target.value) })}
+                  onChange={(e) => updateNewCoupon({ discountValue: parseInt(e.target.value) })}
                   className="w-full p-2 border rounded"
                 />
               </div>
