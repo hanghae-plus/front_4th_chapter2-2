@@ -1,18 +1,17 @@
 // useCart.ts
 import { useState } from 'react';
-import { CartItem, Coupon, Product } from '../../../../types.ts';
-import { calculateCartTotal, updateCartItemQuantity } from '../lib/cart.ts';
+import { updateCartItemQuantity } from '../lib/cart.ts';
+import { ICartItem, IProduct } from '../../../shared/types';
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [cart, setCart] = useState<ICartItem[]>([]);
 
-  const getRemainingStock = (product: Product) => {
+  const getRemainingStock = (product: IProduct) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
     return product.stock - (cartItem?.quantity || 0);
   };
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: IProduct) => {
     const remainingStock = getRemainingStock(product);
     if (remainingStock <= 0) return;
 
@@ -43,21 +42,10 @@ export const useCart = () => {
     );
   };
 
-  const applyCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
-  };
-
-  const calculateTotal = () => {
-    return calculateCartTotal(cart, selectedCoupon);
-  };
-
   return {
     cart,
     addToCart,
     removeFromCart,
     updateQuantity,
-    applyCoupon,
-    calculateTotal,
-    selectedCoupon,
   };
 };

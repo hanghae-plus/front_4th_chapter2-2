@@ -26,13 +26,13 @@ const initialProducts: IProduct[] = [
   },
 ];
 
-export interface IProductContextType {
+export interface IProductContext {
   products: IProduct[];
   updateProduct: (product: IProduct) => void;
   addProduct: (product: IProduct) => void;
 }
 
-export const ProductContext = createContext<IProductContextType | undefined>(
+export const ProductContext = createContext<IProductContext | undefined>(
   undefined,
 );
 

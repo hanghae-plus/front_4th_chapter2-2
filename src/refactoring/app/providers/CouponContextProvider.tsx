@@ -17,12 +17,12 @@ const initialCoupons: ICoupon[] = [
   },
 ];
 
-export interface ICouponContextType {
+export interface ICouponContext {
   coupons: ICoupon[];
   addCoupon: (coupon: ICoupon) => void;
 }
 
-export const CouponContext = createContext<ICouponContextType | undefined>(
+export const CouponContext = createContext<ICouponContext | undefined>(
   undefined,
 );
 

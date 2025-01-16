@@ -1,10 +1,12 @@
 import { SectionTitle } from '../../../shared/ui/typography';
+import { useCartTotalContext } from '../../../pages/cart/ui/CartTotalContextProvider.tsx';
 import { useCartContext } from '../../../pages/cart/model';
 
 export function OrderSummary() {
-  const { calculateTotal } = useCartContext();
+  const { cart } = useCartContext();
+  const { calculateTotal } = useCartTotalContext();
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
-    calculateTotal();
+    calculateTotal(cart);
 
   return (
     <div className="mt-6 bg-white p-4 rounded shadow">

@@ -1,10 +1,10 @@
 import { SectionTitle } from '../../../shared/ui/typography';
 import { useCouponContext } from '../../../entities/coupon/model';
-import { useCartContext } from '../../../pages/cart/model';
+import { useCartTotalContext } from '../../../pages/cart/ui/CartTotalContextProvider.tsx';
 
 export function CouponSelector() {
   const { coupons } = useCouponContext();
-  const { selectedCoupon, applyCoupon } = useCartContext();
+  const { selectedCoupon, applyCoupon } = useCartTotalContext();
 
   return (
     <>
