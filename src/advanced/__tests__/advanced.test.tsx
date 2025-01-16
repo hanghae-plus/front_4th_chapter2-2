@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { Coupon, Product } from '../../types';
+import { AdminPage } from "../../origin/components/AdminPage";
+import { CartPage } from "../../origin/components/CartPage";
+import { useCart } from "../../refactoring/pages/cart/hooks/useCart";
+import { getAppliedDiscount, getMaxDiscount, getRemainingStock } from "../../refactoring/pages/cart/models/cart";
 
 const mockProducts: Product[] = [
   {
@@ -232,13 +234,88 @@ describe('advanced > ', () => {
   })
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+    test('useCart hook 테스트: 로컬 스토리지 사용', () => {
+      const mockProduct: Product = {
+        id: 'p1',
+        name: '상품1',
+        price: 10000,
+        stock: 10,
+        discounts: [],
+      };
+    
+      const { result } = renderHook(() => useCart({ useLocalStorage: true }));
+    
+      // 장바구니에 아이템 추가
+      act(() => {
+        result.current.addToCart(mockProduct);
+      });
+    
+      let cart = result.current.cart;
+      expect(cart).toHaveLength(1);
+      expect(cart[0].product.id).toBe('p1');
+      expect(cart[0].quantity).toBe(1);
+    
+      // 수량 업데이트
+      act(() => {
+        result.current.updateQuantity('p1', 5);
+      });
+    
+      cart = result.current.cart;
+      expect(cart[0].quantity).toBe(5);
+    
+      // 로컬 스토리지 확인
+      const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      expect(storedCart).toHaveLength(1);
+      expect(storedCart[0].product.id).toBe('p1');
+      expect(storedCart[0].quantity).toBe(5);
+    
+      // 아이템 삭제
+      act(() => {
+        result.current.removeFromCart('p1');
+      });
+    
+      cart = result.current.cart;
+      expect(cart).toHaveLength(0);
+    
+      // 로컬 스토리지 확인
+      const updatedStoredCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      expect(updatedStoredCart).toHaveLength(0);
+    });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+    test("getMaxDiscount: 최대 할인율 반환", () => {
+      const discounts = [
+        { quantity: 5, rate: 0.05 },
+        { quantity: 10, rate: 0.1 },
+        { quantity: 15, rate: 0.2 },
+      ];
+  
+      expect(getMaxDiscount(discounts)).toBe(0.2);
+    });
+  
+    test("getAppliedDiscount: 적용 가능한 할인율 반환", () => {
+      const item = {
+        product: {
+          id: "p1",
+          name: "상품 1",
+          price: 100,
+          stock: 10,
+          discounts: [
+            { quantity: 5, rate: 0.05 },
+            { quantity: 10, rate: 0.1 },
+          ],
+        },
+        quantity: 7,
+      };
+  
+      expect(getAppliedDiscount(item)).toBe(0.05);
+    });
+  
+    test("getRemainingStock: 남은 재고 계산", () => {
+      const product = { id: "p1", name: "상품 1", price: 100, stock: 10, discounts: [] };
+      const cart = [{ product, quantity: 3 }];
+  
+      expect(getRemainingStock(product, cart)).toBe(7);
+    });
   })
 })
 

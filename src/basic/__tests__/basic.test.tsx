@@ -8,11 +8,13 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { CartPage } from "../../refactoring/components/CartPage";
-import { AdminPage } from "../../refactoring/components/AdminPage";
 import { CartItem, Coupon, Product } from "../../types";
-import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
-import * as cartUtils from "../../refactoring/models/cart";
+import { useCoupons, useProducts } from "../../refactoring/hooks";
+import { AdminPage } from "../../origin/components/AdminPage";
+import { CartPage } from "../../origin/components/CartPage";
+import { useDiscountCalculator } from "../../refactoring/pages/cart/hooks/useDiscountCalculator";
+import { useCart } from "../../refactoring/pages/cart/hooks/useCart";
+import * as cartUtils from "../../refactoring/pages/cart/models/cart";
 
 const mockProducts: Product[] = [
   {
@@ -383,10 +385,10 @@ describe("basic > ", () => {
       ];
 
       test("쿠폰 없이 총액을 올바르게 계산해야 합니다.", () => {
-        const result = cartUtils.calculateCartTotal(cart, null);
-        expect(result.totalBeforeDiscount).toBe(400);
-        expect(result.totalAfterDiscount).toBe(380);
-        expect(result.totalDiscount).toBe(20);
+        const { result } = renderHook(() => useDiscountCalculator(cart, null));
+        expect(result.current.totalBeforeDiscount).toBe(400);
+        expect(result.current.totalAfterDiscount).toBe(380);
+        expect(result.current.totalDiscount).toBe(20);
       });
 
       test("금액쿠폰을 올바르게 적용해야 합니다.", () => {
@@ -396,9 +398,9 @@ describe("basic > ", () => {
           discountType: "amount",
           discountValue: 50,
         };
-        const result = cartUtils.calculateCartTotal(cart, coupon);
-        expect(result.totalAfterDiscount).toBe(330);
-        expect(result.totalDiscount).toBe(70);
+        const { result } = renderHook(() => useDiscountCalculator(cart, coupon));
+        expect(result.current.totalAfterDiscount).toBe(330);
+        expect(result.current.totalDiscount).toBe(70);
       });
 
       test("퍼센트 쿠폰을 올바르게 적용해야 합니다", () => {
@@ -408,9 +410,9 @@ describe("basic > ", () => {
           discountType: "percentage",
           discountValue: 10,
         };
-        const result = cartUtils.calculateCartTotal(cart, coupon);
-        expect(result.totalAfterDiscount).toBe(342);
-        expect(result.totalDiscount).toBe(58);
+        const { result } = renderHook(() =>useDiscountCalculator(cart, coupon));
+        expect(result.current.totalAfterDiscount).toBe(342);
+        expect(result.current.totalDiscount).toBe(58);
       });
     });
 
@@ -509,7 +511,7 @@ describe("basic > ", () => {
         result.current.applyCoupon(testCoupon);
       });
 
-      const total = result.current.calculateTotal();
+      const total = result.current.calculateTotal;
       expect(total.totalBeforeDiscount).toBe(200);
       expect(total.totalAfterDiscount).toBe(180);
       expect(total.totalDiscount).toBe(20);
