@@ -7,7 +7,11 @@ import {
   createSuccessResponse,
 } from "../utils/error";
 import { parseRequest } from "../utils/request";
-import { coupons, findCoupon, updateCoupons } from "../utils/coupon";
+import { storage } from "../utils/storage";
+import { initialCoupons } from "../data/coupons";
+
+// 초기 상태 로드
+let coupons = storage.get("coupons") || initialCoupons;
 
 export const couponHandlers = [
   // 쿠폰 목록 조회
@@ -19,14 +23,18 @@ export const couponHandlers = [
   http.post("/api/coupons", async ({ request }) => {
     const newCoupon = await parseRequest<Coupon>(request);
 
-    if (findCoupon(newCoupon.code)) {
+    const existingCoupon = coupons.find(
+      (coupon: Coupon) => coupon.code === newCoupon.code
+    );
+    if (existingCoupon) {
       return createErrorResponse(
         "이미 존재하는 쿠폰 코드입니다.",
         HTTP_STATUS.BAD_REQUEST
       );
     }
 
-    updateCoupons([...coupons, newCoupon]);
+    coupons = [...coupons, newCoupon];
+    storage.set("coupons", coupons);
     return createSuccessResponse(newCoupon, HTTP_STATUS.CREATED);
   }),
 
@@ -34,26 +42,34 @@ export const couponHandlers = [
   http.put<CouponParams>("/api/coupons/:code", async ({ params, request }) => {
     const updatedCoupon = await parseRequest<Coupon>(request);
 
-    if (!findCoupon(params.code)) {
+    const existingCoupon = coupons.find(
+      (coupon: Coupon) => coupon.code === params.code
+    );
+    if (!existingCoupon) {
       return createErrorResponse("쿠폰을 찾을 수 없습니다.");
     }
 
-    updateCoupons(
-      coupons.map((coupon) =>
-        coupon.code === params.code ? updatedCoupon : coupon
-      )
+    coupons = coupons.map((coupon: Coupon) =>
+      coupon.code === params.code ? updatedCoupon : coupon
     );
-
+    storage.set("coupons", coupons);
     return createSuccessResponse(updatedCoupon);
   }),
 
   // 쿠폰 삭제
   http.delete<CouponParams>("/api/coupons/:code", ({ params }) => {
-    if (!findCoupon(params.code)) {
+    const existingCoupon = coupons.find(
+      (coupon: Coupon) => coupon.code === params.code
+    );
+    if (!existingCoupon) {
       return createErrorResponse("쿠폰을 찾을 수 없습니다.");
     }
 
-    updateCoupons(coupons.filter((coupon) => coupon.code !== params.code));
-    return createSuccessResponse(null, HTTP_STATUS.NO_CONTENT);
+    coupons = coupons.filter((coupon: Coupon) => coupon.code !== params.code);
+    storage.set("coupons", coupons);
+
+    return new Response(null, {
+      status: HTTP_STATUS.NO_CONTENT,
+    });
   }),
 ];

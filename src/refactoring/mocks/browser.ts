@@ -2,8 +2,14 @@ import { setupWorker } from "msw/browser";
 import { productHandlers } from "./apis/product";
 import { couponHandlers } from "./apis/coupon";
 import { common } from "./common";
+import { cartHandlers } from "./apis/cart";
 
-const handlers = [...productHandlers, ...couponHandlers, ...common];
+const handlers = [
+  ...productHandlers,
+  ...couponHandlers,
+  ...cartHandlers,
+  ...common,
+];
 
 export const worker = setupWorker(...handlers);
 

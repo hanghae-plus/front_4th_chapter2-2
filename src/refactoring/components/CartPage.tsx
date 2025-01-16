@@ -1,4 +1,4 @@
-import { useCart } from "../hooks";
+import { useCartAPI } from "../hooks/api/useCartAPI";
 import { CartItem, Coupon, Product } from "../models/index.ts";
 import { getRemainingStock } from "../utils/index.ts";
 
@@ -16,7 +16,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     applyCoupon,
     calculateTotal,
     selectedCoupon,
-  } = useCart();
+  } = useCartAPI();
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
@@ -104,7 +104,7 @@ export const CartPage = ({ products, coupons }: Props) => {
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
 
           <div className="space-y-2">
-            {cart.map((item) => {
+            {cart.map((item: CartItem) => {
               const appliedDiscount = getAppliedDiscount(item);
               return (
                 <div
@@ -126,7 +126,10 @@ export const CartPage = ({ products, coupons }: Props) => {
                   <div>
                     <button
                       onClick={() =>
-                        updateQuantity(item.product.id, item.quantity - 1)
+                        updateQuantity({
+                          productId: item.product.id,
+                          quantity: item.quantity - 1,
+                        })
                       }
                       className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
                     >
@@ -134,14 +137,23 @@ export const CartPage = ({ products, coupons }: Props) => {
                     </button>
                     <button
                       onClick={() =>
-                        updateQuantity(item.product.id, item.quantity + 1)
+                        updateQuantity({
+                          productId: item.product.id,
+                          quantity: item.quantity + 1,
+                        })
                       }
                       className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
                     >
                       +
                     </button>
                     <button
-                      onClick={() => removeFromCart(item.product.id)}
+                      onClick={() => {
+                        try {
+                          removeFromCart(item.product.id);
+                        } catch (error) {
+                          console.error("Failed to remove item:", error);
+                        }
+                      }}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
                       삭제

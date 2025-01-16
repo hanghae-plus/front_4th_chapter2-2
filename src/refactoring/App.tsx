@@ -3,26 +3,14 @@ import { CartPage } from "./components/CartPage.tsx";
 import { AdminPage } from "./components/AdminPage.tsx";
 import { useCoupons, useProducts } from "./hooks";
 import { initialProducts, initialCoupons } from "./mocks/data";
-import { useQuery } from "@tanstack/react-query";
-import { productService, couponService } from "./services";
+
+import { useProductsAPI } from "./hooks/api/useProductsAPI";
 
 const App = () => {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
-
-  const { data: fetchedProducts } = useQuery({
-    queryKey: ["products"],
-    queryFn: () => productService.getProducts(),
-  });
-
-  const { data: fetchedCoupons } = useQuery({
-    queryKey: ["coupons"],
-    queryFn: () => couponService.getCoupons(),
-  });
-
-  console.log("Fetched products:", fetchedProducts);
-  console.log("Fetched coupons:", fetchedCoupons);
+  const { products, addProduct, updateProduct, deleteProduct } =
+    useProductsAPI();
+  const { coupons, addCoupon } = useCoupons(initialCoupons);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -42,7 +30,9 @@ const App = () => {
           <AdminPage
             products={products}
             coupons={coupons}
-            onProductUpdate={updateProduct}
+            onProductUpdate={(product) =>
+              updateProduct({ id: product.id, product })
+            }
             onProductAdd={addProduct}
             onCouponAdd={addCoupon}
           />

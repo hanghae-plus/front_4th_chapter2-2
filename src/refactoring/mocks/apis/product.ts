@@ -7,56 +7,43 @@ import {
   createSuccessResponse,
 } from "../utils/error";
 import { parseRequest } from "../utils/request";
-import { products, findProduct, updateProducts } from "../utils/product";
+import { storage } from "../utils/storage";
+import { initialProducts } from "../data/products";
+
+// 초기 상태 로드
+let products = storage.get("products") || initialProducts;
 
 export const productHandlers = [
   // 상품 목록 조회
   http.get("/api/products", () => {
-    console.log("Intercepted GET /api/products request");
-    const response = createSuccessResponse(products);
-    console.log("Sending response:", response);
-    return response;
+    return createSuccessResponse(products);
   }),
 
   // 상품 추가
   http.post("/api/products", async ({ request }) => {
     const newProduct = await parseRequest<Product>(request);
-
-    if (findProduct(newProduct.id)) {
-      return createErrorResponse(
-        "이미 존재하는 상품 ID입니다.",
-        HTTP_STATUS.BAD_REQUEST
-      );
-    }
-
-    updateProducts([...products, newProduct]);
+    products = [...products, newProduct];
+    storage.set("products", products);
     return createSuccessResponse(newProduct, HTTP_STATUS.CREATED);
   }),
 
   // 상품 수정
   http.put<ProductParams>("/api/products/:id", async ({ params, request }) => {
     const updatedProduct = await parseRequest<Product>(request);
-
-    if (!findProduct(params.id)) {
-      return createErrorResponse("상품을 찾을 수 없습니다.");
-    }
-
-    updateProducts(
-      products.map((product) =>
-        product.id === params.id ? updatedProduct : product
-      )
+    products = products.map((product: Product) =>
+      product.id === params.id ? updatedProduct : product
     );
-
+    storage.set("products", products);
     return createSuccessResponse(updatedProduct);
   }),
 
   // 상품 삭제
   http.delete<ProductParams>("/api/products/:id", ({ params }) => {
-    if (!findProduct(params.id)) {
-      return createErrorResponse("상품을 찾을 수 없습니다.");
-    }
+    products = products.filter((product: Product) => product.id !== params.id);
+    storage.set("products", products);
 
-    updateProducts(products.filter((product) => product.id !== params.id));
-    return createSuccessResponse(null, HTTP_STATUS.NO_CONTENT);
+    return new Response(null, {
+      status: HTTP_STATUS.NO_CONTENT,
+    });
   }),
 ];
