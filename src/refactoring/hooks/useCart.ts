@@ -7,7 +7,8 @@ import { useLocalStorage } from "./useLocalStorage";
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-  const { addLocalStorage } = useLocalStorage();
+  const { addLocalStorage, getLocalStorage, updateLocalStorage } =
+    useLocalStorage();
 
   const getRemainingStock = (product: Product) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
@@ -47,6 +48,7 @@ export const useCart = () => {
         productId,
         newQuantity
       );
+      updateLocalStorage(updatedCart);
       return updatedCart;
     });
   };
