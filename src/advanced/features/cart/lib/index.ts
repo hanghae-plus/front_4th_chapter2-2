@@ -1,4 +1,5 @@
 import { Coupon } from '@advanced/entities/coupon';
+import { Product } from '@advanced/entities/product';
 import { CartItem } from '../model';
 
 export const calculateItemTotal = (item: CartItem) => {
@@ -74,4 +75,9 @@ export const updateCartItemQuantity = (
     );
   }
   return cart.filter((item) => item.product.id !== productId);
+};
+
+export const getRemainingStock = (cart: CartItem[], product: Product) => {
+  const cartItem = cart.find((item) => item.product.id === product.id);
+  return product.stock - (cartItem?.quantity || 0);
 };
