@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CartItem, Coupon, Product } from '../../types.ts';
+import { CartItem, Coupon, Product } from '@/types';
 
 interface Props {
   products: Product[];

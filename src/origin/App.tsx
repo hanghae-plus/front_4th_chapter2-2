@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { CartPage } from './components/CartPage.tsx';
-import { AdminPage } from './components/AdminPage.tsx';
-import { Coupon, Product } from '../types.ts';
+import { CartPage, AdminPage } from '@/refactoring/pages'
+import { Coupon, Product } from '@/types'
 
 const initialProducts: Product[] = [
   {
