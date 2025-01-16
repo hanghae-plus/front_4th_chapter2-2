@@ -16,6 +16,10 @@ import ProductContextProvider from '../refactoring/components/shared/product/con
 import { useProducts } from '../refactoring/hooks';
 import { useDiscount } from '../refactoring/hooks/admin/useDiscount';
 import { useCreateCoupon } from '../refactoring/hooks/admin/useCreateCoupon';
+import {
+  addProductDiscount,
+  removeProductDiscount,
+} from '../refactoring/models/discount';
 
 const mockProducts: Product[] = [
   {
@@ -263,6 +267,31 @@ describe('advanced > ', () => {
       const $newCoupon = screen.getByTestId('coupon-3');
 
       expect($newCoupon).toHaveTextContent('새 쿠폰 (NEW10):10% 할인');
+    });
+  });
+
+  describe('계산 함수 테스트 > ', () => {
+    describe('discount > ', () => {
+      test('할인 추가 함수 테스트 > ', () => {
+        const result = addProductDiscount(
+          { ...mockProducts[0] },
+          {
+            quantity: 10,
+            rate: 50,
+          },
+        );
+
+        expect(result.discounts).toHaveLength(2);
+        expect(result.discounts[result.discounts.length - 1]).toEqual({
+          quantity: 10,
+          rate: 50,
+        });
+      });
+      test('할인 삭제 함수 테스트 > ', () => {
+        const result = removeProductDiscount({ ...mockProducts[0] }, 0);
+
+        expect(result.discounts).toHaveLength(0);
+      });
     });
   });
 
