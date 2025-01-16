@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { describe, expect, test, vi } from 'vitest';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from "../../refactoring/components/AdminPage";
 import { Coupon, Product } from '../../types';
+import { useAdminCoupon, useAdminProduct } from "../../refactoring/hooks";
+import { getMaxDiscount } from "../../refactoring/models/cart";
 
 const mockProducts: Product[] = [
   {
@@ -231,13 +233,113 @@ describe('advanced > ', () => {
     })
   })
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+  describe('useAdminCoupon Hook 테스트', () => {
+    const mockOnCouponAdd = vi.fn();
+    
+    test('금액 할인 쿠폰도 올바르게 추가된다.', () => {
+      const { result } = renderHook(() => useAdminCoupon(mockOnCouponAdd));
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      // 금액 할인 쿠폰 정보 설정
+      act(() => {
+        result.current.handleInputChange('name', '5천원 할인');
+        result.current.handleInputChange('code', 'FIXED5000');
+        result.current.handleDiscountTypeChange('amount');
+        result.current.handleDiscountValueChange('5000');
+      });
+
+      act(() => {
+        result.current.handleAddCoupon();
+      });
+
+      expect(mockOnCouponAdd).toHaveBeenCalledWith({
+        name: '5천원 할인',
+        code: 'FIXED5000',
+        discountType: 'amount',
+        discountValue: 5000
+      });
+    });
+    
+    test('빈 쿠폰도 추가할 수 있다.', () => {
+      const { result } = renderHook(() => useAdminCoupon(mockOnCouponAdd));
+
+      act(() => {
+        result.current.handleAddCoupon();
+      });
+
+      expect(mockOnCouponAdd).toHaveBeenCalledWith({
+        name: '',
+        code: '',
+        discountType: 'percentage',
+        discountValue: 0
+      });
+    });
+  });
+
+  describe('useAdminProduct Hook 테스트', () => {
+    const mockOnProductAdd = vi.fn();
+    
+    test('새 상품을 추가하고 폼을 초기화한다.', () => {
+      const { result } = renderHook(() => useAdminProduct(mockOnProductAdd));
+
+      // 상품 정보 입력
+      act(() => {
+        result.current.handleNameChange('테스트 상품');
+        result.current.handlePriceChange('20000');
+        result.current.handleStockChange('100');
+        result.current.handleToggleProductForm();
+      });
+
+      // 상품 추가
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      // onProductAdd 호출 확인
+      expect(mockOnProductAdd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: '테스트 상품',
+          price: 20000,
+          stock: 100,
+          discounts: []
+        })
+      );
+
+      // 폼 상태 초기화 확인
+      expect(result.current.showNewProductForm).toBe(false);
+      expect(result.current.newProduct).toEqual({
+        name: '',
+        price: 0,
+        stock: 0,
+        discounts: []
+      });
+    });
+  });
+  
+  describe('계산 함수 테스트', () => {
+    describe('getMaxDiscount 테스트 >', () => {
+      test('할인이 여러 개 있을 때 최대 할인율을 반환한다.', () => {
+        const discounts = [
+          { quantity: 3, rate: 0.1 },
+          { quantity: 5, rate: 0.2 },
+          { quantity: 10, rate: 0.3 }
+        ];
+  
+        expect(getMaxDiscount(discounts)).toBe(0.3);
+      });
+  
+      test('할인이 하나만 있을 때 해당 할인율을 반환한다.', () => {
+        const discounts = [
+          { quantity: 3, rate: 0.1 }
+        ];
+  
+        expect(getMaxDiscount(discounts)).toBe(0.1);
+      });
+  
+      test('할인이 없을 때 0을 반환한다.', () => {
+        const discounts: { quantity: number; rate: number }[] = [];
+  
+        expect(getMaxDiscount(discounts)).toBe(0);
+      });
     })
   })
 })
