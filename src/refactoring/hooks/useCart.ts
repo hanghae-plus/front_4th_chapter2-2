@@ -22,6 +22,12 @@ export const useCart = () => {
     setCart(cart =>  updateCartItemQuantity(cart, productId, newQuantity));
   };
 
+  const getRemainingStock = (product: Product) => {
+    const cartItem = cart.find(item => item.product.id === product.id);
+
+    return product.stock - (cartItem?.quantity || 0);
+  };
+
   return {
     cart,
     selectedCoupon,
@@ -29,6 +35,7 @@ export const useCart = () => {
     calculateTotal,
     addToCart,
     removeFromCart,
-    updateQuantity
+    updateQuantity,
+    getRemainingStock
   } as const;
 };
