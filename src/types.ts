@@ -1,3 +1,17 @@
+export const DISCOUNT_TYPE_AMOUNT = "amount";
+export const DISCOUNT_TYPE_PERCENTAGE = "percentage";
+
+export type DiscountType =
+  | typeof DISCOUNT_TYPE_AMOUNT
+  | typeof DISCOUNT_TYPE_PERCENTAGE;
+
+export interface Coupon {
+  name: string;
+  code: string;
+  discountType: DiscountType;
+  discountValue: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -14,11 +28,4 @@ export interface Discount {
 export interface CartItem {
   product: Product;
   quantity: number;
-}
-
-export interface Coupon {
-  name: string;
-  code: string;
-  discountType: "amount" | "percentage";
-  discountValue: number;
 }

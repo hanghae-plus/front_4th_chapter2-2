@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Coupon } from "../../../../types";
 import CouponList from "./CouponList";
 import CouponForm from "./CouponForm";
@@ -9,30 +8,13 @@ interface CouponContainerProps {
 }
 
 const CouponContainer = ({ coupons, onAddCoupon }: CouponContainerProps) => {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: "",
-    code: "",
-    discountType: "percentage",
-    discountValue: 0,
-  });
-
-  const handleSubmit = () => {
-    onAddCoupon(newCoupon);
-    setNewCoupon({
-      name: "",
-      code: "",
-      discountType: "percentage",
-      discountValue: 0,
-    });
+  const handleSubmit = (addCoupon: Coupon) => {
+    onAddCoupon(addCoupon);
   };
 
   return (
     <div className="bg-white p-4 rounded shadow">
-      <CouponForm
-        coupon={newCoupon}
-        onChange={setNewCoupon}
-        onSubmit={handleSubmit}
-      />
+      <CouponForm onSubmit={handleSubmit} />
       <CouponList coupons={coupons} />
     </div>
   );
