@@ -1,6 +1,7 @@
 import { Coupon } from '@/shared/types';
 
 import { create } from 'zustand';
+import { addItem } from '@/shared/libs';
 
 interface CouponState {
   coupons: Coupon[];
@@ -17,7 +18,7 @@ export const useCouponStore = create<CouponState>((set) => ({
 
   handleCouponAdd: (newCoupon: Coupon) => {
     set((state) => ({
-      coupons: [...state.coupons, newCoupon],
+      coupons: addItem(state.coupons, newCoupon),
     }));
   },
 }));

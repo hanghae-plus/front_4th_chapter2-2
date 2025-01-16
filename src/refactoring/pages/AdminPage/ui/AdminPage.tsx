@@ -3,6 +3,7 @@ import { Coupon, Discount, Product } from '@/shared/types/';
 import { GridContainer, GridItem } from '@/widgets/CartItem';
 import { useProductsStore } from '@/entities/product';
 import { useCouponStore } from '@/entities/coupon';
+import { addItem } from '@/shared/libs';
 
 export function AdminPage() {
   const { handleProductUpdate, handleProductAdd, products } = useProductsStore();
@@ -85,7 +86,7 @@ export function AdminPage() {
     if (updatedProduct && editingProduct) {
       const newProduct = {
         ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
+        discounts: addItem(updatedProduct.discounts, newDiscount),
       };
       handleProductUpdate(newProduct);
       setEditingProduct(newProduct);
