@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { vi, beforeEach, describe, expect, test } from "vitest";
 import {
   act,
@@ -14,6 +14,7 @@ import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { storageManager } from "../../refactoring/utils";
 import { useForm, useLocalStorage } from "../../refactoring/hooks";
 import { formatCurrency } from "../../refactoring/utils/formatCurrency.ts";
+import { useProductSearch } from "../../refactoring/hooks/useProductSearch.ts";
 
 const mockProducts: Product[] = [
   {
@@ -480,6 +481,66 @@ describe("advanced > ", () => {
 
       expect(result1).toBe("10,000원");
       expect(result2).toBe("1,000,000원");
+    });
+  });
+
+  describe("useProductSearch hook 테스트", () => {
+    test("검색어가 입력되지 않았을 때 모든 제품을 반환 >", () => {
+      const { result } = renderHook(() => useProductSearch(mockProducts));
+
+      expect(result.current.filteredProducts).toEqual(mockProducts);
+    });
+
+    test("검색어에 따라 제품을 필터링 >", () => {
+      const { result } = renderHook(() => useProductSearch(mockProducts));
+
+      act(() => {
+        result.current.handleSearch({
+          target: { value: "상품1" },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      expect(result.current.filteredProducts).toEqual([
+        {
+          id: "p1",
+          name: "상품1",
+          price: 10000,
+          stock: 20,
+          discounts: [{ quantity: 10, rate: 0.1 }],
+        },
+      ]);
+    });
+
+    test("검색어와 일치하는 제품이 없을 경우 빈 배열을 반환 >", () => {
+      const { result } = renderHook(() => useProductSearch(mockProducts));
+
+      act(() => {
+        result.current.handleSearch({
+          target: { value: "없는상품" },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      expect(result.current.filteredProducts).toEqual([]);
+    });
+
+    test("대소문자를 구분 하지 않아야 한다 >", () => {
+      const { result } = renderHook(() => useProductSearch(mockProducts));
+
+      act(() => {
+        result.current.handleSearch({
+          target: { value: "상품2" },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      expect(result.current.filteredProducts).toEqual([
+        {
+          id: "p2",
+          name: "상품2",
+          price: 20000,
+          stock: 20,
+          discounts: [{ quantity: 10, rate: 0.15 }],
+        },
+      ]);
     });
   });
 });
