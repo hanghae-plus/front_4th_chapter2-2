@@ -1,4 +1,3 @@
-import { AppliedCoupon } from '@/refactoring/pages/Cart/ShoppingCart/components/AppliedCoupon';
 import { CartItem } from '@/refactoring/pages/Cart/ShoppingCart/components/CartItem';
 import { CouponSelect } from '@/refactoring/pages/Cart/ShoppingCart/components/CouponSelect';
 import { OrderSummary } from '@/refactoring/pages/Cart/ShoppingCart/components/OrderSummary';
@@ -47,8 +46,7 @@ export const ShoppingCart = ({
 
       <div className="mt-6 rounded bg-white p-4 shadow">
         <h2 className="mb-2 text-2xl font-semibold">쿠폰 적용</h2>
-        <CouponSelect coupons={coupons} onCouponApply={applyCoupon} />
-        {selectedCoupon && <AppliedCoupon appliedCoupon={selectedCoupon} />}
+        <CouponSelect selectedCoupon={selectedCoupon} coupons={coupons} onCouponApply={applyCoupon} />
       </div>
 
       <div className="mt-6 rounded bg-white p-4 shadow">

@@ -139,7 +139,7 @@ describe('advanced > ', () => {
 
       // 10. 쿠폰 적용하기
       const couponSelect = screen.getByRole('combobox');
-      fireEvent.change(couponSelect, { target: { value: '1' } }); // 10% 할인 쿠폰 선택
+      fireEvent.change(couponSelect, { target: { value: mockCoupons[1].code } }); // 10% 할인 쿠폰 선택
 
       // 11. 할인율 계산
       expect(screen.getByText('상품 금액: 700,000원')).toBeInTheDocument();
@@ -147,7 +147,7 @@ describe('advanced > ', () => {
       expect(screen.getByText('최종 결제 금액: 531,000원')).toBeInTheDocument();
 
       // 12. 다른 할인 쿠폰 적용하기
-      fireEvent.change(couponSelect, { target: { value: '0' } }); // 5000원 할인 쿠폰
+      fireEvent.change(couponSelect, { target: { value: mockCoupons[0].code } }); // 5000원 할인 쿠폰
       expect(screen.getByText('상품 금액: 700,000원')).toBeInTheDocument();
       expect(screen.getByText('할인 금액: 115,000원')).toBeInTheDocument();
       expect(screen.getByText('최종 결제 금액: 585,000원')).toBeInTheDocument();
