@@ -12,10 +12,10 @@ export const useGetCouponQuery = () => {
   });
 };
 
-export const useAddProductMutation = (Coupon: Coupon) => {
+export const useAddCouponMutation = (Coupon: Coupon) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ['/api/products'],
+    mutationKey: ['/api/coupons'],
     mutationFn: () => addCoupon(Coupon),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/coupons'] });

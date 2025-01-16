@@ -1,1 +1,1 @@
-export { useGetCouponQuery, useAddProductMutation } from './useCoupon';
+export { useGetCouponQuery, useAddCouponMutation } from './useCoupon';
