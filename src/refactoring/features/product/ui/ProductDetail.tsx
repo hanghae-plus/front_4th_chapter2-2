@@ -23,8 +23,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
         </EditingProductProvider>
       ) : (
         <div>
-          {product.discounts.map((discount) => (
-            <DiscountView discount={discount} />
+          {product.discounts.map((discount, index) => (
+            <DiscountView key={index} discount={discount} />
           ))}
           <button
             data-testid="modify-button"
