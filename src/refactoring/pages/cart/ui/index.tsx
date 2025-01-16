@@ -1,14 +1,11 @@
-import { CartItem, Product } from '../../../../types';
+import { CartItem } from '../../../../types';
 import { useCart } from '../../../entities/cart/model/useCart';
 import { TextButton } from '../../../shared/ui';
-import { DiscountCondition } from '../../../entities/discount/ui/DiscountCondition';
-import { ProductDisplay } from '../../../entities/product/ui/ProductDisplay';
-import { formatPrice } from '../../../entities/product/lib';
 import { useProductContext } from '../../../entities/product/model/useProductContext';
 import { useCouponContext } from '../../../entities/coupon/model/useCouponContext';
+import ProductList from '../../../features/product/ui/ProductList';
 
 export function CartPage() {
-  const { products } = useProductContext();
   const { coupons } = useCouponContext();
 
   const {
@@ -20,15 +17,6 @@ export function CartPage() {
     updateQuantity,
     selectedCoupon,
   } = useCart();
-
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
@@ -45,45 +33,9 @@ export function CartPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">장바구니</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
-          <div className="space-y-2">
-            {products.map((product) => {
-              const remainingStock = getRemainingStock(product);
-              return (
-                <ProductDisplay key={product.id} product={product}>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">{product.name}</span>
-                    <span className="text-gray-600">{formatPrice(product.price)}</span>
-                  </div>
-                  <div className="text-sm text-gray-500 mb-2">
-                    <span
-                      className={`font-medium ${remainingStock > 0 ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                      재고: {remainingStock}개
-                    </span>
-                    {product.discounts.length > 0 && (
-                      <span className="ml-2 font-medium text-blue-600">
-                        최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
-                      </span>
-                    )}
-                  </div>
-                  <DiscountCondition discounts={product.discounts} />
-                  <TextButton
-                    variant="add"
-                    title={remainingStock > 0 ? '장바구니에 추가' : '품절'}
-                    onClick={() => addToCart(product)}
-                    isDisabled={remainingStock <= 0}
-                    fullWidth
-                  />
-                </ProductDisplay>
-              );
-            })}
-          </div>
-        </div>
+        <ProductList cart={cart} addToCart={addToCart} />
         <div>
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-
           <div className="space-y-2">
             {cart.map((item) => {
               const appliedDiscount = getAppliedDiscount(item);

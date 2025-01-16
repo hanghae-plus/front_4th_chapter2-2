@@ -1,7 +1,6 @@
 import { Product } from '../../../../types';
-import { TextButton } from '../../../shared/ui';
+import { TextButton, FormInput } from '../../../shared/ui';
 import { DiscountEditor } from '../../discount/ui/DiscountEditor';
-import { FormInput } from '../../../shared/ui/FormInput';
 import { useProductEditForm } from '../model/useProductEditForm';
 
 export interface ProductEditFormProps {

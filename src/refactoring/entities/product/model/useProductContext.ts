@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Product } from '../../../../types.ts';
+import { Product } from '../../../../types';
 
 interface ProductContextType {
   products: Product[];

@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
-import { Discount } from '../../../../../types';
-import { formatDiscountRate } from '../../lib';
+import { Discount } from '../../../../types';
+import { formatDiscountRate } from '../lib';
 
 interface DiscountConditionProps {
   discounts: Discount[];

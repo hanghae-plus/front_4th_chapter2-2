@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react';
-import { Product } from '../../../../types.ts';
-import { useProducts } from '../../../features/product/model/useProduct.ts';
-import { ProductContext } from '../model/useProductContext.ts';
+import { Product } from '../../../../types';
+import { useProduct } from '../model/useProduct.ts';
+import { ProductContext } from '../model/useProductContext';
 
 export function ProductProvider({
   children,
@@ -10,7 +10,7 @@ export function ProductProvider({
   children: ReactNode;
   initialProducts: Product[];
 }) {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
+  const { products, updateProduct, addProduct } = useProduct(initialProducts);
 
   const value = useMemo(
     () => ({

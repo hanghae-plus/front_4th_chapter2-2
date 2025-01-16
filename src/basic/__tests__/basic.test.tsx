@@ -8,7 +8,7 @@ import * as cartUtils from '../../refactoring/entities/cart/lib/cart.ts';
 import { AdminPage } from '../../refactoring/pages/admin/ui';
 import { CartPage } from '../../refactoring/pages/cart/ui';
 import { useCoupons } from '../../refactoring/entities/coupon/model/useCoupon.ts';
-import { useProducts } from '../../refactoring/features/product/model/useProduct.ts';
+import { useProduct } from '../../refactoring/entities/product/model/useProduct.ts';
 import { useCart } from '../../refactoring/entities/cart/model/useCart.ts';
 import { ProductProvider } from '../../refactoring/entities/product/provider/ProductProvider.tsx';
 import { CouponProvider } from '../../refactoring/entities/coupon/provider/CouponProvider.tsx';
@@ -262,12 +262,12 @@ describe('basic > ', () => {
     ];
 
     test('특정 제품으로 초기화할 수 있다.', () => {
-      const { result } = renderHook(() => useProducts(initialProducts));
+      const { result } = renderHook(() => useProduct(initialProducts));
       expect(result.current.products).toEqual(initialProducts);
     });
 
     test('제품을 업데이트할 수 있다.', () => {
-      const { result } = renderHook(() => useProducts(initialProducts));
+      const { result } = renderHook(() => useProduct(initialProducts));
       const updatedProduct = { ...initialProducts[0], name: 'Updated Product' };
 
       act(() => {
@@ -284,7 +284,7 @@ describe('basic > ', () => {
     });
 
     test('새로운 제품을 추가할 수 있다.', () => {
-      const { result } = renderHook(() => useProducts(initialProducts));
+      const { result } = renderHook(() => useProduct(initialProducts));
       const newProduct: Product = {
         id: '2',
         name: 'New Product',

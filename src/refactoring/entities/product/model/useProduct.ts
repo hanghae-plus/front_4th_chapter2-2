@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Product } from '../../../../types.ts';
+import { Product } from '../../../../types';
 
-export const useProducts = (initialProducts: Product[]) => {
+export const useProduct = (initialProducts: Product[]) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const addProduct = (newProduct: Product) => {

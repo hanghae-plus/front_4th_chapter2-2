@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ProductDisplay } from '../../../entities/product/ui/ProductDisplay';
 import { Product } from '../../../../types';
 import { PanelTrigger } from '../../../entities/product/ui/PanelTrigger';
-import { ProductEditForm } from './ProductEditForm.tsx';
+import { ProductEditForm } from './ProductEditForm';
 import { DiscountCondition } from '../../../entities/discount/ui/DiscountCondition';
 import { TextButton } from '../../../shared/ui';
 
@@ -41,7 +41,6 @@ export function ProductPanel({
       <PanelTrigger onToggle={handleToggle}>
         {product.name} - {product.price}원 (재고: {product.stock})
       </PanelTrigger>
-      {/* <div className={isOpen ? 'block' : 'hidden'}> */}
       {isOpen &&
         (isEditing ? (
           <ProductEditForm product={product} onUpdate={handleSubmit} />
