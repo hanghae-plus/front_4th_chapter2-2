@@ -1,4 +1,5 @@
-//* storage 생성성
+//* storage 생성
+//* 2주차 solution 코드 참고
 export const createStorage = (key: string, storage = window.localStorage) => {
   const get = () => {
     const item = storage.getItem(key);
