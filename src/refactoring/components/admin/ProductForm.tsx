@@ -1,4 +1,5 @@
 import { Product } from '../../../types';
+import { Button } from '../common/Button';
 
 interface ProductFormProps {
   showForm: boolean;
@@ -17,9 +18,9 @@ export const ProductForm = ({
 }: ProductFormProps) => {
   return (
     <div className='mb-6'>
-      <button onClick={onToggleForm} className='bg-green-500 text-white px-4 py-2 rounded mb-4'>
+      <Button onClick={onToggleForm} className='bg-green-500 text-white px-4 py-2 rounded mb-4'>
         {showForm ? '취소' : '새 상품 추가'}
-      </button>
+      </Button>
 
       {showForm && (
         <div className='bg-white p-4 rounded shadow mb-4'>
@@ -70,12 +71,9 @@ export const ProductForm = ({
               className='w-full p-2 border rounded'
             />
           </div>
-          <button
-            onClick={onSubmit}
-            className='w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600'
-          >
+          <Button variant='primary' onClick={onSubmit} className='w-full'>
             추가
-          </button>
+          </Button>
         </div>
       )}
     </div>

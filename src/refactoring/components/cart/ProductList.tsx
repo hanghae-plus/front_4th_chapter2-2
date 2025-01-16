@@ -1,11 +1,12 @@
 import { CartItem, Product } from '../../../types';
 import { getMaxDiscount, getRemainingStock } from '../../utils/cartUtils';
+import { Button } from '../common/Button';
 
 interface ProductListProps {
   products: Product[];
   cart: CartItem[];
   addToCart: (product: Product) => void;
-  getRemainingStock: (product: Product) => number;
+  getRemainingStock: (product: Product, cart: CartItem[]) => number;
   getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
@@ -49,8 +50,9 @@ export const ProductList = ({ products, cart, addToCart }: ProductListProps) => 
                   ))}
                 </ul>
               )}
-              <button
+              <Button
                 onClick={() => addToCart(product)}
+                variant={remainingStock > 0 ? 'primary' : 'secondary'}
                 className={`w-full px-3 py-1 rounded ${
                   remainingStock > 0
                     ? 'bg-blue-500 text-white hover:bg-blue-600'
@@ -59,7 +61,7 @@ export const ProductList = ({ products, cart, addToCart }: ProductListProps) => 
                 disabled={remainingStock <= 0}
               >
                 {remainingStock > 0 ? '장바구니에 추가' : '품절'}
-              </button>
+              </Button>
             </div>
           );
         })}
