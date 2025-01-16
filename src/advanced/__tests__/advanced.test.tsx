@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/cart/CartPage';
 import { AdminPage } from '../../refactoring/components/admin/AdminPage';
 import { Coupon, Product } from '../../types';
+import * as productUtils from '../../refactoring/models/product';
+import { useAdminCoupon } from '../../refactoring/hooks';
+import { INITIAL_COUPON_STATE } from '../../refactoring/data/initialData';
 
 const mockProducts: Product[] = [
   {
@@ -263,13 +273,51 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    });
+  describe('productUtils', () => {
+    const testProduct: Product = {
+      id: 'p2',
+      name: 'Test Product',
+      price: 100,
+      stock: 10,
+      discounts: [
+        { quantity: 2, rate: 0.1 },
+        { quantity: 5, rate: 0.2 },
+      ],
+    };
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    describe('updateProductList', () => {
+      test('업데이트된 제품 리스트를 반환할 수 있다.', () => {
+        const updatedProductList = productUtils.updateProductList(
+          mockProducts,
+          testProduct,
+        );
+        expect(updatedProductList[1]).toBe(testProduct);
+      });
+    });
+  });
+
+  describe('useAdminCoupon', () => {
+    const testCoupon: Coupon = {
+      name: 'Test Coupon',
+      code: 'TEST',
+      discountType: 'percentage',
+      discountValue: 10,
+    };
+
+    test('쿠폰을 수정할 수 있다.', () => {
+      const { result } = renderHook(() => useAdminCoupon());
+      act(() => {
+        result.current.handleEditCoupon(testCoupon, { name: '변경된 쿠폰' });
+      });
+      expect(result.current.newCoupon.name).toBe('변경된 쿠폰');
+    });
+    test('쿠폰을 초기화 할 수 있다.', () => {
+      const { result } = renderHook(() => useAdminCoupon());
+      act(() => {
+        result.current.handleEditCoupon(testCoupon, { name: '변경된 쿠폰' });
+        result.current.handleClearCoupon();
+      });
+      expect(result.current.newCoupon).toEqual(INITIAL_COUPON_STATE);
     });
   });
 });
