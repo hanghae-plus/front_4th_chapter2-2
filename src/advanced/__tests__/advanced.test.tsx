@@ -1,9 +1,18 @@
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeEach, describe, expect, test } from "vitest";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from "@testing-library/react";
+import { Coupon, Product } from "../../types";
 import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
-import { Coupon, Product } from "../../types";
+import { storageManager } from "../../refactoring/utils";
+import { useLocalStorage } from "../../refactoring/hooks";
 
 const mockProducts: Product[] = [
   {
@@ -73,6 +82,27 @@ const TestAdminPage = () => {
     />
   );
 };
+
+const mockStorage = (() => {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: (index: number) => Object.keys(store)[index] || null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  } as Storage;
+})();
 
 describe("advanced > ", () => {
   describe("시나리오 테스트 > ", () => {
@@ -263,13 +293,87 @@ describe("advanced > ", () => {
     });
   });
 
-  describe("자유롭게 작성해보세요.", () => {
-    test("새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+  describe("storageManager 테스트 >", () => {
+    beforeEach(() => {
+      Object.defineProperty(window, "localStorage", {
+        value: mockStorage,
+      });
+      localStorage.clear();
     });
 
-    test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+    test("데이터 저장/조회 테스트 >", () => {
+      const key = "test";
+      const value = "test value";
+      const { get, set } = storageManager<string>(key, mockStorage);
+
+      set(value);
+      expect(get()).toBe(value);
+    });
+
+    test("데이터 삭제 테스트 >", () => {
+      const key = "test";
+      const value = "test value";
+      const { get, set, reset } = storageManager<string>(key, mockStorage);
+
+      set(value);
+      expect(get()).toBe(value);
+
+      reset();
+      expect(get()).toBeNull();
+    });
+  });
+
+  describe("useLocalStorage 테스트 >", () => {
+    beforeEach(() => {
+      Object.defineProperty(window, "localStorage", {
+        value: mockStorage,
+      });
+      localStorage.clear();
+    });
+
+    test("초기 값 설정 테스트 >", () => {
+      const key = "testKey";
+      const initialValue = "initialValue";
+      const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+      expect(result.current[0]).toBe(initialValue);
+    });
+
+    test("상태 업데이트 테스트 >", () => {
+      const key = "testKey";
+      const initialValue = "initialValue";
+      const { result } = renderHook(() => useLocalStorage(key, initialValue));
+
+      act(() => {
+        result.current[1]("newValue");
+      });
+
+      expect(result.current[0]).toBe("newValue");
+      expect(window.localStorage.getItem(key)).toBe(JSON.stringify("newValue"));
+    });
+
+    test("새로 고침 테스트 >", () => {
+      const key = "testKey";
+      const initialValue = "initialValue";
+
+      const { result, unmount } = renderHook(() =>
+        useLocalStorage(key, initialValue),
+      );
+
+      act(() => {
+        result.current[1]("newValue");
+      });
+
+      expect(result.current[0]).toBe("newValue");
+      expect(window.localStorage.getItem(key)).toBe(JSON.stringify("newValue"));
+
+      unmount();
+
+      const { result: refreshedResult } = renderHook(() =>
+        useLocalStorage(key, null),
+      );
+
+      expect(refreshedResult.current[0]).toBe("newValue");
     });
   });
 });
