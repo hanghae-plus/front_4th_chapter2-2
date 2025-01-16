@@ -2,7 +2,7 @@ import { fireEvent, render, renderHook, screen, within } from '@testing-library/
 import { act, useState } from 'react';
 import { describe, expect, test } from 'vitest';
 
-import { useForm } from '@/refactoring/hooks/useForm';
+import { useForm } from '@/refactoring/hooks';
 import { AdminPage } from '@/refactoring/pages/Admin/AdminPage';
 import { useCouponForm } from '@/refactoring/pages/Admin/CouponManagement/components/CouponAddForm/hooks/useCouponForm';
 import { useProductForm } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductUpdateForm/hooks/useProductForm';

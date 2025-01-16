@@ -1,4 +1,4 @@
-import { useForm } from '@/refactoring/hooks/useForm';
+import { useForm } from '@/refactoring/hooks';
 import type { Coupon } from '@/types';
 
 export const useCouponForm = () => {

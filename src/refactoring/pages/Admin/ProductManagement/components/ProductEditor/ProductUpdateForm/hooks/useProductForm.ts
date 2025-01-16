@@ -1,4 +1,4 @@
-import { useForm } from '@/refactoring/hooks/useForm';
+import { useForm } from '@/refactoring/hooks';
 import type { Discount, Product } from '@/types';
 
 interface UseProductFormProps {
