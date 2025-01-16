@@ -24,6 +24,8 @@ import {
 import { getAppliedDiscount } from '../../refactoring/features/cart/lib/discount';
 import { useAddProduct } from '../../refactoring/hooks/useAddProduct';
 import { useCouponStore } from '../../refactoring/entities/coupon/model/useCouponStore';
+import { useForm } from '../../refactoring/hooks/useForm';
+import { useEditProduct } from '../../refactoring/hooks/useEditProduct';
 
 const mockProducts: Product[] = [
   {
@@ -476,13 +478,269 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+  describe('useEditProduct 커스텀 훅 테스트', () => {
+    const mockUpdateProduct = vi.fn();
+
+    const mockProducts: Product[] = [
+      {
+        id: '1',
+        name: '상품1',
+        price: 1000,
+        stock: 10,
+        discounts: [],
+      },
+      {
+        id: '2',
+        name: '상품2',
+        price: 2000,
+        stock: 20,
+        discounts: [],
+      },
+    ];
+
+    beforeEach(() => {
+      vi.clearAllMocks();
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    test('초기값 확인', () => {
+      const { result } = renderHook(() =>
+        useEditProduct({
+          products: mockProducts,
+          updateProduct: mockUpdateProduct,
+        }),
+      );
+
+      expect(result.current.editingProduct).toBeNull();
+    });
+
+    test('selectEditProduct로 상품 선택', () => {
+      const { result } = renderHook(() =>
+        useEditProduct({
+          products: mockProducts,
+          updateProduct: mockUpdateProduct,
+        }),
+      );
+
+      act(() => {
+        result.current.selectEditProduct(mockProducts[0]);
+      });
+
+      expect(result.current.editingProduct).toEqual(mockProducts[0]);
+    });
+
+    test('updateEditingProduct로 상품 업데이트', () => {
+      const { result } = renderHook(() =>
+        useEditProduct({
+          products: mockProducts,
+          updateProduct: mockUpdateProduct,
+        }),
+      );
+
+      act(() => {
+        result.current.selectEditProduct(mockProducts[0]);
+      });
+
+      const updatedProduct = { ...mockProducts[0], price: 1500 };
+
+      act(() => {
+        result.current.updateEditingProduct(updatedProduct);
+      });
+
+      expect(mockUpdateProduct).toHaveBeenCalledWith(updatedProduct);
+      expect(mockUpdateProduct).toHaveBeenCalledTimes(1);
+    });
+
+    test('updateEditingProduct 호출 시 ID가 다른 경우 업데이트되지 않음', () => {
+      const { result } = renderHook(() =>
+        useEditProduct({
+          products: mockProducts,
+          updateProduct: mockUpdateProduct,
+        }),
+      );
+
+      act(() => {
+        result.current.selectEditProduct(mockProducts[0]);
+      });
+
+      const updatedProduct = { ...mockProducts[1], price: 1500 };
+
+      act(() => {
+        result.current.updateEditingProduct(updatedProduct);
+      });
+
+      expect(mockUpdateProduct).not.toHaveBeenCalled();
+    });
+
+    test('resetEditingProduct로 상태 초기화', () => {
+      const { result } = renderHook(() =>
+        useEditProduct({
+          products: mockProducts,
+          updateProduct: mockUpdateProduct,
+        }),
+      );
+
+      act(() => {
+        result.current.selectEditProduct(mockProducts[0]);
+      });
+
+      expect(result.current.editingProduct).toEqual(mockProducts[0]);
+
+      act(() => {
+        result.current.resetEditingProduct();
+      });
+
+      expect(result.current.editingProduct).toBeNull();
+    });
+  });
+
+  describe('useForm 커스텀 훅 테스트', () => {
+    // 테스트 데이터 타입 정의
+    interface TestFormValues {
+      name: string;
+      email: string;
+      age: number;
+    }
+
+    // 초기값 설정
+    const initialValues: TestFormValues = {
+      name: '',
+      email: '',
+      age: 0,
+    };
+
+    // onSubmit 함수 모킹
+    const mockOnSubmit = vi.fn();
+
+    // 유효성 검사 함수
+    const validate = (values: TestFormValues) => {
+      const errors: Partial<Record<keyof TestFormValues, string>> = {};
+      if (!values.name) errors.name = '이름을 입력하세요.';
+      if (!values.email.includes('@'))
+        errors.email = '올바른 이메일을 입력하세요.';
+      if (values.age < 0) errors.age = '나이는 음수일 수 없습니다.';
+      return errors;
+    };
+
+    describe('useForm 커스텀 훅 테스트', () => {
+      beforeEach(() => {
+        vi.clearAllMocks();
+      });
+
+      test('초기값이 올바르게 설정된다.', () => {
+        const { result } = renderHook(() =>
+          useForm({
+            initialValues,
+            onSubmit: mockOnSubmit,
+          }),
+        );
+
+        expect(result.current.values).toEqual(initialValues);
+        expect(result.current.errors).toEqual({});
+        expect(result.current.isSubmitting).toBe(false);
+      });
+
+      test('값을 변경하면 values가 업데이트된다.', () => {
+        const { result } = renderHook(() =>
+          useForm({
+            initialValues,
+            onSubmit: mockOnSubmit,
+          }),
+        );
+
+        act(() => {
+          result.current.handleChange({
+            target: { name: 'name', value: '홍길동' },
+          } as React.ChangeEvent<HTMLInputElement>);
+        });
+
+        expect(result.current.values.name).toBe('홍길동');
+      });
+
+      test('setValue를 호출하면 특정 필드가 업데이트된다.', () => {
+        const { result } = renderHook(() =>
+          useForm({
+            initialValues,
+            onSubmit: mockOnSubmit,
+          }),
+        );
+
+        act(() => {
+          result.current.setValue('email', 'test@example.com');
+        });
+
+        expect(result.current.values.email).toBe('test@example.com');
+      });
+
+      test('유효성 검사 에러를 올바르게 처리한다.', () => {
+        const { result } = renderHook(() =>
+          useForm({
+            initialValues,
+            onSubmit: mockOnSubmit,
+            validate,
+          }),
+        );
+
+        act(() => {
+          result.current.handleSubmit({
+            preventDefault: vi.fn(),
+          } as unknown as React.FormEvent);
+        });
+
+        expect(result.current.errors).toEqual({
+          name: '이름을 입력하세요.',
+          email: '올바른 이메일을 입력하세요.',
+        });
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+      });
+
+      test('유효성 검사를 통과하면 onSubmit이 호출된다.', () => {
+        const { result } = renderHook(() =>
+          useForm({
+            initialValues: {
+              name: '홍길동',
+              email: 'test@example.com',
+              age: 25,
+            },
+            onSubmit: mockOnSubmit,
+            validate,
+          }),
+        );
+
+        act(() => {
+          result.current.handleSubmit({
+            preventDefault: vi.fn(),
+          } as unknown as React.FormEvent);
+        });
+
+        expect(result.current.errors).toEqual({});
+        expect(mockOnSubmit).toHaveBeenCalledWith({
+          name: '홍길동',
+          email: 'test@example.com',
+          age: 25,
+        });
+      });
+
+      test('resetForm을 호출하면 초기값으로 리셋된다.', () => {
+        const { result } = renderHook(() =>
+          useForm({
+            initialValues,
+            onSubmit: mockOnSubmit,
+          }),
+        );
+
+        act(() => {
+          result.current.setValue('name', '홍길동');
+        });
+
+        expect(result.current.values.name).toBe('홍길동');
+
+        act(() => {
+          result.current.resetForm();
+        });
+
+        expect(result.current.values).toEqual(initialValues);
+        expect(result.current.errors).toEqual({});
+      });
     });
   });
 });
