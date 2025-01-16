@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CartPage } from "./components/CartPage.tsx";
 import { AdminPage } from './components/AdminPage.tsx';
-import { useCoupons, useProducts, useDarkMode } from "./hooks";
+import { useCoupons, useProducts, useDarkMode, useFontSize } from "./hooks";
 import { initialProducts, initialCoupons } from "./data/initialData";
 
 
@@ -10,6 +10,10 @@ const App = () => {
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { fontSize, increaseFontSize, decreaseFontSize } = useFontSize();
+
+  // 초기 글자 크기 설정
+  document.documentElement.style.fontSize = `${fontSize}px`;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -19,12 +23,14 @@ const App = () => {
 
           <div className="flex gap-2">
             <button
+              onClick={increaseFontSize}
               className="bg-white text-blue-600 px-2 py-1 rounded hover:bg-blue-100 max-sm:text-xs max-sm:px-1 max-sm:py-1"
               title="확대"
             >
               +
             </button>
             <button
+              onClick={decreaseFontSize}
               className="bg-white text-blue-600 px-2 py-1 rounded hover:bg-blue-100 max-sm:text-xs max-sm:px-1 max-sm:py-1"
               title="축소"
             >
@@ -35,7 +41,7 @@ const App = () => {
               title="색상변경"
               onClick={toggleDarkMode}
             >
-              {isDarkMode ? "라이트 모드로 변경" : "다크모드로 변경"}
+              {isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경"}
             </button>
             <button
               onClick={() => setIsAdmin(!isAdmin)}
