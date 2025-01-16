@@ -12,13 +12,16 @@ export const useGetCouponQuery = () => {
   });
 };
 
-export const useAddCouponMutation = (Coupon: Coupon) => {
+export const useAddCouponMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ['/api/coupons'],
-    mutationFn: () => addCoupon(Coupon),
+    mutationFn: (Coupon: Coupon) => addCoupon(Coupon),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/coupons'] });
+      queryClient.invalidateQueries({
+        queryKey: ['/api/coupons'],
+        exact: false,
+      });
     },
   });
 };
