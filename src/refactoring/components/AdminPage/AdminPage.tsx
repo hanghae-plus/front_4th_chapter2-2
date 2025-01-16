@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../../types.ts';
+import { Container, Title, Button } from '../Styled.tsx';
+import { Section } from '../Section.tsx';
+import { InputLabel } from './InputLabel.tsx';
 
 interface Props {
   products: Product[];
@@ -125,11 +128,14 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
+    <Section
+      className="container mx-auto p-4"
+      title={<Title.Main>관리자 페이지</Title.Main>}
+    >
+      <Container.Grid>
+        <Section
+          title={<Title.Sub>상품 관리</Title.Sub>}
+        >
           <button
             onClick={() => setShowNewProductForm(!showNewProductForm)}
             className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
@@ -137,56 +143,44 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
             {showNewProductForm ? '취소' : '새 상품 추가'}
           </button>
           {showNewProductForm && (
-            <div className="bg-white p-4 rounded shadow mb-4">
-              <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
-              <div className="mb-2">
-                <label htmlFor="productName" className="block text-sm font-medium text-gray-700">상품명</label>
-                <input
-                  id="productName"
-                  type="text"
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">가격</label>
-                <input
-                  id="productPrice"
-                  type="number"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">재고</label>
-                <input
-                  id="productStock"
-                  type="number"
-                  value={newProduct.stock}
-                  onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <button
-                onClick={handleAddNewProduct}
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                추가
-              </button>
-            </div>
+            <Section
+              className="bg-white p-4 rounded shadow mb-4"
+              title={<Title.Container>새 상품 추가</Title.Container>}
+            >
+              <InputLabel
+                id='productName'
+                label='상품명'
+                valueType="text"
+                value={newProduct.name}
+                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+              />
+              <InputLabel
+                id='productPrice'
+                label='가격'
+                valueType="number"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
+              />
+              <InputLabel
+                id='productStock'
+                label='재고'
+                valueType="number"
+                value={newProduct.stock}
+                onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
+              />
+              <Button.Blue className='w-full' onClick={handleAddNewProduct}>추가</Button.Blue>
+            </Section>
           )}
           <div className="space-y-2">
             {products.map((product, index) => (
               <div key={product.id} data-testid={`product-${index + 1}`} className="bg-white p-4 rounded shadow">
-                <button
+                <Button.FullLeftText
                   data-testid="toggle-button"
                   onClick={() => toggleProductAccordion(product.id)}
                   className="w-full text-left font-semibold"
                 >
                   {product.name} - {product.price}원 (재고: {product.stock})
-                </button>
+                </Button.FullLeftText>
                 {openProductIds.has(product.id) && (
                   <div className="mt-2">
                     {editingProduct && editingProduct.id === product.id ? (
@@ -224,12 +218,12 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                           {editingProduct.discounts.map((discount, index) => (
                             <div key={index} className="flex justify-between items-center mb-2">
                               <span>{discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인</span>
-                              <button
+                              <Button.Red
+                                className="px-2 py-1"
                                 onClick={() => handleRemoveDiscount(product.id, index)}
-                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                               >
                                 삭제
-                              </button>
+                              </Button.Red>
                             </div>
                           ))}
                           <div className="flex space-x-2">
@@ -247,12 +241,12 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
                               onChange={(e) => setNewDiscount({ ...newDiscount, rate: parseInt(e.target.value) / 100 })}
                               className="w-1/3 p-2 border rounded"
                             />
-                            <button
+                            <Button.Blue
                               onClick={() => handleAddDiscount(product.id)}
-                              className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                              className="w-1/3"
                             >
                               할인 추가
-                            </button>
+                            </Button.Blue>
                           </div>
                         </div>
                         <button
@@ -283,9 +277,11 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
               </div>
             ))}
           </div>
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
+        </Section>
+
+        <Section
+          title={<Title.Sub>쿠폰관리</Title.Sub>}
+        >
           <div className="bg-white p-4 rounded shadow">
             <div className="space-y-2 mb-4">
               <input
@@ -338,8 +334,8 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </Section>
+      </Container.Grid >
+    </Section >
   );
 };
