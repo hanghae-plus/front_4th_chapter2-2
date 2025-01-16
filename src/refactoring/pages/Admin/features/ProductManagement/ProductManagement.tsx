@@ -1,4 +1,4 @@
-import { ProductAddForm } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductAddForm/ProductAddForm';
+import { ProductAddForm } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductAddForm';
 import { ProductEditor } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/ProductEditor';
 import type { Product } from '@/types';
 
