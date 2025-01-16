@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Coupon } from '../../../../types';
 import { CouponItem } from './Item';
+import { validateCoupon } from '../helpers';
 
 interface CouponManagementProps {
   coupons: Coupon[];
@@ -14,8 +15,16 @@ export const CouponManagement = ({ coupons, onCouponAdd }: CouponManagementProps
     discountType: 'percentage',
     discountValue: 0,
   });
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const handleAddCoupon = () => {
+    const validation = validateCoupon(newCoupon);
+    setValidationErrors(validation.errors);
+
+    if (!validation.isValid) {
+      return;
+    }
+
     onCouponAdd(newCoupon);
     setNewCoupon({
       name: '',
@@ -23,6 +32,7 @@ export const CouponManagement = ({ coupons, onCouponAdd }: CouponManagementProps
       discountType: 'percentage',
       discountValue: 0,
     });
+    setValidationErrors([]);
   };
 
   return (
@@ -34,20 +44,29 @@ export const CouponManagement = ({ coupons, onCouponAdd }: CouponManagementProps
             type="text"
             placeholder="쿠폰 이름"
             value={newCoupon.name}
-            onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
+            onChange={(e) => {
+              setNewCoupon({ ...newCoupon, name: e.target.value });
+              setValidationErrors([]);
+            }}
             className="w-full p-2 border rounded"
           />
           <input
             type="text"
             placeholder="쿠폰 코드"
             value={newCoupon.code}
-            onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
+            onChange={(e) => {
+              setNewCoupon({ ...newCoupon, code: e.target.value });
+              setValidationErrors([]);
+            }}
             className="w-full p-2 border rounded"
           />
           <div className="flex gap-2">
             <select
               value={newCoupon.discountType}
-              onChange={(e) => setNewCoupon({ ...newCoupon, discountType: e.target.value as 'amount' | 'percentage' })}
+              onChange={(e) => {
+                setNewCoupon({ ...newCoupon, discountType: e.target.value as 'amount' | 'percentage' });
+                setValidationErrors([]);
+              }}
               className="w-full p-2 border rounded"
             >
               <option value="amount">금액(원)</option>
@@ -57,13 +76,23 @@ export const CouponManagement = ({ coupons, onCouponAdd }: CouponManagementProps
               type="number"
               placeholder="할인 값"
               value={newCoupon.discountValue}
-              onChange={(e) => setNewCoupon({ ...newCoupon, discountValue: parseInt(e.target.value) })}
+              onChange={(e) => {
+                setNewCoupon({ ...newCoupon, discountValue: parseInt(e.target.value) });
+                setValidationErrors([]);
+              }}
               className="w-full p-2 border rounded"
             />
           </div>
           <button onClick={handleAddCoupon} className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
             쿠폰 추가
           </button>
+          {validationErrors.length > 0 && (
+            <div className="mt-2 text-red-500 text-sm">
+              {validationErrors.map((error, index) => (
+                <div key={index}>{error}</div>
+              ))}
+            </div>
+          )}
         </div>
         <div>
           <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>
