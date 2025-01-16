@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { useLocalStorage } from './useLocalStorage';
 import { CartItem, Coupon, Product } from '../../types';
-import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../models/cart';
 import { LOCAL_STORAGE_KEY } from '../constants/localStorage';
+import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../models/cart';
 
 export const useCart = () => {
   const { saveToStorage, getFromStorage } = useLocalStorage<CartItem[]>(LOCAL_STORAGE_KEY['CART']);

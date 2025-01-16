@@ -5,6 +5,7 @@ export const useLocalStorage = <T>(key: string) => {
 
   const getFromStorage = (): T | null => {
     const item = localStorage.getItem(key);
+
     return item ? JSON.parse(item) : null;
   };
 

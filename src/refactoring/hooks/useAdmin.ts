@@ -27,25 +27,32 @@ export const useAdmin = ({
 
     if (validateProductData(productToValidate)) {
       onProductUpdate(product);
+
       return true;
     }
+
     return false;
   };
 
   const addProduct = (product: Omit<Product, 'id'>): boolean => {
     if (validateProductData(product)) {
       const newProduct = { ...product, id: Date.now().toString() };
+
       onProductAdd(newProduct);
+
       return true;
     }
+
     return false;
   };
 
   const addCoupon = (coupon: Coupon): boolean => {
     if (validateCouponData(coupon)) {
       onCouponAdd(coupon);
+
       return true;
     }
+
     return false;
   };
 
@@ -53,6 +60,7 @@ export const useAdmin = ({
     if (!validateDiscount(discount.quantity, discount.rate * 100)) return false;
 
     const product = products.find((p) => p.id === productId);
+
     if (!product) return false;
 
     const updatedProduct = {
@@ -61,11 +69,13 @@ export const useAdmin = ({
     };
 
     updateProduct(updatedProduct);
+
     return true;
   };
 
   const removeDiscount = (productId: string, discountIndex: number) => {
     const product = products.find((p) => p.id === productId);
+
     if (!product) return false;
 
     const updatedProduct = {
@@ -74,6 +84,7 @@ export const useAdmin = ({
     };
 
     updateProduct(updatedProduct);
+
     return true;
   };
 
