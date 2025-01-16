@@ -1,5 +1,5 @@
 import { Coupon } from '../../../../types';
-import { formatCouponDiscount } from '../../product/helpers/index';
+import { formatCouponDiscount } from '../../product/helpers/\bindex';
 
 interface CouponSelectorProps {
   coupons: Coupon[];
@@ -18,8 +18,7 @@ export const CouponSelector = ({ coupons, selectedCoupon, onApplyCoupon }: Coupo
         <option value="">쿠폰 선택</option>
         {coupons.map((coupon, index) => (
           <option key={coupon.code} value={index}>
-            {coupon.name} -{' '}
-            {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
+            {coupon.name} - {formatCouponDiscount(coupon)}
           </option>
         ))}
       </select>
