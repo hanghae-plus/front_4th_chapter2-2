@@ -1,6 +1,6 @@
-import { useForm } from "../../hooks";
-import { Discount, Product } from "../../../types.ts";
 import { useState } from "react";
+import { Discount, Product } from "../../../types.ts";
+import { useForm } from "../../hooks";
 
 interface Props {
   product: Product;

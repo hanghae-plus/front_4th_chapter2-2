@@ -1,6 +1,6 @@
-import { Product } from "../../types.ts";
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import { Product } from "../../types.ts";
 
 export const useProductSearch = (products: Product[]) => {
   const [word, setWord] = useState("");

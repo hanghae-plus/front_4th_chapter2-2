@@ -1,11 +1,12 @@
 import { Coupon, Product } from "../../types.ts";
-import { useCart } from "../hooks";
-import { ProductList } from "../components/cart";
-import { CartList } from "../components/cart";
-import { SelectCoupon } from "../components/cart";
-import { OrderSummary } from "../components/cart";
-import { useProductSearch } from "../hooks/useProductSearch.ts";
-import { SearchProductBar } from "../components/cart/SearchProduct.tsx";
+import { useCart, useProductSearch } from "../hooks";
+import {
+  SelectCoupon,
+  OrderSummary,
+  SearchProductBar,
+  CartList,
+  ProductList,
+} from "../components/cart";
 
 interface Props {
   products: Product[];

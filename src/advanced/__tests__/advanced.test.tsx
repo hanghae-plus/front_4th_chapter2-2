@@ -11,10 +11,12 @@ import {
 import { Coupon, Product } from "../../types";
 import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
-import { storageManager } from "../../refactoring/utils";
-import { useForm, useLocalStorage } from "../../refactoring/hooks";
-import { formatCurrency } from "../../refactoring/utils/formatCurrency.ts";
-import { useProductSearch } from "../../refactoring/hooks/useProductSearch.ts";
+import { storageManager, formatCurrency } from "../../refactoring/utils";
+import {
+  useForm,
+  useLocalStorage,
+  useProductSearch,
+} from "../../refactoring/hooks";
 
 const mockProducts: Product[] = [
   {

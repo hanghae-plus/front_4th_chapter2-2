@@ -1,5 +1,5 @@
 import { CartItem, Product } from "../../../types.ts";
-import { formatCurrency } from "../../utils/formatCurrency.ts";
+import { formatCurrency } from "../../utils";
 
 interface Props {
   products: Product[];
