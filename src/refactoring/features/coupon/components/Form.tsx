@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Coupon, DiscountType } from '../../../../types';
+import type { Coupon, DiscountType } from '../../../../types';
+import { useForm } from '../../../hooks/useForm';
 import { validateCoupon } from '../helpers';
 
 interface CouponFormProps {
@@ -7,56 +7,36 @@ interface CouponFormProps {
 }
 
 export const CouponForm = ({ onSubmit }: CouponFormProps) => {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-
-  const handleSubmit = () => {
-    const validation = validateCoupon(newCoupon);
-    setValidationErrors(validation.errors);
-
-    if (!validation.isValid) {
-      return;
-    }
-
-    onSubmit(newCoupon);
-    setNewCoupon({
+  const { values, errors, handleChange, handleSubmit } = useForm<Coupon>({
+    initialValues: {
       name: '',
       code: '',
       discountType: 'percentage',
       discountValue: 0,
-    });
-    setValidationErrors([]);
-  };
-
-  const handleChange = <K extends keyof Coupon>(key: K, value: Coupon[K]) => {
-    setNewCoupon((prev) => ({ ...prev, [key]: value }));
-    setValidationErrors([]);
-  };
+    },
+    validate: validateCoupon,
+    onSubmit,
+  });
 
   return (
     <div className="space-y-2 mb-4">
       <input
         type="text"
         placeholder="쿠폰 이름"
-        value={newCoupon.name}
+        value={values.name}
         onChange={(e) => handleChange('name', e.target.value)}
         className="w-full p-2 border rounded"
       />
       <input
         type="text"
         placeholder="쿠폰 코드"
-        value={newCoupon.code}
+        value={values.code}
         onChange={(e) => handleChange('code', e.target.value)}
         className="w-full p-2 border rounded"
       />
       <div className="flex gap-2">
         <select
-          value={newCoupon.discountType}
+          value={values.discountType}
           onChange={(e) => handleChange('discountType', e.target.value as DiscountType)}
           className="w-full p-2 border rounded"
         >
@@ -66,7 +46,7 @@ export const CouponForm = ({ onSubmit }: CouponFormProps) => {
         <input
           type="number"
           placeholder="할인 값"
-          value={newCoupon.discountValue}
+          value={values.discountValue}
           onChange={(e) => handleChange('discountValue', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
@@ -74,9 +54,9 @@ export const CouponForm = ({ onSubmit }: CouponFormProps) => {
       <button onClick={handleSubmit} className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
         쿠폰 추가
       </button>
-      {validationErrors.length > 0 && (
+      {errors.length > 0 && (
         <div className="mt-2 text-red-500 text-sm">
-          {validationErrors.map((error, index) => (
+          {errors.map((error, index) => (
             <div key={index}>{error}</div>
           ))}
         </div>
