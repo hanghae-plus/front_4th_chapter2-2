@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '@/shared/types/';
-import { Layout } from '@/widgets/CartItem';
+import { GridContainer, GridItem } from '@/widgets/CartItem';
 
 interface Props {
   products: Product[];
@@ -131,10 +131,9 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
   };
 
   return (
-    <Layout title={'관리자 페이지'}>
+    <GridContainer title={'관리자 페이지'}>
       {/* 그리드 범주 1 */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
+      <GridItem title={'상품 관리'}>
         <button
           onClick={() => setShowNewProductForm(!showNewProductForm)}
           className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
@@ -318,10 +317,9 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
             </div>
           ))}
         </div>
-      </div>
+      </GridItem>
       {/*그리드 범주 2*/}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
+      <GridItem title={'쿠폰 관리'}>
         <div className="bg-white p-4 rounded shadow">
           <div className="space-y-2 mb-4">
             <input
@@ -381,7 +379,7 @@ export function AdminPage({ products, coupons, onProductUpdate, onProductAdd, on
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
+      </GridItem>
+    </GridContainer>
   );
 }

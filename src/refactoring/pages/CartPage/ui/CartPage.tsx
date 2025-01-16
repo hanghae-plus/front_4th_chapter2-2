@@ -1,7 +1,7 @@
 import { Coupon, Product } from '@/shared/types/';
 import { useCartStore } from '@/entities/cart';
 import { getAppliedDiscount } from '@/entities/cart';
-import { CartItem, Layout } from '@/widgets/CartItem';
+import { CartItem, GridContainer, GridItem } from '@/widgets/CartItem';
 
 interface Props {
   products: Product[];
@@ -14,19 +14,17 @@ export function CartPage({ products, coupons }: Props) {
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   return (
-    <Layout title={'장바구니'}>
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
+    <GridContainer title={'장바구니'}>
+      {/* 그리드 범주 1 */}
+      <GridItem title={'상품 목록'}>
         <div className="space-y-2">
           {products.map((product) => (
             <CartItem product={product} key={product.id} />
           ))}
         </div>
-      </div>
-      {/* 장바구니 내역에 대한 요소 */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-
+      </GridItem>
+      {/* 그리드 범주 2 */}
+      <GridItem title={'장바구니 내역'}>
         <div className="space-y-2">
           {cart.map((item) => {
             const appliedDiscount = getAppliedDiscount(item);
@@ -100,7 +98,7 @@ export function CartPage({ products, coupons }: Props) {
             <p className="text-xl font-bold">최종 결제 금액: {totalAfterDiscount.toLocaleString()}원</p>
           </div>
         </div>
-      </div>
-    </Layout>
+      </GridItem>
+    </GridContainer>
   );
 }

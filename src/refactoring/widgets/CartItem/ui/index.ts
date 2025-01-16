@@ -1,2 +1,3 @@
 export { CartItem } from './CartItem';
-export { Layout } from './Layout';
+export { GridContainer } from './GridContainer';
+export { GridItem } from './GridItem';
