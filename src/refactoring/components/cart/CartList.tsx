@@ -1,5 +1,6 @@
 import { CartItem } from '../../../types';
 import { calculateItemDiscount } from '../../utils/cartUtils';
+import { formatDiscountRate } from '../../utils/format';
 
 interface CartListProps {
   cart: CartItem[];
@@ -24,7 +25,7 @@ export const CartList = ({ cart, updateQuantity, removeFromCart }: CartListProps
                 {item.product.price}원 x {item.quantity}
                 {appliedDiscount > 0 && (
                   <span className='text-green-600 ml-1'>
-                    ({(appliedDiscount * 100).toFixed(0)}% 할인 적용)
+                    {formatDiscountRate(appliedDiscount)} 할인 적용
                   </span>
                 )}
               </span>
