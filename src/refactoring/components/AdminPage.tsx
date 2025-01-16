@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CouponType, DiscountType, ProductType } from '../types';
 import { AdminPageUI } from './admin/AdminPageUI';
+import { updateProductField, handleAddOrRemoveDiscount } from '../utils/product';
 
 interface Props {
   productList: ProductType[];
@@ -19,7 +20,10 @@ export const AdminPage = ({
 }: Props) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<ProductType | null>(null);
-  const [newDiscount, setNewDiscount] = useState<DiscountType>({ quantity: 0, rate: 0 });
+  const [newDiscount, setNewDiscount] = useState<DiscountType>({
+    quantity: 0,
+    rate: 0,
+  });
   const [newCoupon, setNewCoupon] = useState<CouponType>({
     name: '',
     code: '',
@@ -50,20 +54,6 @@ export const AdminPage = ({
     setEditingProduct({ ...product });
   };
 
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
@@ -81,30 +71,28 @@ export const AdminPage = ({
   };
 
   const handleAddDiscount = (productId: string) => {
-    const updatedProduct = productList.find((p) => p.id === productId);
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
-      };
-
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
-    }
+    handleAddOrRemoveDiscount(
+      productId,
+      newDiscount,
+      true,
+      productList,
+      onProductUpdate,
+      setEditingProduct,
+    );
+    setNewDiscount({ quantity: 0, rate: 0 });
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = productList.find((p) => p.id === productId);
-
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
-
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+    const discountToRemove = productList.find((p) => p.id === productId)?.discounts[index];
+    if (discountToRemove) {
+      handleAddOrRemoveDiscount(
+        productId,
+        discountToRemove,
+        false,
+        productList,
+        onProductUpdate,
+        setEditingProduct,
+      );
     }
   };
 
@@ -146,8 +134,12 @@ export const AdminPage = ({
       setShowNewProductForm={setShowNewProductForm}
       setNewDiscount={setNewDiscount}
       setNewCoupon={setNewCoupon}
-      handleProductNameUpdate={handleProductNameUpdate}
-      handlePriceUpdate={handlePriceUpdate}
+      handleProductNameUpdate={(productId, newName) =>
+        updateProductField(productId, 'name', newName, editingProduct, setEditingProduct)
+      }
+      handlePriceUpdate={(productId, newPrice) =>
+        updateProductField(productId, 'price', newPrice, editingProduct, setEditingProduct)
+      }
       handleStockUpdate={handleStockUpdate}
       handleAddDiscount={handleAddDiscount}
       handleRemoveDiscount={handleRemoveDiscount}
