@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
 import { validateCouponData, validateProductData } from '../../refactoring/utils/validateData';
+import { renderHook } from '@testing-library/react';
+import { useLocalStorage } from '../../refactoring/hooks';
 
 const mockProducts: Product[] = [
   {
@@ -230,7 +232,7 @@ describe('advanced > ', () => {
   });
 
   describe('추가된 테스트 코드', () => {
-    test('validateData', () => {
+    test('validateData 함수로 입력 데이터 검증', () => {
       const validProduct = { name: '상품1', price: 10000, stock: 10 };
       const invalidProduct1 = { name: '', price: 10000, stock: 10 };
       const invalidProduct2 = { name: '상품2', price: -5000, stock: 10 };
@@ -277,6 +279,70 @@ describe('advanced > ', () => {
       expect(validateCouponData(invalidCoupon2)).toBe(false);
       expect(validateCouponData(invalidCoupon3)).toBe(false);
       expect(validateCouponData(invalidCoupon4)).toBe(false);
+    });
+
+    describe('useLocalStorage', () => {
+      const TEST_KEY = 'test-key';
+      const TEST_DATA = { name: 'test', value: 123 };
+
+      beforeEach(() => {
+        localStorage.clear();
+      });
+
+      test('saveToStorage로 데이터를 저장', () => {
+        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
+
+        result.current.saveToStorage(TEST_DATA);
+
+        const savedItem = localStorage.getItem(TEST_KEY);
+        expect(JSON.parse(savedItem!)).toEqual(TEST_DATA);
+      });
+
+      test('getFromStorage로 저장된 데이터를 가져옴', () => {
+        localStorage.setItem(TEST_KEY, JSON.stringify(TEST_DATA));
+
+        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
+
+        const data = result.current.getFromStorage();
+        expect(data).toEqual(TEST_DATA);
+      });
+
+      test('저장된 데이터가 없으면 null을 반환', () => {
+        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
+
+        const data = result.current.getFromStorage();
+        expect(data).toBeNull();
+      });
+
+      test('clearStorage로 저장된 데이터를 삭제', () => {
+        localStorage.setItem(TEST_KEY, JSON.stringify(TEST_DATA));
+
+        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
+        result.current.clearStorage();
+
+        const savedItem = localStorage.getItem(TEST_KEY);
+        expect(savedItem).toBeNull();
+      });
+    });
+
+    test('새로고침 후에도 장바구니 데이터가 유지', () => {
+      const { unmount } = render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+
+      const product1 = screen.getByTestId('product-p1');
+      const addToCartButton = within(product1).getByText('장바구니에 추가');
+      fireEvent.click(addToCartButton);
+      fireEvent.click(addToCartButton);
+
+      // 첫 렌더링의 상태 확인
+      expect(screen.getByText('상품 금액: 20,000원')).toBeInTheDocument();
+
+      // 컴포넌트 언마운트 (새로고침 시뮬레이션)
+      unmount();
+
+      // 컴포넌트 다시 마운트 (새로고침 후)
+      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+
+      expect(screen.getByText('상품 금액: 20,000원')).toBeInTheDocument();
     });
   });
 });
