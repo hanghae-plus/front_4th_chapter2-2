@@ -90,12 +90,6 @@ const updateItemQuantity = (item: CartItem, newQuantity: number): CartItem | nul
 };
 
 /**
- * 상품 제거
- */
-export const removeProductFromCart = (cart: CartItem[], productId: string): CartItem[] =>
-  cart.filter((item) => item.product.id !== productId);
-
-/**
  * 기본 카트 총합 반환
  */
 export const getDefaultCartTotal = () => ({

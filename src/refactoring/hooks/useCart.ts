@@ -4,7 +4,6 @@ import {
   addOrUpdateProductInCart,
   calculateCartTotal,
   getDefaultCartTotal,
-  removeProductFromCart,
   updateCartItemQuantity,
 } from '../models/cart';
 
@@ -17,17 +16,17 @@ export const useCart = () => {
 
   // 카트에 상품 추가
   const addToCart = (product: Product) => {
-    setCart((prevCart) => addOrUpdateProductInCart(prevCart, product));
+    setCart((cart) => addOrUpdateProductInCart(cart, product));
   };
 
   // 카트에서 상품 제거
   const removeFromCart = (productId: string) => {
-    setCart((prevCart) => removeProductFromCart(prevCart, productId));
+    setCart((cart) => cart.filter((item) => item.product.id !== productId));
   };
 
   // 카트 상품 수량 업데이트
   const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart((prevCart) => updateCartItemQuantity(prevCart, productId, newQuantity));
+    setCart((cart) => updateCartItemQuantity(cart, productId, newQuantity));
   };
 
   // 쿠폰 적용
