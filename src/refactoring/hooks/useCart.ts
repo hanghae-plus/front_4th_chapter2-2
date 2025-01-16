@@ -1,7 +1,7 @@
 // useCart.ts
 import { useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types';
-import { applyCouponDiscount, calculateAddToCart, calculateCartTotal, updateCartItemQuantity } from '../models/cart';
+import { calculateAddToCart, calculateCartTotal, updateCartItemQuantity } from '../models/cart';
 import { useLocalStorage } from './useLocalStorage';
 
 // 2. 장바구니 내역 나타내기
@@ -35,13 +35,7 @@ export const useCart = () => {
 
   // 2-5. 장바구니 내 모든 상품 총액 계산하기
   const calculateTotal = () => {
-    const {totalBeforeDiscount, totalAfterDiscount: initialTotalAfterDiscount} = calculateCartTotal(cart);
-
-    const {totalAfterDiscount, totalDiscount} = applyCouponDiscount(initialTotalAfterDiscount, totalBeforeDiscount, selectedCoupon);
-
-    return {
-      totalBeforeDiscount, totalAfterDiscount, totalDiscount: Math.round(totalDiscount)
-    }
+    return calculateCartTotal(cart, selectedCoupon);
   };
 
   return {

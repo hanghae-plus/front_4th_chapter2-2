@@ -52,32 +52,8 @@ export const updateCartItemQuantity = (
     .filter((item): item is CartItem => item !== null);
 
 // 장바구니 총액 계산 함수 분리
-// 쿠폰 할인 금액 계산 함수
-export const applyCouponDiscount = (
-  totalAfterDiscount: number,
-  totalBeforeDiscount: number,
-  selectedCoupon: Coupon | null
-) => {
-  if (!selectedCoupon)
-    return { totalAfterDiscount, totalDiscount: totalBeforeDiscount - totalAfterDiscount };
-  let updatedTotalAfterDiscount = totalAfterDiscount;
-  if (selectedCoupon.discountType === 'amount') {
-    updatedTotalAfterDiscount = Math.max(
-      0,
-      updatedTotalAfterDiscount - selectedCoupon.discountValue
-    );
-  } else {
-    updatedTotalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
-  }
-  const totalDiscount = totalBeforeDiscount - updatedTotalAfterDiscount;
-  return {
-    totalAfterDiscount: updatedTotalAfterDiscount,
-    totalDiscount,
-  };
-};
-
-// 장바구니 내 모든 상품 총액 계산 함수
-export const calculateCartTotal = (cart: CartItem[]) => {
+// 장바구니 상품 계산 함수
+const calculateTotalDiscount = (cart: CartItem[]) => {
   let totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   let totalAfterDiscount = cart.reduce((sum, item) => {
@@ -93,5 +69,45 @@ export const calculateCartTotal = (cart: CartItem[]) => {
     totalBeforeDiscount: Math.round(totalBeforeDiscount),
     totalAfterDiscount: Math.round(totalAfterDiscount),
     totalDiscount: 0,
+  };
+};
+
+// 쿠폰 할인 적용 금액 계산 함수
+export const applyCouponDiscount = (
+  totalAfterDiscount: number,
+  totalBeforeDiscount: number,
+  selectedCoupon: Coupon | null
+) => {
+  if (!selectedCoupon)
+    return { totalAfterDiscount, totalDiscount: totalBeforeDiscount - totalAfterDiscount };
+
+  const { discountType, discountValue } = selectedCoupon;
+
+  const updatedTotalAfterDiscount =
+    discountType === 'amount'
+      ? Math.max(0, totalAfterDiscount - discountValue)
+      : totalAfterDiscount * (1 - discountValue / 100);
+
+  return {
+    totalAfterDiscount: updatedTotalAfterDiscount,
+    totalDiscount: totalBeforeDiscount - updatedTotalAfterDiscount,
+  };
+};
+
+// 장바구니 내 모든 상품 총액 계산 함수
+export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
+  const { totalBeforeDiscount, totalAfterDiscount: initialTotalAfterDiscount } =
+    calculateTotalDiscount(cart);
+
+  const { totalAfterDiscount, totalDiscount } = applyCouponDiscount(
+    initialTotalAfterDiscount,
+    totalBeforeDiscount,
+    selectedCoupon
+  );
+
+  return {
+    totalBeforeDiscount,
+    totalAfterDiscount,
+    totalDiscount: Math.round(totalDiscount),
   };
 };

@@ -268,6 +268,32 @@ describe('advanced > ', () => {
           expect(updatedCart).toBeNull();
         });
       });
+
+      describe('applyCouponDiscount', () => {
+        test('금액 쿠폰을 올바르게 적용해야 합니다.', () => {
+          const coupon: Coupon = {
+            name: 'Test Coupon',
+            code: 'TEST',
+            discountType: 'amount',
+            discountValue: 50,
+          };
+          const result = cartUtils.applyCouponDiscount(400, 450, coupon);
+          expect(result.totalAfterDiscount).toBe(350); // 400 - 50
+          expect(result.totalDiscount).toBe(100); // 450 - 350
+        });
+
+        test('퍼센트 쿠폰을 올바르게 적용해야 합니다.', () => {
+          const coupon: Coupon = {
+            name: 'Test Coupon',
+            code: 'TEST',
+            discountType: 'percentage',
+            discountValue: 10,
+          };
+          const result = cartUtils.applyCouponDiscount(400, 450, coupon);
+          expect(result.totalAfterDiscount).toBe(360); // 400 * 0.9
+          expect(result.totalDiscount).toBe(90); // 450 - 360
+        });
+      });
     });
 
     // test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
