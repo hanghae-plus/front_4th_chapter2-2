@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Product, Discount } from '../../../../types';
+import { useAccordion } from '../../../hooks/useAccordion';
 
 interface ProductAccordionProps {
   product: Product;
-  isOpen: boolean;
-  onToggle: (productId: string) => void;
   onProductUpdate: (updatedProduct: Product) => void;
 }
 
-export const ProductAccordion = ({ product, isOpen, onToggle, onProductUpdate }: ProductAccordionProps) => {
+export const ProductAccordion = ({ product, onProductUpdate }: ProductAccordionProps) => {
+  const { openIds, toggleAccordion } = useAccordion();
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
+
+  const isOpen = openIds.has(product.id);
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct({ ...product });
@@ -71,7 +73,7 @@ export const ProductAccordion = ({ product, isOpen, onToggle, onProductUpdate }:
     <div className="bg-white p-4 rounded shadow">
       <button
         data-testid="toggle-button"
-        onClick={() => onToggle(product.id)}
+        onClick={() => toggleAccordion(product.id)}
         className="w-full text-left font-semibold"
       >
         {product.name} - {product.price}원 (재고: {product.stock})
