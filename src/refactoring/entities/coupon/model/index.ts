@@ -1,2 +1,2 @@
 export * from './initialCoupons';
-export * from './useCoupon';
+export { useCouponStore } from './useCouponStore';

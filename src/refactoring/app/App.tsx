@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react';
 import { CartPage } from '@/pages/CartPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { initialProducts, useProductsStore } from '@/entities/product';
-import { initialCoupons, useCoupons } from '@/entities/coupon';
+import { initialCoupons, useCouponStore } from '@/entities/coupon';
 import { Header } from '@/shared/ui';
 
 function App() {
   const { setProducts } = useProductsStore();
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
+  const { setCoupons } = useCouponStore();
 
   useEffect(() => {
     setProducts(initialProducts);
+    setCoupons(initialCoupons);
   }, []);
 
   // 어드민일때랑 아닐 때 상태 분류
@@ -32,9 +33,7 @@ function App() {
         </div>
       </nav>
       {/* 메인 로직이 따로 분리 된다. */}
-      <main className="container mx-auto mt-6">
-        {isAdmin ? <AdminPage coupons={coupons} onCouponAdd={addCoupon} /> : <CartPage coupons={coupons} />}
-      </main>
+      <main className="container mx-auto mt-6">{isAdmin ? <AdminPage /> : <CartPage />}</main>
     </div>
   );
 }

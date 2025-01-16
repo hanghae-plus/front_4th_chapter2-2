@@ -1,15 +1,12 @@
-import { Coupon } from '@/shared/types/';
 import { useCartStore } from '@/entities/cart';
 import { CartItem, GridContainer, GridItem } from '@/widgets/CartItem';
 import { SelectedItem } from '@/widgets/SelectedItem';
 import { useProductsStore } from '@/entities/product';
+import { useCouponStore } from '@/entities/coupon';
 
-interface Props {
-  coupons: Coupon[];
-}
-
-export function CartPage({ coupons }: Props) {
+export function CartPage() {
   const { products } = useProductsStore();
+  const { coupons } = useCouponStore();
   const { cart, applyCoupon, calculateTotal, selectedCoupon } = useCartStore();
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();

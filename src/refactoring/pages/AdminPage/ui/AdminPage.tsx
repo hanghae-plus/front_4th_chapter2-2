@@ -2,14 +2,11 @@ import { useState } from 'react';
 import { Coupon, Discount, Product } from '@/shared/types/';
 import { GridContainer, GridItem } from '@/widgets/CartItem';
 import { useProductsStore } from '@/entities/product';
+import { useCouponStore } from '@/entities/coupon';
 
-interface Props {
-  coupons: Coupon[];
-  onCouponAdd: (newCoupon: Coupon) => void;
-}
-
-export function AdminPage({ coupons, onCouponAdd }: Props) {
+export function AdminPage() {
   const { handleProductUpdate, handleProductAdd, products } = useProductsStore();
+  const { coupons, handleCouponAdd } = useCouponStore();
 
   // 항상 state가 많으면 의심하게 되는 부분이 굳이 이런 자료가 필요한가이다.
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
@@ -109,7 +106,7 @@ export function AdminPage({ coupons, onCouponAdd }: Props) {
   };
 
   const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
+    handleCouponAdd(newCoupon);
     setNewCoupon({
       name: '',
       code: '',
