@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { renderHook } from '@testing-library/react'
 import { Coupon, Product, CartItem } from '@/types'
 import { useProducts, useCoupons, useCart, useLocalStorage } from '@/refactoring/hooks'
-import { CartPage, AdminPage } from '@/refactoring/components'
+import { CartPage, AdminPage } from '@/refactoring/pages'
 import {
   calculateItemTotal,
   getMaxApplicableDiscount,
@@ -14,6 +14,8 @@ import {
   getRemainingStock,
   getAppliedDiscount,
 } from '@/refactoring/utils/cart'
+import { formatCouponDiscount, getCouponDisplayText } from '@/refactoring/utils/coupon'
+import { formatPrice } from '@/refactoring/utils/common'
 
 // localStorage 모킹 추가
 const localStorageMock = (() => {
@@ -447,6 +449,48 @@ describe('advanced > ', () => {
         quantity: 5,
       }
       expect(getMaxApplicableDiscount(noDiscountItem)).toBe(0)
+    })
+
+    test('coupon util - formatCouponDiscount 테스트', () => {
+      const amountCoupon: Coupon = {
+        name: '5000원 할인',
+        code: 'AMOUNT5000',
+        discountType: 'amount',
+        discountValue: 5000,
+      }
+
+      const percentageCoupon: Coupon = {
+        name: '10% 할인',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10,
+      }
+
+      expect(formatCouponDiscount(amountCoupon)).toBe('5000원')
+      expect(formatCouponDiscount(percentageCoupon)).toBe('10%')
+    })
+
+    test('coupon util - getCouponDisplayText 테스트', () => {
+      const testCoupon: Coupon = {
+        name: '테스트 쿠폰',
+        code: 'TEST',
+        discountType: 'amount',
+        discountValue: 1000,
+      }
+
+      expect(getCouponDisplayText(testCoupon)).toBe('테스트 쿠폰 - 1000원')
+    })
+
+    test('common util - formatPrice 테스트', () => {
+      const testCases = [
+        { input: 1000, expected: '1,000원' },
+        { input: 1000000, expected: '1,000,000원' },
+        { input: 0, expected: '0원' },
+      ]
+
+      testCases.forEach(({ input, expected }) => {
+        expect(formatPrice(input)).toBe(expected)
+      })
     })
 
     describe('Coupons 훅 테스트', () => {
