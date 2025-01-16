@@ -1,6 +1,7 @@
 import { CartItem, Coupon, Product } from "../../types.ts";
 import { useCart, useLocalStorage } from "../hooks";
 import CartItemDisplay from "./carts/CartItemDisplay.tsx";
+import DiscountInfo from "./carts/DiscountInfo.tsx";
 import ProductPrice from "./carts/ProductPrice.tsx";
 
 interface Props {
@@ -60,17 +61,7 @@ export const CartPage = ({ products, coupons }: Props) => {
                     product={product}
                     remainingStock={remainingStock}
                   />
-
-                  {product.discounts.length > 0 && (
-                    <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
-                      {product.discounts.map((discount, index) => (
-                        <li key={index}>
-                          {discount.quantity}개 이상:{" "}
-                          {(discount.rate * 100).toFixed(0)}% 할인
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <DiscountInfo product={product} />
                   <button
                     onClick={() => addToCart(product)}
                     className={`w-full px-3 py-1 rounded ${
