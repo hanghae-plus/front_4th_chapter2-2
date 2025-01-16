@@ -2,20 +2,33 @@ import { Coupon } from '@types';
 import { Heading } from '../shared/Heading';
 import { CouponList } from './CouponList';
 import { CouponForm } from './CouponForm';
+import { useState } from 'react';
 
 interface CouponManagementProps {
   coupons: Coupon[];
-  newCoupon: Coupon;
-  setNewCoupon: React.Dispatch<React.SetStateAction<Coupon>>;
-  handleAddCoupon: (event: React.FormEvent) => void;
+  onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 export function CouponManagement({
   coupons,
-  newCoupon,
-  setNewCoupon,
-  handleAddCoupon,
+  onCouponAdd,
 }: CouponManagementProps) {
+  const [newCoupon, setNewCoupon] = useState<Coupon>({
+    name: '',
+    code: '',
+    discountType: 'percentage',
+    discountValue: 0,
+  });
+
+  const handleAddCoupon = () => {
+    onCouponAdd(newCoupon);
+    setNewCoupon({
+      name: '',
+      code: '',
+      discountType: 'percentage',
+      discountValue: 0,
+    });
+  };
   return (
     <div>
       <Heading as="h2" className="text-2xl font-semibold mb-4">

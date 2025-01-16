@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Coupon, Product } from '../../types.ts';
 import { CouponManagement } from './coupon/CouponManagement.tsx';
 import { Heading } from './shared/Heading.tsx';
@@ -19,23 +18,6 @@ export function AdminPage({
   onProductAdd,
   onCouponAdd,
 }: Props) {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
-
-  const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
-  };
-
   return (
     <div className="container mx-auto p-4">
       <Heading as="h1" className="text-3xl font-bold mb-6">
@@ -47,12 +29,7 @@ export function AdminPage({
           onProductUpdate={onProductUpdate}
           onProductAdd={onProductAdd}
         />
-        <CouponManagement
-          coupons={coupons}
-          newCoupon={newCoupon}
-          setNewCoupon={setNewCoupon}
-          handleAddCoupon={handleAddCoupon}
-        />
+        <CouponManagement coupons={coupons} onCouponAdd={onCouponAdd} />
       </div>
     </div>
   );
