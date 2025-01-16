@@ -1,8 +1,4 @@
-// FormSelect.tsx
-interface SelectOption {
-  value: string;
-  label: string;
-}
+import { SelectOption } from '../types/SelectOption';
 
 interface FormSelectProps {
   id?: string;

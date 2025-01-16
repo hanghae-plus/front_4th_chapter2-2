@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { ProductDisplay } from '../../../entities/product/ui/ProductDisplay';
+import { ProductDisplay, PanelTrigger } from '../../../entities/product/ui';
 import { Product } from '../../../../types';
-import { PanelTrigger } from '../../../entities/product/ui/PanelTrigger';
 import { ProductEditForm } from './ProductEditForm';
 import { DiscountCondition } from '../../../entities/discount/ui/DiscountCondition';
 import { TextButton } from '../../../shared/ui';
@@ -56,7 +55,6 @@ export function ProductPanel({
             />
           </div>
         ))}
-      {/* </div> */}
     </ProductDisplay>
   );
 }
