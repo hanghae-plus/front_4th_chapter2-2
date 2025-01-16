@@ -19,6 +19,7 @@ export interface CartItem {
 export interface Membership {
   name: string;
   code: string;
+  discountType: 'amount' | 'percentage';
   discountValue: number;
 }
 
