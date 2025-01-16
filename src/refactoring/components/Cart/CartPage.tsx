@@ -1,5 +1,5 @@
-import { Coupon, Product } from '../../types.ts';
-import { useCart } from '../hooks';
+import { Coupon, Product } from '../../../types.ts';
+import { useCart } from '../../hooks';
 import CartItemCardWrapper from './CartItemCardWrapper.tsx';
 import ProductCardWrapper from './ProductCardWrapper.tsx';
 

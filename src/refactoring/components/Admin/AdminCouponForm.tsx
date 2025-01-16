@@ -1,5 +1,5 @@
-import { Coupon } from '../../types.ts';
-import useNewCoupon from '../hooks/useNewCoupon.ts';
+import { Coupon } from '../../../types.ts';
+import useNewCoupon from '../../hooks/useNewCoupon.ts';
 
 interface ManageCouponProps {
   couponList: Coupon[];

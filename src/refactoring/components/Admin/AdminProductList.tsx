@@ -1,7 +1,7 @@
 import AdminProductContent from './AdminProductContent.tsx';
-import { Product } from '../../types.ts';
-import useProductSet from '../hooks/useProductSet.ts';
-import useAdmin from '../hooks/useAdmin.ts';
+import { Product } from '../../../types.ts';
+import useProductSet from '../../hooks/useProductSet.ts';
+import useAdmin from '../../hooks/useAdmin.ts';
 
 interface AdminProductCardProps {
   productList: Product[];

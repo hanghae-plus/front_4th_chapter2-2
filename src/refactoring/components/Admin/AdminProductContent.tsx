@@ -1,4 +1,4 @@
-import { Discount, Product } from '../../types.ts';
+import { Discount, Product } from '../../../types.ts';
 import { ChangeEvent } from 'react';
 
 interface AdminProductContentProps {

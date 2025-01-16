@@ -1,6 +1,6 @@
-import ProductForm from './ProductForm.tsx';
-import useNewProduct from '../hooks/useNewProduct.ts';
-import { Product } from '../../types.ts';
+import ProductForm from '../Cart/ProductForm.tsx';
+import useNewProduct from '../../hooks/useNewProduct.ts';
+import { Product } from '../../../types.ts';
 
 interface AdminNewProductProps {
   onProductAdd: (newProduct: Product) => void;

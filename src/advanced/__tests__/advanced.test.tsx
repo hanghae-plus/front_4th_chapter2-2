@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { CartPage } from '../../refactoring/components/CartPage.tsx';
-import { AdminPage } from '../../refactoring/components/AdminPage.tsx';
+import { CartPage } from '../../refactoring/components/Cart/CartPage.tsx';
+import { AdminPage } from '../../refactoring/components/Admin/AdminPage.tsx';
 import { Coupon, Product } from '../../types';
 
 const mockProducts: Product[] = [

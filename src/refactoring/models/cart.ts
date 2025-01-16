@@ -60,11 +60,10 @@ export const getRemainingStock = (product: Product, cart: CartItem[]) => {
 
 export const addCartItemToCart = (product: Product, cart: CartItem[]) => {
   if (getCartItem(product, cart)) {
-    return cart.map((item) =>
-      item.product.id === product.id
-        ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-        : item,
-    );
+    return cart.map((item) => {
+      const hasSameId = item.product.id === product.id;
+      return hasSameId ? { ...item, quantity: item.quantity + 1 } : item;
+    });
   }
   return [...cart, { product, quantity: 1 }];
 };

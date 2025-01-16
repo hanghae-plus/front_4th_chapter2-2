@@ -1,4 +1,4 @@
-import { Coupon, Product } from '../../types.ts';
+import { Coupon, Product } from '../../../types.ts';
 import AdminCouponForm from './AdminCouponForm.tsx';
 import AdminProductList from './AdminProductList.tsx';
 import AdminNewProduct from './AdminNewProduct.tsx';

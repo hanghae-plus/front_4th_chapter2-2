@@ -1,6 +1,6 @@
 import ProductCard from './ProductCard.tsx';
-import { CartItem, Product } from '../../types.ts';
-import { getRemainingStock } from '../models/cart.ts';
+import { CartItem, Product } from '../../../types.ts';
+import { getRemainingStock } from '../../models/cart.ts';
 
 interface ProductCardWrapperProps {
   cart: CartItem[];

@@ -1,4 +1,4 @@
-import { CartItem } from '../../types.ts';
+import { CartItem } from '../../../types.ts';
 
 interface CartItemCardProps {
   item: CartItem;

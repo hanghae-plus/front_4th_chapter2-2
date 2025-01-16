@@ -1,5 +1,5 @@
 import CartItemCard from './CartItemCard.tsx';
-import { CartItem } from '../../types.ts';
+import { CartItem } from '../../../types.ts';
 
 interface CartItemCardWrapperProps {
   item: CartItem;
