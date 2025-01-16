@@ -3,10 +3,10 @@ import { Coupon } from "../../../types";
 
 interface Props {
   coupons: Coupon[];
-  onAddCoupon: (coupon: Coupon) => void;
+  onCouponAdd: (coupon: Coupon) => void;
 }
 
-export const ManageCoupon = ({ coupons, onAddCoupon }: Props) => {
+export const ManageCoupon = ({ coupons, onCouponAdd }: Props) => {
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
@@ -15,7 +15,7 @@ export const ManageCoupon = ({ coupons, onAddCoupon }: Props) => {
   });
 
   const handleAddCoupon = () => {
-    onAddCoupon(newCoupon);
+    onCouponAdd(newCoupon);
     setNewCoupon({
       name: '',
       code: '',

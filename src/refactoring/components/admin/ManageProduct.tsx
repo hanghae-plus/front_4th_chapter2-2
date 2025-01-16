@@ -3,11 +3,11 @@ import { useState } from "react";
 
 interface Props {
   products: Product[];
-  onAddProduct: (product: Product) => void;
-  onUpdateProduct: (product: Product) => void;
+  onProductUpdate: (product: Product) => void;
+  onProductAdd: (product: Product) => void;
 }
 
-export const ManageProduct = ({products, onAddProduct, onUpdateProduct}: Props) => {
+export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
@@ -55,7 +55,7 @@ export const ManageProduct = ({products, onAddProduct, onUpdateProduct}: Props) 
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
-      onUpdateProduct(editingProduct);
+      onProductUpdate(editingProduct);
       setEditingProduct(null);
     }
   };
@@ -64,7 +64,7 @@ export const ManageProduct = ({products, onAddProduct, onUpdateProduct}: Props) 
     const updatedProduct = products.find(p => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
-      onUpdateProduct(newProduct);
+      onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
   };
@@ -76,7 +76,7 @@ export const ManageProduct = ({products, onAddProduct, onUpdateProduct}: Props) 
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount]
       };
-      onUpdateProduct(newProduct);
+      onProductUpdate(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
     }
@@ -89,14 +89,14 @@ export const ManageProduct = ({products, onAddProduct, onUpdateProduct}: Props) 
         ...updatedProduct,
         discounts: updatedProduct.discounts.filter((_, i) => i !== index)
       };
-      onUpdateProduct(newProduct);
+      onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
   };
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
-    onAddProduct(productWithId);
+    onProductAdd(productWithId);
     setNewProduct({
       name: '',
       price: 0,

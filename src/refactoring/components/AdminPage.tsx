@@ -5,17 +5,17 @@ import { Product, Coupon } from '../../types.ts';
 interface Props {
   products: Product[];
   coupons: Coupon[];
-  onAddCoupon: (coupon: Coupon) => void;
-  onAddProduct: (product: Product) => void;
-  onUpdateProduct: (product: Product) => void;
+  onProductUpdate: (product: Product) => void;
+  onProductAdd: (product: Product) => void;
+  onCouponAdd: (coupon: Coupon) => void;
 }
 
 export const AdminPage = ({
   products,
   coupons, 
-  onAddCoupon,
-  onAddProduct, 
-  onUpdateProduct
+  onProductUpdate,
+  onProductAdd, 
+  onCouponAdd,
 }: Props) => {
   return (
     <div className="container mx-auto p-4">
@@ -23,12 +23,12 @@ export const AdminPage = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ManageProduct 
           products={products} 
-          onAddProduct={onAddProduct}
-          onUpdateProduct={onUpdateProduct}
+          onProductUpdate={onProductUpdate}
+          onProductAdd={onProductAdd}
         />
         <ManageCoupon 
           coupons={coupons}
-          onAddCoupon={onAddCoupon}
+          onCouponAdd={onCouponAdd}
         />
       </div>
     </div>
