@@ -1,7 +1,4 @@
-interface DiscountType {
-  quantity: number;
-  rate: number;
-}
+import { DiscountType } from './ProductList';
 
 export const DiscountItem = ({
   discount,

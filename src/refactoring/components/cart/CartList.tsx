@@ -1,5 +1,5 @@
 import { CartItem } from '../../../types';
-import { getAppliedDiscount } from '../../utils/cartUtils';
+import { calculateItemDiscount } from '../../utils/cartUtils';
 
 interface CartListProps {
   cart: CartItem[];
@@ -11,7 +11,7 @@ export const CartList = ({ cart, updateQuantity, removeFromCart }: CartListProps
   return (
     <div className='space-y-2'>
       {cart.map((item) => {
-        const appliedDiscount = getAppliedDiscount(item);
+        const appliedDiscount = calculateItemDiscount(item);
         return (
           <div
             key={item.product.id}

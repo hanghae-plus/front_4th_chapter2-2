@@ -1,12 +1,6 @@
 import React from 'react';
-import { Coupon } from '../../../types';
-
-interface CouponManagerProps {
-  coupons: Coupon[];
-  newCoupon: Coupon;
-  onCouponChange: (coupon: Coupon) => void;
-  onAddCoupon: () => void;
-}
+import { Button } from '../common/Button';
+import { CouponManagerProps } from '../type/cart.type';
 
 export const CouponManager: React.FC<CouponManagerProps> = ({
   coupons,
@@ -62,12 +56,12 @@ export const CouponManager: React.FC<CouponManagerProps> = ({
           </div>
         </div>
 
-        <button
+        <Button
           onClick={onAddCoupon}
           className='w-full bg-green-500 text-white p-2 rounded hover:bg-green-600'
         >
           쿠폰 추가
-        </button>
+        </Button>
 
         <div>
           <h3 className='text-lg font-semibold mb-2'>현재 쿠폰 목록</h3>

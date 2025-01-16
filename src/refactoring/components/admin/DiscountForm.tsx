@@ -1,14 +1,10 @@
-import { DiscountType } from './ProductList';
+import { DiscountFormProps } from '../type/cart.type';
 
 export const DiscountForm = ({
   newDiscount,
   onNewDiscountChange,
   onAddDiscount,
-}: {
-  newDiscount: DiscountType;
-  onNewDiscountChange: (discount: DiscountType) => void;
-  onAddDiscount: () => void;
-}) => (
+}: DiscountFormProps) => (
   <div className='flex space-x-2'>
     <input
       type='number'
