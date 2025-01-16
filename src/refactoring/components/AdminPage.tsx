@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { Coupon, Product } from '../../types.ts';
-import {
-  INITIAL_COUPON_STATE,
-  INITIAL_DISCOUNT_STATE,
-  INITIAL_PRODUCT_STATE,
-} from '../data/initialData.ts';
+import { INITIAL_COUPON_STATE } from '../data/initialData.ts';
+import { useAdminProduct } from '../hooks/useAdminProduct.ts';
 
 interface Props {
   products: Product[];
@@ -22,11 +19,29 @@ export const AdminPage = ({
   onCouponAdd,
 }: Props) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newDiscount, setNewDiscount] = useState(INITIAL_DISCOUNT_STATE);
   const [newCoupon, setNewCoupon] = useState(INITIAL_COUPON_STATE);
-  const [newProduct, setNewProduct] = useState(INITIAL_PRODUCT_STATE);
+
+  const {
+    editingProduct,
+    handleEditProduct,
+    handleProductNameUpdate,
+    handlePriceUpdate,
+    handleEditComplete,
+    handleStockUpdate,
+    handleAddDiscount,
+    handleRemoveDiscount,
+    newDiscount,
+    setNewDiscount,
+    newProduct,
+    setNewProduct,
+    handleAddNewProduct,
+  } = useAdminProduct({
+    products,
+    onProductUpdate,
+    onProductAdd,
+    onAddSuccess: () => setShowNewProductForm(false),
+  });
 
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds((prev) => {
@@ -40,79 +55,9 @@ export const AdminPage = ({
     });
   };
 
-  // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({ ...product });
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 수정 완료 핸들러 함수 추가
-  const handleEditComplete = () => {
-    if (editingProduct) {
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-    }
-  };
-
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
-    }
-  };
-
-  const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
     setNewCoupon(INITIAL_COUPON_STATE);
-  };
-
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
-    setNewProduct(INITIAL_PRODUCT_STATE);
-    setShowNewProductForm(false);
   };
 
   return (
