@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { describe, expect, test } from "vitest";
 import {
   act,
   fireEvent,
@@ -8,11 +6,13 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { CartPage } from "../../refactoring/components/CartPage";
-import { AdminPage } from "../../refactoring/components/AdminPage";
-import { CartItem, Coupon, Product } from "../../types";
+import { useState } from "react";
+import { beforeEach, describe, expect, test } from "vitest";
 import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
 import * as cartUtils from "../../refactoring/models/cart";
+import { AdminPage } from "../../refactoring/pages/AdminPage";
+import { CartPage } from "../../refactoring/pages/CartPage";
+import { CartItem, Coupon, Grade, Product } from "../../types";
 
 const mockProducts: Product[] = [
   {
@@ -52,9 +52,17 @@ const mockCoupons: Coupon[] = [
   },
 ];
 
+const mockGrades: Grade[] = [
+  {
+    name: "VIP",
+    rate: 10,
+  },
+];
+
 const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
+  const [grades, setGrades] = useState<Grade[]>(mockGrades);
 
   const handleProductUpdate = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
@@ -70,13 +78,19 @@ const TestAdminPage = () => {
     setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
   };
 
+  const handleGradeAdd = (newGrade: Grade) => {
+    setGrades((prevGrades) => [...prevGrades, newGrade]);
+  };
+
   return (
     <AdminPage
       products={products}
       coupons={coupons}
+      grades={grades}
       onProductUpdate={handleProductUpdate}
       onProductAdd={handleProductAdd}
       onCouponAdd={handleCouponAdd}
+      onGradeAdd={handleGradeAdd}
     />
   );
 };
@@ -84,7 +98,13 @@ const TestAdminPage = () => {
 describe("basic > ", () => {
   describe("시나리오 테스트 > ", () => {
     test("장바구니 페이지 테스트 > ", async () => {
-      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+      render(
+        <CartPage
+          products={mockProducts}
+          coupons={mockCoupons}
+          grades={mockGrades}
+        />
+      );
       const product1 = screen.getByTestId("product-p1");
       const product2 = screen.getByTestId("product-p2");
       const product3 = screen.getByTestId("product-p3");
@@ -148,7 +168,7 @@ describe("basic > ", () => {
       expect(screen.getByText("최종 결제 금액: 590,000원")).toBeInTheDocument();
 
       // 10. 쿠폰 적용하기
-      const couponSelect = screen.getByRole("combobox");
+      const [couponSelect] = screen.getAllByRole("combobox");
       fireEvent.change(couponSelect, { target: { value: "1" } }); // 10% 할인 쿠폰 선택
 
       // 11. 할인율 계산
@@ -383,7 +403,7 @@ describe("basic > ", () => {
       ];
 
       test("쿠폰 없이 총액을 올바르게 계산해야 합니다.", () => {
-        const result = cartUtils.calculateCartTotal(cart, null);
+        const result = cartUtils.calculateCartTotal(cart, null, null);
         expect(result.totalBeforeDiscount).toBe(400);
         expect(result.totalAfterDiscount).toBe(380);
         expect(result.totalDiscount).toBe(20);
@@ -396,7 +416,7 @@ describe("basic > ", () => {
           discountType: "amount",
           discountValue: 50,
         };
-        const result = cartUtils.calculateCartTotal(cart, coupon);
+        const result = cartUtils.calculateCartTotal(cart, coupon, null);
         expect(result.totalAfterDiscount).toBe(330);
         expect(result.totalDiscount).toBe(70);
       });
@@ -408,7 +428,7 @@ describe("basic > ", () => {
           discountType: "percentage",
           discountValue: 10,
         };
-        const result = cartUtils.calculateCartTotal(cart, coupon);
+        const result = cartUtils.calculateCartTotal(cart, coupon, null);
         expect(result.totalAfterDiscount).toBe(342);
         expect(result.totalDiscount).toBe(58);
       });
@@ -454,6 +474,11 @@ describe("basic > ", () => {
       discountValue: 10,
     };
 
+    // localStorage 초기화 추가
+    beforeEach(() => {
+      window.localStorage.clear();
+    });
+
     test("장바구니에 제품을 추가해야 합니다", () => {
       const { result } = renderHook(() => useCart());
 
@@ -479,11 +504,14 @@ describe("basic > ", () => {
       expect(result.current.cart).toHaveLength(0);
     });
 
-    test("제품 수량을 업데이트해야 합니다", () => {
+    test("제품 수량을 업데이트해야 합니다", async () => {
       const { result } = renderHook(() => useCart());
 
-      act(() => {
+      await act(async () => {
         result.current.addToCart(testProduct);
+      });
+
+      await act(async () => {
         result.current.updateQuantity(testProduct.id, 5);
       });
 
@@ -500,12 +528,18 @@ describe("basic > ", () => {
       expect(result.current.selectedCoupon).toEqual(testCoupon);
     });
 
-    test("합계를 정확하게 계산해야 합니다", () => {
+    test("합계를 정확하게 계산해야 합니다", async () => {
       const { result } = renderHook(() => useCart());
 
-      act(() => {
+      await act(async () => {
         result.current.addToCart(testProduct);
+      });
+
+      await act(async () => {
         result.current.updateQuantity(testProduct.id, 2);
+      });
+
+      await act(async () => {
         result.current.applyCoupon(testCoupon);
       });
 

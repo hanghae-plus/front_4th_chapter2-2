@@ -11,6 +11,11 @@ export interface Discount {
   rate: number;
 }
 
+export interface Grade {
+  name: string;
+  rate: number;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
@@ -19,6 +24,6 @@ export interface CartItem {
 export interface Coupon {
   name: string;
   code: string;
-  discountType: 'amount' | 'percentage';
+  discountType: "amount" | "percentage";
   discountValue: number;
 }
