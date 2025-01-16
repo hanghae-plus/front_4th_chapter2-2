@@ -4,10 +4,10 @@ import { calculateAppliedDiscount } from '../utils/cartUtils';
 
 interface Props {
   cart: CartItem[];
-  updateQuantity: ReturnType<typeof useCart>['updateQuantity'];
-  removeFromCart: ReturnType<typeof useCart>['removeFromCart'];
+  onQuantityUpdate: ReturnType<typeof useCart>['updateQuantity'];
+  onRemoveFromCart: ReturnType<typeof useCart>['removeFromCart'];
 }
-export default function CartList({ cart, updateQuantity, removeFromCart }: Props) {
+export default function CartList({ cart, onQuantityUpdate, onRemoveFromCart }: Props) {
   return (
     <>
       <h2 className='text-2xl font-semibold mb-4'>장바구니 내역</h2>
@@ -34,19 +34,19 @@ export default function CartList({ cart, updateQuantity, removeFromCart }: Props
               </div>
               <div>
                 <button
-                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                  onClick={() => onQuantityUpdate(item.product.id, item.quantity - 1)}
                   className='bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400'
                 >
                   -
                 </button>
                 <button
-                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                  onClick={() => onQuantityUpdate(item.product.id, item.quantity + 1)}
                   className='bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400'
                 >
                   +
                 </button>
                 <button
-                  onClick={() => removeFromCart(item.product.id)}
+                  onClick={() => onRemoveFromCart(item.product.id)}
                   className='bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600'
                 >
                   삭제

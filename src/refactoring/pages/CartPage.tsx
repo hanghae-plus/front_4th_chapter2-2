@@ -27,8 +27,16 @@ export const CartPage = ({ productList, coupons }: Props) => {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <ProductList productList={productList} cart={cart} addToCart={addToCart} />
         <div>
-          <CartList cart={cart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />
-          <CouponForm coupons={coupons} applyCoupon={applyCoupon} selectedCoupon={selectedCoupon} />
+          <CartList
+            cart={cart}
+            onQuantityUpdate={updateQuantity}
+            onRemoveFromCart={removeFromCart}
+          />
+          <CouponForm
+            coupons={coupons}
+            selectedCoupon={selectedCoupon}
+            onCouponApply={applyCoupon}
+          />
           <OrderSummary calculateTotal={calculateTotal} />
         </div>
       </div>
