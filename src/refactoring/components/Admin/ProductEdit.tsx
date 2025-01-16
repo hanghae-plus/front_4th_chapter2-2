@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Product, Discount } from 'src/types';
 
-interface Props {
+interface ProductEditProps {
   product: Product;
   onProductUpdate: (updatedProduct: Product) => void;
 }
 
-export const ProductEdit = ({ product, onProductUpdate }: Props) => {
+export const ProductEdit = ({ product, onProductUpdate }: ProductEditProps) => {
   const [editedProduct, setEditedProduct] = useState(product);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
 

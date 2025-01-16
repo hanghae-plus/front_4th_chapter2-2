@@ -157,7 +157,7 @@ describe('basic > ', () => {
     test('관리자 페이지 테스트 > ', async () => {
       render(<TestAdminPage />);
 
-      const $product1 = screen.getByTestId('product-1');
+      const $product1 = screen.getByTestId('product-p1');
 
       // 1. 새로운 상품 추가
       fireEvent.click(screen.getByText('새 상품 추가'));
@@ -174,7 +174,7 @@ describe('basic > ', () => {
 
       fireEvent.click(screen.getByText('추가'));
 
-      const $product4 = screen.getByTestId('product-4');
+      const $product4 = screen.getByTestId('product-p4');
 
       expect($product4).toHaveTextContent('상품4');
       expect($product4).toHaveTextContent('15000원');
