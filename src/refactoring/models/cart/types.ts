@@ -1,3 +1,8 @@
+export interface Discount {
+  quantity: number;
+  rate: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -6,9 +11,9 @@ export interface Product {
   discounts: Discount[];
 }
 
-export interface Discount {
+export interface CartItem {
+  product: Product;
   quantity: number;
-  rate: number;
 }
 
 export interface Coupon {
@@ -16,9 +21,4 @@ export interface Coupon {
   code: string;
   discountType: "amount" | "percentage";
   discountValue: number;
-}
-
-export interface CartItem {
-  product: Product;
-  quantity: number;
 }
