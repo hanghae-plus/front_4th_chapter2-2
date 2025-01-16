@@ -3,6 +3,7 @@ import { IProduct } from '../../../shared/types';
 import { useProductContext } from '../../../entities/product/model';
 import { ProductEdit } from './ProductEdit.tsx';
 import { EditingProductProvider } from './EditingProductContextProvider.tsx';
+import { DiscountView } from '../../discount/ui/DiscountView.tsx';
 
 interface ProductDetailProps {
   productId: string;
@@ -22,12 +23,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
         </EditingProductProvider>
       ) : (
         <div>
-          {product.discounts.map((discount, index) => (
-            <div key={index} className="mb-2">
-              <span>
-                {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
-              </span>
-            </div>
+          {product.discounts.map((discount) => (
+            <DiscountView discount={discount} />
           ))}
           <button
             data-testid="modify-button"
