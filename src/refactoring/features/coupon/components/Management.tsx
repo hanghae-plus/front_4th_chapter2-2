@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Coupon } from '../../../../types';
+import type { Coupon, DiscountType } from '../../../../types';
 import { CouponItem } from './Item';
 import { validateCoupon } from '../helpers';
 
@@ -64,7 +64,7 @@ export const CouponManagement = ({ coupons, onCouponAdd }: CouponManagementProps
             <select
               value={newCoupon.discountType}
               onChange={(e) => {
-                setNewCoupon({ ...newCoupon, discountType: e.target.value as 'amount' | 'percentage' });
+                setNewCoupon({ ...newCoupon, discountType: e.target.value as DiscountType });
                 setValidationErrors([]);
               }}
               className="w-full p-2 border rounded"
