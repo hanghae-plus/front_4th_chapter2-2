@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { beforeEach, describe, expect, test } from "vitest";
+import { vi, beforeEach, describe, expect, test } from "vitest";
 import {
   act,
   fireEvent,
@@ -12,7 +12,7 @@ import { Coupon, Product } from "../../types";
 import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { storageManager } from "../../refactoring/utils";
-import { useLocalStorage } from "../../refactoring/hooks";
+import { useForm, useLocalStorage } from "../../refactoring/hooks";
 
 const mockProducts: Product[] = [
   {
@@ -374,6 +374,101 @@ describe("advanced > ", () => {
       );
 
       expect(refreshedResult.current[0]).toBe("newValue");
+    });
+  });
+
+  describe("useForm hook 테스트 >", () => {
+    interface TestFormValues {
+      name: string;
+      email: string;
+    }
+
+    const initialValues: TestFormValues = {
+      name: "",
+      email: "",
+    };
+
+    const testname = "test name";
+    const testemail = "test@test.com";
+
+    test("초기값 설정 테스트 >", () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues,
+          onSubmit: vi.fn(),
+        }),
+      );
+
+      expect(result.current.values).toEqual(initialValues);
+    });
+
+    test("handleChange 테스트 >", () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues,
+          onSubmit: vi.fn(),
+        }),
+      );
+
+      act(() => {
+        result.current.handleChange("name", testname);
+        result.current.handleChange("email", testemail);
+      });
+
+      expect(result.current.values).toEqual({
+        name: testname,
+        email: testemail,
+      });
+    });
+
+    test("onSubmit 테스트 >", () => {
+      const onSubmitMock = vi.fn();
+
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues,
+          onSubmit: onSubmitMock,
+        }),
+      );
+
+      act(() => {
+        result.current.handleChange("name", testname);
+        result.current.handleChange("email", testemail);
+      });
+
+      act(() => {
+        result.current.handleSubmit();
+      });
+
+      expect(onSubmitMock).toHaveBeenCalledWith({
+        name: testname,
+        email: testemail,
+      });
+    });
+
+    test("resetForm 테스트 >", () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues,
+          onSubmit: vi.fn(),
+        }),
+      );
+
+      act(() => {
+        result.current.handleChange("name", "changed name");
+        result.current.handleChange("email", "changeEmail@test.com");
+      });
+
+      expect(result.current.values).toEqual({
+        name: "changed name",
+        email: "changeEmail@test.com",
+      });
+
+      act(() => {
+        result.current.resetForm();
+      });
+
+      expect(result.current.values).toEqual(initialValues);
     });
   });
 });
