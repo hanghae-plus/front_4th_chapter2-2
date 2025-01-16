@@ -6,11 +6,50 @@ import {
   CouponContextProvider,
   ProductContextProvider,
 } from '../../refactoring/app/providers';
+import { ICoupon, IProduct } from '../../refactoring/shared/types';
+
+const mockProducts: IProduct[] = [
+  {
+    id: 'p1',
+    name: '상품1',
+    price: 10000,
+    stock: 20,
+    discounts: [{ quantity: 10, rate: 0.1 }],
+  },
+  {
+    id: 'p2',
+    name: '상품2',
+    price: 20000,
+    stock: 20,
+    discounts: [{ quantity: 10, rate: 0.15 }],
+  },
+  {
+    id: 'p3',
+    name: '상품3',
+    price: 30000,
+    stock: 20,
+    discounts: [{ quantity: 10, rate: 0.2 }],
+  },
+];
+const mockCoupons: ICoupon[] = [
+  {
+    name: '5000원 할인 쿠폰',
+    code: 'AMOUNT5000',
+    discountType: 'amount',
+    discountValue: 5000,
+  },
+  {
+    name: '10% 할인 쿠폰',
+    code: 'PERCENT10',
+    discountType: 'percentage',
+    discountValue: 10,
+  },
+];
 
 const TestAdminPage = () => {
   return (
-    <ProductContextProvider>
-      <CouponContextProvider>
+    <ProductContextProvider initialProducts={mockProducts}>
+      <CouponContextProvider initialCoupons={mockCoupons}>
         <AdminPage />
       </CouponContextProvider>
     </ProductContextProvider>
@@ -21,8 +60,8 @@ describe('advanced > ', () => {
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
       render(
-        <ProductContextProvider>
-          <CouponContextProvider>
+        <ProductContextProvider initialProducts={mockProducts}>
+          <CouponContextProvider initialCoupons={mockCoupons}>
             <CartPage />
           </CouponContextProvider>
         </ProductContextProvider>,

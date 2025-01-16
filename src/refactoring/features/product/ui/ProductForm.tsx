@@ -1,6 +1,7 @@
 import { Input } from '../../../shared/ui/inputs';
 import { useState } from 'react';
 import { IProduct } from '../../../shared/types';
+import { Label } from '../../../shared/ui/typography';
 
 interface IProductFormProps {
   onProductAdd: (newProduct: IProduct) => void;
@@ -39,12 +40,12 @@ export function ProductForm({ onProductAdd }: IProductFormProps): JSX.Element {
         <div className="bg-white p-4 rounded shadow mb-4">
           <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
           <div className="mb-2">
-            <label
+            <Label
               htmlFor="productName"
-              className="block text-sm font-medium text-gray-700"
+              className={'text-sm font-medium text-gray-700'}
             >
               상품명
-            </label>
+            </Label>
             <Input
               id={'productName'}
               type={'text'}
@@ -55,12 +56,12 @@ export function ProductForm({ onProductAdd }: IProductFormProps): JSX.Element {
             />
           </div>
           <div className="mb-2">
-            <label
+            <Label
               htmlFor="productPrice"
-              className="block text-sm font-medium text-gray-700"
+              className={'text-sm font-medium text-gray-700'}
             >
               가격
-            </label>
+            </Label>
             <Input
               id={'productPrice'}
               type={'number'}
@@ -74,12 +75,12 @@ export function ProductForm({ onProductAdd }: IProductFormProps): JSX.Element {
             />
           </div>
           <div className="mb-2">
-            <label
+            <Label
               htmlFor="productStock"
-              className="block text-sm font-medium text-gray-700"
+              className={'text-sm font-medium text-gray-700'}
             >
               재고
-            </label>
+            </Label>
             <Input
               id={'productStock'}
               type={'number'}

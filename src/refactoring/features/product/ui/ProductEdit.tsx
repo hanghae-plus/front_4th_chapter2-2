@@ -20,7 +20,7 @@ export function ProductEdit({ updateProduct, setIsEdit }: ProductEditProps) {
   return (
     <div>
       <div className="mb-4">
-        <Label>상품명: </Label>
+        <Label className={'mb-1'}>상품명: </Label>
         <Input
           type={'text'}
           value={editingProduct.name}
@@ -28,7 +28,7 @@ export function ProductEdit({ updateProduct, setIsEdit }: ProductEditProps) {
         />
       </div>
       <div className="mb-4">
-        <Label>가격: </Label>
+        <Label className={'mb-1'}>가격: </Label>
         <Input
           type="number"
           value={editingProduct.price}
@@ -38,7 +38,7 @@ export function ProductEdit({ updateProduct, setIsEdit }: ProductEditProps) {
         />
       </div>
       <div className="mb-4">
-        <Label>재고: </Label>
+        <Label className={'mb-1'}>재고: </Label>
         <Input
           type="number"
           value={editingProduct.stock}

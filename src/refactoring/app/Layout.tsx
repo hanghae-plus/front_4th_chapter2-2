@@ -1,12 +1,12 @@
 import { PageTitle } from '../shared/ui/typography';
 
-interface ILayoutProps {
+interface LayoutProps {
   isAdmin: boolean;
   setIsAdmin: (isAdmin: boolean) => void;
   children: React.ReactNode;
 }
 
-export function Layout({ isAdmin, setIsAdmin, children }: ILayoutProps) {
+export function Layout({ isAdmin, setIsAdmin, children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-blue-600 text-white p-4">
