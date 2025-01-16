@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
+import { fromPercentage, isNegativeNumber } from '../../refactoring/utils/numberUtils';
 import { Coupon, Product } from '../../types';
 
 const mockProductList: Product[] = [
@@ -228,13 +229,37 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+  describe('순수 함수 > ', () => {
+    describe('fromPercentage > ', () => {
+      test('백분율을 소수로 변환해야 합니다.', () => {
+        expect(fromPercentage(10)).toBe(0.1);
+        expect(fromPercentage(50)).toBe(0.5);
+        expect(fromPercentage(100)).toBe(1);
+      });
+
+      test('0%는 0으로 변환해야 합니다.', () => {
+        expect(fromPercentage(0)).toBe(0);
+      });
+
+      test('음수 백분율도 소수로 변환해야 합니다.', () => {
+        expect(() => fromPercentage(-10)).toThrowError('백분율은 0 이상의 숫자여야 합니다.');
+      });
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    describe('isPositive > ', () => {
+      test('음수일 때 true를 반환해야 합니다.', () => {
+        expect(isNegativeNumber(-1)).toBe(true);
+        expect(isNegativeNumber(-100)).toBe(true);
+      });
+
+      test('양수일 때 false를 반환해야 합니다.', () => {
+        expect(isNegativeNumber(1)).toBe(false);
+        expect(isNegativeNumber(100)).toBe(false);
+      });
+
+      test('0일 때 false를 반환해야 합니다.', () => {
+        expect(isNegativeNumber(0)).toBe(false);
+      });
     });
   });
 });
