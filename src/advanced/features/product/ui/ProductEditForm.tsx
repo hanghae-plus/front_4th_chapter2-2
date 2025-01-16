@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Discount, UpdateProduct } from '@advanced/entities/product';
+import { Input } from '@advanced/shared/ui';
 import { useGetProductByIdQuery, useUpdateProductMutation } from '../model';
 
 interface ProductEditFormProps {
@@ -45,37 +46,31 @@ export function ProductEditForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label className="block mb-1">상품명: </label>
-        <input
-          type="text"
-          value={editingProduct.name}
-          onChange={(e) => handleChangeEditingProduct('name', e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">가격: </label>
-        <input
-          type="number"
-          value={editingProduct.price}
-          onChange={(e) =>
-            handleChangeEditingProduct('price', parseInt(e.target.value))
-          }
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1">재고: </label>
-        <input
-          type="number"
-          value={editingProduct.stock}
-          onChange={(e) =>
-            handleChangeEditingProduct('stock', parseInt(e.target.value))
-          }
-          className="w-full p-2 border rounded"
-        />
-      </div>
+      <Input
+        labelStyle="simple"
+        label="상품명: "
+        type="text"
+        value={editingProduct.name}
+        onChange={(e) => handleChangeEditingProduct('name', e.target.value)}
+      />
+      <Input
+        labelStyle="simple"
+        label="가격: "
+        type="number"
+        value={editingProduct.price}
+        onChange={(e) =>
+          handleChangeEditingProduct('price', parseInt(e.target.value))
+        }
+      />
+      <Input
+        labelStyle="simple"
+        label="재고: "
+        type="number"
+        value={editingProduct.stock}
+        onChange={(e) =>
+          handleChangeEditingProduct('stock', parseInt(e.target.value))
+        }
+      />
       {/* 할인 정보 수정 부분 */}
       <div>
         <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
@@ -99,7 +94,8 @@ export function ProductEditForm({
           </div>
         ))}
         <div className="flex space-x-2">
-          <input
+          <Input
+            inputStyle="third"
             type="number"
             placeholder="수량"
             value={newDiscount.quantity}
@@ -109,9 +105,9 @@ export function ProductEditForm({
                 quantity: parseInt(e.target.value),
               })
             }
-            className="w-1/3 p-2 border rounded"
           />
-          <input
+          <Input
+            inputStyle="third"
             type="number"
             placeholder="할인율 (%)"
             value={newDiscount.rate * 100}
@@ -121,7 +117,6 @@ export function ProductEditForm({
                 rate: parseInt(e.target.value) / 100,
               })
             }
-            className="w-1/3 p-2 border rounded"
           />
           <button
             type="button"

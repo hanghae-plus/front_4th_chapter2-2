@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Coupon } from '@advanced/entities/coupon';
-import { Select } from '@advanced/shared/ui';
+import { Input, Select } from '@advanced/shared/ui';
 import { useAddCouponMutation } from '../model';
 
 const discountTypeOptions = [
@@ -39,26 +39,24 @@ export function CouponForm() {
 
   return (
     <form className="space-y-2 mb-4" onSubmit={handleAddCoupon}>
-      <input
+      <Input
         type="text"
         placeholder="쿠폰 이름"
         value={newCoupon.name}
         onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
-        className="w-full p-2 border rounded"
       />
-      <input
+      <Input
         type="text"
         placeholder="쿠폰 코드"
         value={newCoupon.code}
         onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
-        className="w-full p-2 border rounded"
       />
       <div className="flex gap-2">
         <Select
           options={discountTypeOptions}
           onChange={handleChangeDiscountType}
         />
-        <input
+        <Input
           type="number"
           placeholder="할인 값"
           value={newCoupon.discountValue}
@@ -68,7 +66,6 @@ export function CouponForm() {
               discountValue: parseInt(e.target.value),
             })
           }
-          className="w-full p-2 border rounded"
         />
       </div>
       <button className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
