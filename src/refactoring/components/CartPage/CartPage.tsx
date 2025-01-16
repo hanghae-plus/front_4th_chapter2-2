@@ -1,13 +1,29 @@
+import { ReactNode } from 'react';
 import { CartItem as CartItemType, Coupon, Product as ProductType } from '../../../types.ts';
 import { useCart } from "../../hooks/index.ts";
 import { Section } from '../Section.tsx';
 import { CartItem } from './CartItem.tsx';
 import { Product } from './Product.tsx';
+import { CouponSelect } from './CouponSelect.tsx';
 
 interface Props {
   products: ProductType[];
   coupons: Coupon[];
 }
+
+const styled = (El: keyof JSX.IntrinsicElements, cn?: string) => {
+  return ({ children }: { children: ReactNode }) => <El className={cn}>{children}</El>;
+}
+
+const Title = Object.assign({}, {
+  Main: styled('h2', 'text-3xl font-bold mb-6'),
+  Sub: styled('h2', 'text-2xl font-semibold mb-4'),
+  Container: styled('h2', 'text-2xl font-semibold mb-2'),
+});
+
+const Container = Object.assign(styled('div', 'space-y-2'), {
+  Grid: styled('div', 'grid grid-cols-1 md:grid-cols-2 gap-6')
+})
 
 export const CartPage = ({ products, coupons }: Props) => {
   const {
@@ -32,73 +48,65 @@ export const CartPage = ({ products, coupons }: Props) => {
   return (
     <Section
       className='container mx-auto p-4'
-      title={<h2 className="text-3xl font-bold mb-6">장바구니</h2>}
+      title={<Title.Main>장바구니</Title.Main>}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Container.Grid>
         <Section
-          title={<h2 className="text-2xl font-semibold mb-4">상품 목록</h2>}
+          title={<Title.Sub>상품 목록</Title.Sub>}
         >
-          <div className="space-y-2">
+          <Container>
             {products.map(product => (
               <Product
+                key={`product-${product.id}`}
                 addToCart={addToCart}
                 remainingStock={getRemainingStock(product)}
                 {...product}
               />
             ))}
-          </div>
+          </Container>
         </Section>
 
         <Section
-          title={<h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>}
+          title={<Title.Sub>장바구니 내역</Title.Sub>}
         >
-          <div className="space-y-2">
-            {cart.map(item => {
-              return (
-                <CartItem
-                  appliedDiscount={getAppliedDiscount(item)}
-                  increaseQuantity={() => updateQuantity(item.product.id, item.quantity + 1)}
-                  decreaseQuantity={() => updateQuantity(item.product.id, item.quantity - 1)}
-                  removeCartItem={() => removeFromCart(item.product.id)}
-                  {...item}
-                />
-              );
-            })}
-          </div>
+          <Container>
+            {cart.map(item => (
+              <CartItem
+                key={`cartItem-${item.product.id}`}
+                appliedDiscount={getAppliedDiscount(item)}
+                increaseQuantity={() => updateQuantity(item.product.id, item.quantity + 1)}
+                decreaseQuantity={() => updateQuantity(item.product.id, item.quantity - 1)}
+                removeCartItem={() => removeFromCart(item.product.id)}
+                {...item}
+              />
+            ))}
+          </Container>
 
-          <div className="mt-6 bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">쿠폰 적용</h2>
-            <select
-              onChange={(e) => applyCoupon(coupons[parseInt(e.target.value)])}
-              className="w-full p-2 border rounded mb-2"
-            >
-              <option value="">쿠폰 선택</option>
-              {coupons.map((coupon, index) => (
-                <option key={coupon.code} value={index}>
-                  {coupon.name} - {coupon.discountType === 'amount' ? `${coupon.discountValue}원` : `${coupon.discountValue}%`}
-                </option>
-              ))}
-            </select>
-            {selectedCoupon && (
-              <p className="text-green-600">
-                적용된 쿠폰: {selectedCoupon.name}
-                ({selectedCoupon.discountType === 'amount' ? `${selectedCoupon.discountValue}원` : `${selectedCoupon.discountValue}%`} 할인)
-              </p>
-            )}
-          </div>
+          <Section
+            className="mt-6 bg-white p-4 rounded shadow"
+            title={<Title.Container>쿠폰 적용</Title.Container>}
+          >
+            <CouponSelect
+              couponList={coupons}
+              applyCoupon={applyCoupon}
+              selectedCoupon={selectedCoupon}
+            />
+          </Section>
 
-          <div className="mt-6 bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
-            <div className="space-y-1">
+          <Section
+            className="mt-6 bg-white p-4 rounded shadow"
+            title={<Title.Container>주문 요약</Title.Container>}
+          >
+            <Container>
               <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
               <p className="text-green-600">할인 금액: {totalDiscount.toLocaleString()}원</p>
               <p className="text-xl font-bold">
                 최종 결제 금액: {totalAfterDiscount.toLocaleString()}원
               </p>
-            </div>
-          </div>
+            </Container>
+          </Section>
         </Section>
-      </div>
+      </Container.Grid>
     </Section>
   );
 };
