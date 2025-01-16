@@ -10,20 +10,7 @@ interface ProductManagementProps {
 }
 
 export const ProductManagement = ({ products, onProductUpdate, onProductAdd }: ProductManagementProps) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [showNewProductForm, setShowNewProductForm] = useState(false);
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   return (
     <div>
@@ -40,12 +27,7 @@ export const ProductManagement = ({ products, onProductUpdate, onProductAdd }: P
       <div className="space-y-2">
         {products.map((product, index) => (
           <div key={product.id} data-testid={`product-${index + 1}`}>
-            <ProductAccordion
-              product={product}
-              isOpen={openProductIds.has(product.id)}
-              onToggle={toggleProductAccordion}
-              onProductUpdate={onProductUpdate}
-            />
+            <ProductAccordion product={product} onProductUpdate={onProductUpdate} />
           </div>
         ))}
       </div>
