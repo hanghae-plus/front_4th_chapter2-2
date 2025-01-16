@@ -1,12 +1,13 @@
 import { CartItem, Coupon, Product } from "../../types.ts";
+import { useProductsContext } from "../contexts/ProductsContext.tsx";
 import { useCart } from "../hooks";
 
 interface Props {
-  products: Product[];
   coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({ coupons }: Props) => {
+  const { products } = useProductsContext();
   const {
     cart,
     addToCart,
@@ -199,5 +200,3 @@ export const CartPage = ({ products, coupons }: Props) => {
     </div>
   );
 };
-
-// 철희님 왈: '분리는 어드밴스드 영역이다.' => 조금은 후회중일지도?

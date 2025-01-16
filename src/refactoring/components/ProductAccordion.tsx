@@ -4,22 +4,16 @@ import { ProductDiscounts } from "./ProductDiscounts";
 import { useOpenProductIds } from "../hooks/useOpenProductIds";
 import { useNewDiscount } from "../hooks/useNewDiscount";
 import { useEditingProduct } from "../hooks/useEditingProduct";
+import { useProductsContext } from "../contexts/ProductsContext";
 
 interface Props {
   product: Product;
   index: number;
-  products: Product[];
-  onProductAdd: (newProduct: Product) => void;
-  onProductUpdate: (updatedProduct: Product) => void;
 }
 
-export const ProductAccordion = ({
-  product,
-  products,
-  index,
-  onProductUpdate,
-}: Props) => {
+export const ProductAccordion = ({ product, index }: Props) => {
   // 아코디언 나열 + 아코디언 열려서 정보 보여줌 + 수정 버튼 누를 시 수정 폼 보여줌 + 수정 과정 및 완료 이벤트까지 다룸
+  const { products, onProductUpdate } = useProductsContext();
   const { openProductIds, toggleProductAccordion } = useOpenProductIds();
   const { newDiscount, setNewDiscount } = useNewDiscount();
   const {

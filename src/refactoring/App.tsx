@@ -1,14 +1,14 @@
 import { CartPage } from "./components/CartPage.tsx";
 import { AdminPage } from "./components/AdminPage.tsx";
-import { useCoupons, useProducts } from "./hooks";
+import { useCoupons } from "./hooks";
 import { initialProducts } from "./entity/products.ts";
 import { initialCoupons } from "./entity/coupons.ts";
 import { Navigation } from "./components/Navigation.tsx";
 import { useAdmin } from "./hooks/useAdmin.ts";
+import { ProductsProvider } from "./contexts/ProductsContext.tsx";
 
 const App = () => {
   // App의 관심사: products, coupons, isAdmin을 통해 모든 ui를 관리하면서 렌더링한다.
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const { isAdmin, changeRole } = useAdmin();
 
@@ -16,20 +16,19 @@ const App = () => {
     <div className="min-h-screen bg-gray-100">
       <Navigation isAdmin={isAdmin} onRoleChange={changeRole} />
       <main className="container mx-auto mt-6">
-        {isAdmin ? (
-          <AdminPage
-            products={products}
-            coupons={coupons}
-            onProductUpdate={updateProduct}
-            onProductAdd={addProduct}
-            onCouponAdd={addCoupon}
-          />
-        ) : (
-          <CartPage products={products} coupons={coupons} />
-        )}
+        <ProductsProvider initialProducts={initialProducts}>
+          {isAdmin ? (
+            <AdminPage coupons={coupons} onCouponAdd={addCoupon} />
+          ) : (
+            <CartPage coupons={coupons} />
+          )}
+        </ProductsProvider>
       </main>
     </div>
   );
 };
 
 export default App;
+
+// Todo: 1. AdminPage 컨텍스트로 분리 -> 테스트에서 실패나네.. 어쩔 수 없는 과정이려나.
+// Todo: 2. CartPage 리팩토링

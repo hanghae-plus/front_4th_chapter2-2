@@ -1,16 +1,13 @@
-import { Product } from "../../types";
+import { useProductsContext } from "../contexts/ProductsContext";
 import { useNewProduct } from "../hooks/useNewProduct";
 
 interface Props {
-  onProductAdd: (newProduct: Product) => void;
   onChangeShowNewProductForm: (isShow: boolean) => void;
 }
 
-export const ProductAddForm = ({
-  onProductAdd,
-  onChangeShowNewProductForm,
-}: Props) => {
+export const ProductAddForm = ({ onChangeShowNewProductForm }: Props) => {
   // 관련된 ui를 보여주고 이벤트에 반응한다.
+  const { onProductAdd } = useProductsContext();
   const { newProduct, setNewProduct } = useNewProduct();
 
   const handleAddNewProduct = () => {

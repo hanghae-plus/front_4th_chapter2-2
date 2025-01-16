@@ -1,20 +1,13 @@
-import { Product } from "../../types";
 import { ProductAccordion } from "./ProductAccordion";
 import { ProductAddForm } from "./ProductAddForm";
 import { useShowNewProductForm } from "../hooks/useShowNewProductForm";
+import { useProductsContext } from "../contexts/ProductsContext";
 
-interface Props {
-  products: Product[];
-  onProductAdd: (newProduct: Product) => void;
-  onProductUpdate: (updatedProduct: Product) => void;
-}
+interface Props {}
 
 // 얘의 역할: showNewProductForm에 따라 새 상품 추가 폼을 보여준다 + ProductAccordion을 보여준다.
-export const ProductAdmin = ({
-  products,
-  onProductAdd,
-  onProductUpdate,
-}: Props) => {
+export const ProductAdmin = ({}: Props) => {
+  const { products } = useProductsContext();
   const { showNewProductForm, changeShowNewProductForm } =
     useShowNewProductForm();
 
@@ -28,20 +21,11 @@ export const ProductAdmin = ({
         {showNewProductForm ? "취소" : "새 상품 추가"}
       </button>
       {showNewProductForm && (
-        <ProductAddForm
-          onProductAdd={onProductAdd}
-          onChangeShowNewProductForm={changeShowNewProductForm}
-        />
+        <ProductAddForm onChangeShowNewProductForm={changeShowNewProductForm} />
       )}
       <div className="space-y-2">
         {products.map((product, index) => (
-          <ProductAccordion
-            product={product}
-            products={products}
-            index={index}
-            onProductAdd={onProductAdd}
-            onProductUpdate={onProductUpdate}
-          />
+          <ProductAccordion product={product} index={index} />
         ))}
       </div>
     </div>
