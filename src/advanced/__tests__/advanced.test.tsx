@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within, renderHook } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from "../../refactoring/components/AdminPage";
 import { Coupon, Product } from '../../types';
 import { isSystemDarkMode } from '../../refactoring/models/utilColorMode';
+import { useFontSize } from "../../refactoring/hooks/useFontSize";
 
 const mockProducts: Product[] = [
   {
@@ -253,9 +254,48 @@ describe('advanced > ', () => {
       expect(isSystemDarkMode()).toBe(false);
     })
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    test('[hook 함수] fontSize 초기값은 16 이다. ', () => {
+      const { result } = renderHook(() => useFontSize());
+      expect(result.current.fontSize).toBe(16);
     })
+
+    test("[hook 함수] increaseFontSize 호출 시 1씩 증가한다.", () => {
+      const { result } = renderHook(() => useFontSize());
+      act(() => {
+        result.current.increaseFontSize();
+      });
+      expect(result.current.fontSize).toBe(17);
+    })
+
+    test("[hook 함수] decreaseFontSize 호출 시 1씩 감소한다.", () => {
+      const { result } = renderHook(() => useFontSize());
+      act(() => {
+        result.current.decreaseFontSize();
+      });
+      expect(result.current.fontSize).toBe(15);
+    });
+
+    test("[hook 함수] increaseFontSize  호출 시 fontSize는 최대 23까지만 증가한다.", () => {
+      const { result } = renderHook(() => useFontSize());
+      act(() => {
+        for (let i = 0; i < 10; i++) {
+          result.current.increaseFontSize();
+        }
+      });
+      expect(result.current.fontSize).toBe(23);
+    });
+
+    test("[hook 함수] decreaseFontSize 호출 시 fontSize는 최소 9까지만 감소한다.", () => {
+      const { result } = renderHook(() => useFontSize());
+      act(() => {
+        for (let i = 0; i < 10; i++) {
+          result.current.decreaseFontSize();
+        }
+      });
+      expect(result.current.fontSize).toBe(9);
+    });
+  
+  
   })
 })
 
