@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CartPage } from "./components/CartPage.tsx";
 import { AdminPage } from "./components/AdminPage.tsx";
-
 import { useCoupons, useProducts } from "./hooks";
-import { Coupon, Product } from "./models/index.ts";
-import { config } from "./config";
 import { initialProducts, initialCoupons } from "./mocks/data";
+import { useQuery } from "@tanstack/react-query";
 import { productService, couponService } from "./services";
 
 const App = () => {
@@ -13,29 +11,18 @@ const App = () => {
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    if (config.isApiMockMode) {
-      // 상품 데이터 불러오기
-      productService
-        .getProducts()
-        .then((data) => {
-          console.log("Fetched products:", data);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch products:", error);
-        });
+  const { data: fetchedProducts } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => productService.getProducts(),
+  });
 
-      // 쿠폰 데이터 불러오기
-      couponService
-        .getCoupons()
-        .then((data) => {
-          console.log("Fetched coupons:", data);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch coupons:", error);
-        });
-    }
-  }, []);
+  const { data: fetchedCoupons } = useQuery({
+    queryKey: ["coupons"],
+    queryFn: () => couponService.getCoupons(),
+  });
+
+  console.log("Fetched products:", fetchedProducts);
+  console.log("Fetched coupons:", fetchedCoupons);
 
   return (
     <div className="min-h-screen bg-gray-100">
