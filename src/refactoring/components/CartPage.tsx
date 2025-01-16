@@ -1,6 +1,7 @@
 import { CartItem, Coupon, Product } from "../../types.ts";
 import { useCart, useLocalStorage } from "../hooks";
-import CartItemDisplay from "./CartItemDisplay.tsx";
+import CartItemDisplay from "./carts/CartItemDisplay.tsx";
+import ProductPrice from "./carts/ProductPrice.tsx";
 
 interface Props {
   products: Product[];
@@ -55,28 +56,11 @@ export const CartPage = ({ products, coupons }: Props) => {
                   data-testid={`product-${product.id}`}
                   className="bg-white p-3 rounded shadow"
                 >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">{product.name}</span>
-                    <span className="text-gray-600">
-                      {product.price.toLocaleString()}원
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-500 mb-2">
-                    <span
-                      className={`font-medium ${
-                        remainingStock > 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      재고: {remainingStock}개
-                    </span>
-                    {product.discounts.length > 0 && (
-                      <span className="ml-2 font-medium text-blue-600">
-                        최대{" "}
-                        {(getMaxDiscount(product.discounts) * 100).toFixed(0)}%
-                        할인
-                      </span>
-                    )}
-                  </div>
+                  <ProductPrice
+                    product={product}
+                    remainingStock={remainingStock}
+                  />
+
                   {product.discounts.length > 0 && (
                     <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
                       {product.discounts.map((discount, index) => (
