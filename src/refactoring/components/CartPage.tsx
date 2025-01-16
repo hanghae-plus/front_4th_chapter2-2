@@ -1,4 +1,4 @@
-import { CartItem, Coupon, Product } from '../../types.ts';
+import { Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
 import { calculateCartTotal } from '../models/cart.ts';
 import { getAppliedDiscount, getMaxDiscount, getRemainingStock } from '../utils/cart.ts';
