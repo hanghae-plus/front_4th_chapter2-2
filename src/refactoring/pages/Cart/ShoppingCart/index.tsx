@@ -1,7 +1,7 @@
-import { AppliedCoupon } from '@/refactoring/pages/Cart/features/ShoppingCart/components/AppliedCoupon';
-import { CartItem } from '@/refactoring/pages/Cart/features/ShoppingCart/components/CartItem';
-import { CouponSelect } from '@/refactoring/pages/Cart/features/ShoppingCart/components/CouponSelect';
-import { OrderSummary } from '@/refactoring/pages/Cart/features/ShoppingCart/components/OrderSummary';
+import { AppliedCoupon } from '@/refactoring/pages/Cart/ShoppingCart/components/AppliedCoupon';
+import { CartItem } from '@/refactoring/pages/Cart/ShoppingCart/components/CartItem';
+import { CouponSelect } from '@/refactoring/pages/Cart/ShoppingCart/components/CouponSelect';
+import { OrderSummary } from '@/refactoring/pages/Cart/ShoppingCart/components/OrderSummary';
 import type { CartItem as CartItemType, Coupon } from '@/types';
 
 interface ShoppingCartProps {

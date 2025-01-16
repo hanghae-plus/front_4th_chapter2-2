@@ -1,5 +1,5 @@
-import { ProductAddForm } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductAddForm';
-import { ProductEditor } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/ProductEditor';
+import { ProductAddForm } from '@/refactoring/pages/Admin/ProductManagement/components/ProductAddForm';
+import { ProductEditor } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor';
 import type { Product } from '@/types';
 
 interface ProductManagementProps {

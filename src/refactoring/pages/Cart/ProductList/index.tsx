@@ -1,4 +1,4 @@
-import { ProductItem } from '@/refactoring/pages/Cart/features/ProductList/components/ProductItem';
+import { ProductItem } from '@/refactoring/pages/Cart/ProductList/components/ProductItem';
 import type { CartItem, Product } from '@/types';
 
 interface ProductListProps {

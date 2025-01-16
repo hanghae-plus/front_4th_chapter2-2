@@ -1,5 +1,5 @@
-import { DiscountDetails } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/components/ProductUpdateForm/components/DiscountDetails';
-import { useProductForm } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/components/ProductUpdateForm/hooks/useProductForm';
+import { DiscountDetails } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductUpdateForm/DiscountDetails';
+import { useProductForm } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductUpdateForm/hooks/useProductForm';
 import type { Product } from '@/types';
 
 interface ProductUpdateFormProps {

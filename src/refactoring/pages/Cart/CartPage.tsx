@@ -1,6 +1,6 @@
-import { ProductList } from '@/refactoring/pages/Cart/features/ProductList/ProductList';
-import { ShoppingCart } from '@/refactoring/pages/Cart/features/ShoppingCart/ShoppingCart';
 import { useCart } from '@/refactoring/pages/Cart/hooks/useCart';
+import { ProductList } from '@/refactoring/pages/Cart/ProductList';
+import { ShoppingCart } from '@/refactoring/pages/Cart/ShoppingCart';
 import type { Coupon, Product } from '@/types';
 
 interface Props {

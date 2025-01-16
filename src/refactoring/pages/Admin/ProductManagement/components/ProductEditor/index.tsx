@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import { ProductDetails } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/components/ProductDetails';
-import { ProductUpdateForm } from '@/refactoring/pages/Admin/features/ProductManagement/components/ProductEditor/components/ProductUpdateForm/ProductUpdateForm';
-import { Collapsible } from '@/refactoring/pages/Admin/features/ProductManagement/ui/Collapsible';
+import { ProductDetails } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductDetails';
+import { ProductUpdateForm } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductUpdateForm';
+import { Collapsible } from '@/refactoring/pages/Admin/ProductManagement/ui/Collapsible';
 import type { Product } from '@/types';
 
 interface ProductEditorProps {
