@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Coupon, Product } from '../types';
 import { AdminPage } from './pages/admin/ui';
 import { CartPage } from './pages/cart/ui';
-import { Header } from './widgets';
+import { Header } from './widgets/layout';
 import { AppContainer } from './app/ui/AppContainer';
 
 const initialProducts: Product[] = [

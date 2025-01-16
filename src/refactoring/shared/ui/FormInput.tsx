@@ -1,4 +1,5 @@
 interface FormInputProps {
+  id?: string;
   label: string | null;
   value: string | number;
   type?: 'text' | 'number';
@@ -11,6 +12,7 @@ interface FormInputProps {
 }
 
 export function FormInput({
+  id = '',
   label,
   value,
   onChange,
@@ -23,8 +25,13 @@ export function FormInput({
 }: FormInputProps) {
   return (
     <div className={`${className}`}>
-      {label && <label className="block mb-1">{label}</label>}
+      {label && (
+        <label htmlFor={id} className="block mb-1">
+          {label}
+        </label>
+      )}
       <input
+        id={id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}

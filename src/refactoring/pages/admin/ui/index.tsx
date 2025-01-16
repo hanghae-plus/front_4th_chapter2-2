@@ -1,38 +1,17 @@
 import { useState } from 'react';
-import { Coupon, Product } from '../../../../types';
+import { Coupon } from '../../../../types';
 import { TextButton } from '../../../shared/ui';
-import { ProductPanel } from '../../../features/product/ui/ProductPanel';
-import { useProductContext } from '../../../entities/product/model/useProductContext';
 import { useCouponContext } from '../../../entities/coupon/model/useCouponContext';
+import { ProductManagement } from '../../../widgets/product/ProductManagement';
 
 export function AdminPage() {
-  const { products, updateProduct, addProduct } = useProductContext();
   const { coupons, addCoupon } = useCouponContext();
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
     discountType: 'percentage',
     discountValue: 0,
   });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
-
-  // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({ ...product });
-  };
-  // 수정 완료 핸들러 함수 추가
-  const handleEditComplete = () => {
-    if (editingProduct) {
-      setEditingProduct(null);
-    }
-  };
 
   const handleAddCoupon = () => {
     addCoupon(newCoupon);
@@ -44,93 +23,11 @@ export function AdminPage() {
     });
   };
 
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    addProduct(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
-  };
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">상품 관리</h2>
-          <TextButton
-            variant="add"
-            title={showNewProductForm ? '취소' : '새 상품 추가'}
-            onClick={() => setShowNewProductForm(!showNewProductForm)}
-          />
-          {showNewProductForm && (
-            <div className="bg-white p-4 rounded shadow">
-              <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
-              <div className="mb-2">
-                <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
-                  상품명
-                </label>
-                <input
-                  id="productName"
-                  type="text"
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">
-                  가격
-                </label>
-                <input
-                  id="productPrice"
-                  type="number"
-                  value={newProduct.price}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, price: parseInt(e.target.value, 10) })
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">
-                  재고
-                </label>
-                <input
-                  id="productStock"
-                  type="number"
-                  value={newProduct.stock}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, stock: parseInt(e.target.value, 10) })
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <TextButton variant="add" title="추가" onClick={handleAddNewProduct} fullWidth />
-            </div>
-          )}
-          <div className="space-y-2">
-            {products.map((product, index) => {
-              const key = `product-${index + 1}`;
-              const isEditable = editingProduct && editingProduct.id === product.id;
-              return (
-                <ProductPanel
-                  key={key}
-                  testId={key}
-                  product={product}
-                  isEditing={isEditable ?? false}
-                  onProductUpdate={updateProduct}
-                  onEdit={handleEditProduct}
-                  onEditComplete={handleEditComplete}
-                />
-              );
-            })}
-          </div>
-        </div>
+        <ProductManagement />
         <div>
           <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
           <div className="bg-white p-4 rounded shadow">
@@ -203,7 +100,6 @@ export function AdminPage() {
             </div>
           </div>
         </div>
-        ; ; ;
       </div>
     </div>
   );

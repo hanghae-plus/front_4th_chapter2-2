@@ -1,4 +1,4 @@
-import { TextButton } from '../shared/ui';
+import { TextButton } from '../../shared/ui';
 
 interface HeaderProps {
   isAdmin: boolean;
