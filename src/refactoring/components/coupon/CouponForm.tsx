@@ -1,4 +1,5 @@
 import { Coupon } from '@types';
+import { Select } from '../shared/Select';
 
 interface CouponFormProps {
   newCoupon: Coupon;
@@ -6,11 +7,25 @@ interface CouponFormProps {
   onSubmit: (event: React.FormEvent) => void;
 }
 
+const discountTypeOptions = [
+  { value: 'amount', label: '금액(원)' },
+  { value: 'percentage', label: '할인율(%)' },
+];
+
 export function CouponForm({
   newCoupon,
   setNewCoupon,
   onSubmit,
 }: CouponFormProps) {
+  const handleChangeDiscountType = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setNewCoupon({
+      ...newCoupon,
+      discountType: event.target.value as 'amount' | 'percentage',
+    });
+  };
+
   return (
     <form className="space-y-2 mb-4" onSubmit={onSubmit}>
       <input
@@ -28,19 +43,10 @@ export function CouponForm({
         className="w-full p-2 border rounded"
       />
       <div className="flex gap-2">
-        <select
-          value={newCoupon.discountType}
-          onChange={(e) =>
-            setNewCoupon({
-              ...newCoupon,
-              discountType: e.target.value as 'amount' | 'percentage',
-            })
-          }
-          className="w-full p-2 border rounded"
-        >
-          <option value="amount">금액(원)</option>
-          <option value="percentage">할인율(%)</option>
-        </select>
+        <Select
+          options={discountTypeOptions}
+          onChange={handleChangeDiscountType}
+        />
         <input
           type="number"
           placeholder="할인 값"
