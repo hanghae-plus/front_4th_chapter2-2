@@ -1,7 +1,7 @@
-import { CartItem, Coupon } from '../../types';
+import { CartItem } from '../../types';
 import { clamp } from '../lib';
 
-export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
+export const calculateCartTotal = (cart: CartItem[]) => {
   let totalBeforeDiscount = 0;
   let totalAfterDiscount = 0;
 
@@ -11,16 +11,16 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
     totalAfterDiscount += calculateItemTotal({ product, quantity });
   });
 
-  // 쿠폰 적용
-  if (selectedCoupon) {
-    if (selectedCoupon.discountType === 'amount') {
-      totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-    }
+  // // 쿠폰 적용
+  // if (selectedCoupon) {
+  //   if (selectedCoupon.discountType === 'amount') {
+  //     totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
+  //   }
 
-    if (selectedCoupon.discountType === 'percentage') {
-      totalAfterDiscount = totalAfterDiscount * (1 - selectedCoupon.discountValue / 100);
-    }
-  }
+  //   if (selectedCoupon.discountType === 'percentage') {
+  //     totalAfterDiscount = totalAfterDiscount * (1 - selectedCoupon.discountValue / 100);
+  //   }
+  // }
 
   const totalDiscount = totalBeforeDiscount - totalAfterDiscount;
 

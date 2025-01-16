@@ -1,12 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CartItem, Coupon, Membership, Product } from '../../types';
 import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
+import { Discount, useDiscountCalculator } from './useDiscountCalculator';
+import { useLocalStorage } from './useLocalStorage';
 import { usePreservedCallback } from './usePreservedCallback';
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { getItem, setItem } = useLocalStorage();
+
+  const [cart, setCart] = useState<CartItem[]>(getItem('cart') || []);
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+
+  const discountCalculator = useDiscountCalculator();
+
+  useEffect(() => {
+    setItem('cart', cart);
+  }, [cart]);
 
   const addToCart = usePreservedCallback((product: Product) => {
     const remainingStock = getRemainingStock(product);
@@ -53,7 +63,20 @@ export const useCart = () => {
   });
 
   const calculateTotal = () => {
-    return calculateCartTotal(cart, selectedCoupon);
+    const { totalBeforeDiscount, totalAfterDiscount } = calculateCartTotal(cart);
+
+    const discounts = [selectedMembership, selectedCoupon].reduce((acc, current) => {
+      if (!current) return acc;
+      return [...acc, { type: current.discountType, value: current.discountValue }];
+    }, [] as Discount[]);
+
+    const finalPrice = discountCalculator(totalAfterDiscount, discounts);
+
+    return {
+      totalBeforeDiscount,
+      totalAfterDiscount: finalPrice,
+      totalDiscount: totalBeforeDiscount - finalPrice,
+    };
   };
 
   return {

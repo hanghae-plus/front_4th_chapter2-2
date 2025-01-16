@@ -1,51 +1,15 @@
 import { useState } from 'react';
-import { Coupon, Product } from '../types.ts';
 import { AdminPage } from './components/AdminPage.tsx';
 import { CartPage } from './components/CartPage.tsx';
-import { useCoupons, useProducts } from './hooks';
-
-const initialProducts: Product[] = [
-  {
-    id: 'p1',
-    name: '상품1',
-    price: 10000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.1 }],
-  },
-  {
-    id: 'p2',
-    name: '상품2',
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
-  },
-  {
-    id: 'p3',
-    name: '상품3',
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
-  },
-];
-
-const initialCoupons: Coupon[] = [
-  {
-    name: '5000원 할인 쿠폰',
-    code: 'AMOUNT5000',
-    discountType: 'amount',
-    discountValue: 5000,
-  },
-  {
-    name: '10% 할인 쿠폰',
-    code: 'PERCENT10',
-    discountType: 'percentage',
-    discountValue: 10,
-  },
-];
+import { useCoupons } from './hooks/useCoupon.ts';
+import { useMemberships } from './hooks/useMembership.ts';
+import { useProducts } from './hooks/useProducts.ts';
 
 const App = () => {
-  const { products, addProduct, updateProduct } = useProducts(initialProducts);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { memberships, addMembership } = useMemberships();
+  const { coupons, addCoupon } = useCoupons();
+
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
@@ -65,13 +29,16 @@ const App = () => {
         {isAdmin ? (
           <AdminPage
             products={products}
+            memberships={memberships}
             coupons={coupons}
-            onProductUpdate={updateProduct}
             onProductAdd={addProduct}
+            onProductUpdate={updateProduct}
+            onProductDelete={deleteProduct}
+            onMembershipAdd={addMembership}
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons} />
+          <CartPage products={products} memberships={memberships} coupons={coupons} />
         )}
       </main>
     </div>

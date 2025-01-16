@@ -1,21 +1,29 @@
-import { CartItem, Coupon, Product } from '../../types.ts';
-import { useCart, usePreservedCallback } from '../hooks';
+import { useState } from 'react';
+import { CartItem, Coupon, Membership, Product } from '../../types.ts';
+import { useCart, usePreservedCallback, useProductSearch } from '../hooks';
 
 interface Props {
   products: Product[];
+  memberships: Membership[];
   coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({ products, memberships, coupons }: Props) => {
   const {
     cart,
+    selectedMembership,
     selectedCoupon,
     addToCart,
     removeFromCart,
     updateQuantity,
-    applyCoupon,
     calculateTotal,
+    applyMembership,
+    applyCoupon,
   } = useCart();
+
+  const [keyword, setKeyword] = useState('');
+
+  const filteredProducts = useProductSearch(products, keyword);
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
@@ -46,8 +54,14 @@ export const CartPage = ({ products, coupons }: Props) => {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <h2 className="mb-4 text-2xl font-semibold">상품 목록</h2>
+          <input
+            className="mb-4 w-full rounded border p-2"
+            placeholder="상품 검색"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
           <div className="space-y-2">
-            {products.map((product) => {
+            {filteredProducts.map((product) => {
               const remainingStock = getRemainingStock(product);
               return (
                 <div
@@ -144,6 +158,12 @@ export const CartPage = ({ products, coupons }: Props) => {
             })}
           </div>
 
+          <ApplyMembership
+            memberships={memberships}
+            selectedMembership={selectedMembership}
+            onMembershipChange={applyMembership}
+          />
+
           <ApplyCoupon
             coupons={coupons}
             selectedCoupon={selectedCoupon}
@@ -169,6 +189,47 @@ export const CartPage = ({ products, coupons }: Props) => {
 /** -----------------------------------------------------------------------------------------------
  * Subconponents
  * --------------------------------------------------------------------------------------------- */
+
+interface ApplyMembershipProps {
+  memberships: Membership[];
+  selectedMembership: Membership | null;
+  onMembershipChange: (membership: Membership | null) => void;
+}
+
+const ApplyMembership = ({
+  memberships,
+  selectedMembership,
+  onMembershipChange,
+}: ApplyMembershipProps) => {
+  const handleChange = usePreservedCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    onMembershipChange(memberships[parseInt(e.target.value)] || null);
+  });
+
+  return (
+    <div className="mt-6 rounded bg-white p-4 shadow">
+      <h2 className="mb-2 text-2xl font-semibold">회원 등급 적용</h2>
+      <select
+        id="membership-combobox"
+        className="mb-2 w-full rounded border p-2"
+        onChange={handleChange}
+      >
+        <option value="">회원 등급 선택</option>
+        {memberships.map(({ name, code, discountValue }, i) => (
+          <option key={code} value={i}>
+            {name} - {`${discountValue}%`}
+          </option>
+        ))}
+      </select>
+      {selectedMembership && (
+        <p className="text-green-600">
+          적용된 맴버쉽: {selectedMembership.name}({selectedMembership.discountValue}% 할인)
+        </p>
+      )}
+    </div>
+  );
+};
+
+/* --------------------------------------------------------------------------------------------- */
 
 interface ApplyCouponProps {
   coupons: Coupon[];

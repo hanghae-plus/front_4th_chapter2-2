@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Coupon, Product } from '../types.ts';
+import { Coupon, Membership, Product } from '../types.ts';
 import { AdminPage } from './components/AdminPage.tsx';
 import { CartPage } from './components/CartPage.tsx';
-import { useCoupons, useProducts } from './hooks';
+import { useCoupons } from './hooks/useCoupon.ts';
+import { useMemberships } from './hooks/useMembership.ts';
+import { useProducts } from './hooks/useProducts.ts';
 
 const initialProducts: Product[] = [
   {
@@ -28,6 +30,33 @@ const initialProducts: Product[] = [
   },
 ];
 
+const initialMemberships: Membership[] = [
+  {
+    name: '브론즈 등급 할인',
+    code: 'BRONZE',
+    discountType: 'percentage',
+    discountValue: 3,
+  },
+  {
+    name: '실버 등급 할인',
+    code: 'SILVER',
+    discountType: 'percentage',
+    discountValue: 5,
+  },
+  {
+    name: '골드 등급 할인',
+    code: 'GOLD',
+    discountType: 'percentage',
+    discountValue: 7,
+  },
+  {
+    name: 'VIP 등급 할인',
+    code: 'VIP',
+    discountType: 'percentage',
+    discountValue: 10,
+  },
+];
+
 const initialCoupons: Coupon[] = [
   {
     name: '5000원 할인 쿠폰',
@@ -44,8 +73,10 @@ const initialCoupons: Coupon[] = [
 ];
 
 const App = () => {
-  const { products, addProduct, updateProduct } = useProducts(initialProducts);
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts(initialProducts);
+  const { memberships, addMembership } = useMemberships(initialMemberships);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
+
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
@@ -65,13 +96,16 @@ const App = () => {
         {isAdmin ? (
           <AdminPage
             products={products}
+            memberships={memberships}
             coupons={coupons}
-            onProductUpdate={updateProduct}
             onProductAdd={addProduct}
+            onProductUpdate={updateProduct}
+            onProductDelete={deleteProduct}
+            onMembershipAdd={addMembership}
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons} />
+          <CartPage products={products} memberships={memberships} coupons={coupons} />
         )}
       </main>
     </div>
