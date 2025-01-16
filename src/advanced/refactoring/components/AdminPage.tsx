@@ -1,26 +1,18 @@
 import React, { useState } from 'react';
-import { Product } from '../models/types/Product';
 import { Coupon } from '../models/types/Coupon';
 import ProductForm from './admin/ProductForm';
 import ManageCoupon from './admin/ManageCoupon';
 import ProductList from './admin/ProductList';
+import { useProducts } from '../hooks';
 
 interface Props {
-  products: Product[];
-  onProductAdd: (product: Product) => void;
-  onProductUpdate: (product: Product) => void;
   coupons: Coupon[];
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-function AdminPage({
-  products,
-  onProductAdd,
-  onProductUpdate,
-  coupons,
-  onCouponAdd,
-}: Props) {
+function AdminPage({ coupons, onCouponAdd }: Props) {
   const [showNewProductForm, setShowNewProductForm] = useState(false);
+  const { products, addProduct, updateProduct } = useProducts();
 
   return (
     <div className="container mx-auto p-4">
@@ -36,11 +28,11 @@ function AdminPage({
             {showNewProductForm ? '취소' : '새 상품 추가'}
           </button>
           <ProductForm
-            addProduct={onProductAdd}
+            addProduct={addProduct}
             isOpen={showNewProductForm}
             setFormState={setShowNewProductForm}
           />
-          <ProductList products={products} onProductUpdate={onProductUpdate} />
+          <ProductList products={products} onProductUpdate={updateProduct} />
         </div>
         <ManageCoupon coupons={coupons} onCouponAdd={onCouponAdd} />
       </div>

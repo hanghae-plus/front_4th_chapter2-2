@@ -27,7 +27,7 @@ const initialProducts: Product[] = [
   },
 ];
 
-const getProducts = () => {
+const getProducts = (): Promise<Product[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(initialProducts);

@@ -1,15 +1,14 @@
 import React from 'react';
-import { useCart } from '../hooks';
+import { useCart, useProducts } from '../hooks';
 import { CartItem } from '../models/types/CartItem';
 import { Coupon } from '../models/types/Coupon';
 import { Product } from '../models/types/Product';
 
 interface Props {
-  products: Product[];
   coupons: Coupon[];
 }
 
-function CartPage({ products, coupons }: Props) {
+function CartPage({ coupons }: Props) {
   const {
     cart,
     addToCart,
@@ -19,6 +18,7 @@ function CartPage({ products, coupons }: Props) {
     calculateTotal,
     selectedCoupon,
   } = useCart();
+  const { products } = useProducts();
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
