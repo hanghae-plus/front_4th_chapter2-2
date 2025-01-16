@@ -3,7 +3,6 @@ import { Coupon } from '../models/types/Coupon';
 import ProductForm from './admin/ProductForm';
 import ManageCoupon from './admin/ManageCoupon';
 import ProductList from './admin/ProductList';
-import { useProducts } from '../hooks';
 
 interface Props {
   coupons: Coupon[];
@@ -12,7 +11,6 @@ interface Props {
 
 function AdminPage({ coupons, onCouponAdd }: Props) {
   const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const { products, addProduct, updateProduct } = useProducts();
 
   return (
     <div className="container mx-auto p-4">
@@ -28,11 +26,10 @@ function AdminPage({ coupons, onCouponAdd }: Props) {
             {showNewProductForm ? '취소' : '새 상품 추가'}
           </button>
           <ProductForm
-            addProduct={addProduct}
             isOpen={showNewProductForm}
             setFormState={setShowNewProductForm}
           />
-          <ProductList products={products} onProductUpdate={updateProduct} />
+          <ProductList />
         </div>
         <ManageCoupon coupons={coupons} onCouponAdd={onCouponAdd} />
       </div>

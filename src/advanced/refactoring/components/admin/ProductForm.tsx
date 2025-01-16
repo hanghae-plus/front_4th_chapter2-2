@@ -1,14 +1,14 @@
 import React from 'react';
-import { Product } from '../../models/types/Product';
 import { useCreateProduct } from '../../hooks/admin/useCreateProduct';
+import { useProducts } from '../../hooks';
 
 interface Props {
   isOpen: boolean;
   setFormState: React.Dispatch<React.SetStateAction<boolean>>;
-  addProduct: (product: Product) => void;
 }
 
-function ProductForm({ isOpen, setFormState, addProduct }: Props) {
+function ProductForm({ isOpen, setFormState }: Props) {
+  const { addProduct } = useProducts();
   const {
     newProduct,
     handlers: {

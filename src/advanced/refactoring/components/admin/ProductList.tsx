@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
-import { Product } from '../../models/types/Product';
 import ProductDescription from './ProductDescription';
 import ProductUpdateForm from './ProductUpdateForm';
+import { useProducts } from '../../hooks';
 
-interface ProductListProps {
-  products: Product[];
-  onProductUpdate: (product: Product) => void;
-}
-
-function ProductList({ products, onProductUpdate }: ProductListProps) {
+function ProductList() {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [openEditForm, setOpenEditForm] = useState(false);
+  const { products, updateProduct } = useProducts();
 
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds((prev) => {
@@ -43,7 +39,7 @@ function ProductList({ products, onProductUpdate }: ProductListProps) {
             <div className="mt-2">
               {openEditForm ? (
                 <ProductUpdateForm
-                  onProductUpdate={onProductUpdate}
+                  onProductUpdate={updateProduct}
                   product={product}
                   products={products}
                   closeEditForm={() => setOpenEditForm(false)}
