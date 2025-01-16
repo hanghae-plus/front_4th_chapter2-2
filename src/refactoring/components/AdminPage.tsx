@@ -4,16 +4,16 @@ import AdminProductList from './AdminProductList.tsx';
 import AdminNewProduct from './AdminNewProduct.tsx';
 
 interface Props {
-  products: Product[];
-  coupons: Coupon[];
+  productList: Product[];
+  couponList: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 export const AdminPage = ({
-  products,
-  coupons,
+  productList,
+  couponList,
   onProductUpdate,
   onProductAdd,
   onCouponAdd,
@@ -24,9 +24,9 @@ export const AdminPage = ({
       <div>
         <h2 className='text-2xl font-semibold mb-4'>상품 관리</h2>
         <AdminNewProduct onProductAdd={onProductAdd} />
-        <AdminProductList products={products} onProductUpdate={onProductUpdate} />
+        <AdminProductList productList={productList} onProductUpdate={onProductUpdate} />
       </div>
-      <AdminCouponForm coupons={coupons} onCouponAdd={onCouponAdd} />
+      <AdminCouponForm couponList={couponList} onCouponAdd={onCouponAdd} />
     </div>
   </div>
 );

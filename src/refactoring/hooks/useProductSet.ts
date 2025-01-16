@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 const useProductSet = () => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+  const [openProductIdList, setOpenProductIdList] = useState<Set<string>>(new Set());
   const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
+    setOpenProductIdList((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(productId)) {
         newSet.delete(productId);
@@ -15,7 +15,7 @@ const useProductSet = () => {
   };
 
   return {
-    openProductIds,
+    openProductIdList,
     toggleProductAccordion,
   };
 };

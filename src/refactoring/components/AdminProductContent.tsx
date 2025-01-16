@@ -65,7 +65,7 @@ const AdminProductContent = ({
         {/* 할인 정보 수정 부분 */}
         <div>
           <h4 className='text-lg font-semibold mb-2'>할인 정보</h4>
-          {editingProduct.discounts.map((discount, index) => (
+          {editingProduct.discountList.map((discount, index) => (
             <div key={index} className='flex justify-between items-center mb-2'>
               <span>
                 {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
@@ -110,7 +110,7 @@ const AdminProductContent = ({
       </div>
     ) : (
       <div>
-        {product.discounts.map((discount, index) => (
+        {product.discountList.map((discount, index) => (
           <div key={index} className='mb-2'>
             <span>
               {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인

@@ -4,7 +4,7 @@ export const calculateItemTotal = (item: CartItem) =>
   item.quantity * item.product.price * (1 - getMaxApplicableDiscount(item));
 
 export const getMaxApplicableDiscount = (item: CartItem) =>
-  item.product.discounts.reduce(
+  item.product.discountList.reduce(
     (maxDiscount, discount) =>
       item.quantity >= discount.quantity && discount.rate > maxDiscount
         ? discount.rate

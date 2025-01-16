@@ -2,11 +2,11 @@ import { Coupon } from '../../types.ts';
 import useNewCoupon from '../hooks/useNewCoupon.ts';
 
 interface ManageCouponProps {
-  coupons: Coupon[];
+  couponList: Coupon[];
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-const AdminCouponForm = ({ coupons, onCouponAdd }: ManageCouponProps) => {
+const AdminCouponForm = ({ couponList, onCouponAdd }: ManageCouponProps) => {
   const {
     newCoupon,
     handleChangeName,
@@ -62,7 +62,7 @@ const AdminCouponForm = ({ coupons, onCouponAdd }: ManageCouponProps) => {
         <div>
           <h3 className='text-lg font-semibold mb-2'>현재 쿠폰 목록</h3>
           <div className='space-y-2'>
-            {coupons.map((coupon, index) => (
+            {couponList.map((coupon, index) => (
               <div
                 key={index}
                 data-testid={`coupon-${index + 1}`}

@@ -2,11 +2,11 @@ import { ChangeEvent, useState } from 'react';
 import { Discount, Product } from '../../types.ts';
 
 interface UseAdminProps {
-  products: Product[];
+  productList: Product[];
   onProductUpdate: (product: Product) => void;
 }
 
-const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
+const useAdmin = ({ productList, onProductUpdate }: UseAdminProps) => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
 
@@ -15,7 +15,6 @@ const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
     setEditingProduct({ ...product });
   };
 
-  // 새로운 핸들러 함수 추가
   const handleProductNameUpdate = (productId: string, newName: string) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, name: newName };
@@ -23,7 +22,6 @@ const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
     }
   };
 
-  // 새로운 핸들러 함수 추가
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, price: newPrice };
@@ -31,7 +29,6 @@ const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
     }
   };
 
-  // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
@@ -40,7 +37,7 @@ const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
   };
 
   const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
       onProductUpdate(newProduct);
@@ -49,11 +46,11 @@ const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
   };
 
   const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct && editingProduct) {
-      const newProduct = {
+      const newProduct: Product = {
         ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
+        discountList: [...updatedProduct.discountList, newDiscount],
       };
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
@@ -62,11 +59,11 @@ const useAdmin = ({ products, onProductUpdate }: UseAdminProps) => {
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = {
         ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
+        discountList: updatedProduct.discountList.filter((_, i) => i !== index),
       };
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);

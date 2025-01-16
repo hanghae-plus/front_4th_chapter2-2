@@ -55,9 +55,10 @@ export const CartPage = ({ products, coupons }: Props) => {
       const { quantity } = item;
       totalBeforeDiscount += price * quantity;
 
-      const discount = item.product.discounts.reduce((maxDiscount, d) => {
-        return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-      }, 0);
+      const discount = item.product.discountList.reduce(
+        (maxDiscount, d) => (quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount),
+        0,
+      );
 
       totalAfterDiscount += price * quantity * (1 - discount);
     });
@@ -81,9 +82,8 @@ export const CartPage = ({ products, coupons }: Props) => {
     };
   };
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
+  const getMaxDiscount = (discountList: { quantity: number; rate: number }[]) =>
+    discountList.reduce((max, discount) => Math.max(max, discount.rate), 0);
 
   const getRemainingStock = (product: Product) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
@@ -93,10 +93,10 @@ export const CartPage = ({ products, coupons }: Props) => {
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
+    const { discountList } = item.product;
     const { quantity } = item;
     let appliedDiscount = 0;
-    for (const discount of discounts) {
+    for (const discount of discountList) {
       if (quantity >= discount.quantity) {
         appliedDiscount = Math.max(appliedDiscount, discount.rate);
       }
@@ -133,15 +133,15 @@ export const CartPage = ({ products, coupons }: Props) => {
                     >
                       재고: {remainingStock}개
                     </span>
-                    {product.discounts.length > 0 && (
+                    {product.discountList.length > 0 && (
                       <span className='ml-2 font-medium text-blue-600'>
-                        최대 {(getMaxDiscount(product.discounts) * 100).toFixed(0)}% 할인
+                        최대 {(getMaxDiscount(product.discountList) * 100).toFixed(0)}% 할인
                       </span>
                     )}
                   </div>
-                  {product.discounts.length > 0 && (
+                  {product.discountList.length > 0 && (
                     <ul className='list-disc list-inside text-sm text-gray-500 mb-2'>
-                      {product.discounts.map((discount, index) => (
+                      {product.discountList.map((discount, index) => (
                         <li key={index}>
                           {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}% 할인
                         </li>

@@ -11,7 +11,7 @@ const useNewProduct = ({ onProductAdd }: UseNewProductProps) => {
     name: '',
     price: 0,
     stock: 0,
-    discounts: [],
+    discountList: [],
   });
 
   const handleAddNewProduct = () => {
@@ -21,7 +21,7 @@ const useNewProduct = ({ onProductAdd }: UseNewProductProps) => {
       name: '',
       price: 0,
       stock: 0,
-      discounts: [],
+      discountList: [],
     });
     setShowNewProductForm(false);
   };

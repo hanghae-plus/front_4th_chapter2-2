@@ -9,7 +9,7 @@ interface CartItemCardWrapperProps {
 
 const CartItemCardWrapper = (props: CartItemCardWrapperProps) => {
   const getAppliedDiscount = (item: CartItem) =>
-    item.product.discounts
+    item.product.discountList
       .filter((discount) => item.quantity >= discount.quantity)
       .reduce((max, discount) => Math.max(max, discount.rate), 0);
 

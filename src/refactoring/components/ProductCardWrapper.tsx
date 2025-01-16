@@ -9,15 +9,15 @@ interface ProductCardWrapperProps {
 }
 
 const ProductCardWrapper = ({ cart, product, addToCart }: ProductCardWrapperProps) => {
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) =>
-    discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
+  const getMaxDiscount = (discountList: { quantity: number; rate: number }[]) =>
+    discountList.reduce((max, discount) => Math.max(max, discount.rate), 0);
 
   return (
     <ProductCard
       stock={getRemainingStock(product, cart)}
       product={product}
       addToCart={addToCart}
-      discount={getMaxDiscount(product.discounts) * 100}
+      discount={getMaxDiscount(product.discountList) * 100}
     />
   );
 };

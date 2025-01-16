@@ -4,19 +4,19 @@ import useProductSet from '../hooks/useProductSet.ts';
 import useAdmin from '../hooks/useAdmin.ts';
 
 interface AdminProductCardProps {
-  products: Product[];
+  productList: Product[];
   onProductUpdate: (updatedProduct: Product) => void;
 }
 
-const AdminProductList = ({ products, onProductUpdate }: AdminProductCardProps) => {
+const AdminProductList = ({ productList, onProductUpdate }: AdminProductCardProps) => {
   const adminProps = useAdmin({
-    products,
+    productList,
     onProductUpdate,
   });
-  const { openProductIds, toggleProductAccordion } = useProductSet();
+  const { openProductIdList, toggleProductAccordion } = useProductSet();
   return (
     <div className='space-y-2'>
-      {products.map((product, index) => (
+      {productList.map((product, index) => (
         <div
           key={product.id}
           data-testid={`product-${index + 1}`}
@@ -29,7 +29,7 @@ const AdminProductList = ({ products, onProductUpdate }: AdminProductCardProps) 
           >
             {product.name} - {product.price}원 (재고: {product.stock})
           </button>
-          {openProductIds.has(product.id) && (
+          {openProductIdList.has(product.id) && (
             <AdminProductContent product={product} {...adminProps} />
           )}
         </div>

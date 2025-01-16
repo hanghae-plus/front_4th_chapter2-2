@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../types';
 
 interface Props {
-  products: Product[];
-  coupons: Coupon[];
+  productList: Product[];
+  couponList: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
   onProductAdd: (newProduct: Product) => void;
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 export const AdminPage = ({
-  products,
-  coupons,
+  productList,
+  couponList,
   onProductUpdate,
   onProductAdd,
   onCouponAdd,
@@ -30,7 +30,7 @@ export const AdminPage = ({
     name: '',
     price: 0,
     stock: 0,
-    discounts: [],
+    discountList: [],
   });
 
   const toggleProductAccordion = (productId: string) => {
@@ -75,7 +75,7 @@ export const AdminPage = ({
   };
 
   const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
       onProductUpdate(newProduct);
@@ -84,11 +84,11 @@ export const AdminPage = ({
   };
 
   const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct && editingProduct) {
-      const newProduct = {
+      const newProduct: Product = {
         ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
+        discountList: [...updatedProduct.discountList, newDiscount],
       };
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
@@ -97,11 +97,11 @@ export const AdminPage = ({
   };
 
   const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find((p) => p.id === productId);
+    const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
-      const newProduct = {
+      const newProduct: Product = {
         ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
+        discountList: updatedProduct.discountList.filter((_, i) => i !== index),
       };
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
@@ -125,7 +125,7 @@ export const AdminPage = ({
       name: '',
       price: 0,
       stock: 0,
-      discounts: [],
+      discountList: [],
     });
     setShowNewProductForm(false);
   };
@@ -194,7 +194,7 @@ export const AdminPage = ({
             </div>
           )}
           <div className='space-y-2'>
-            {products.map((product, index) => (
+            {productList.map((product, index) => (
               <div
                 key={product.id}
                 data-testid={`product-${index + 1}`}
@@ -245,7 +245,7 @@ export const AdminPage = ({
                         {/* 할인 정보 수정 부분 */}
                         <div>
                           <h4 className='text-lg font-semibold mb-2'>할인 정보</h4>
-                          {editingProduct.discounts.map((discount, index) => (
+                          {editingProduct.discountList.map((discount, index) => (
                             <div key={index} className='flex justify-between items-center mb-2'>
                               <span>
                                 {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
@@ -300,7 +300,7 @@ export const AdminPage = ({
                       </div>
                     ) : (
                       <div>
-                        {product.discounts.map((discount, index) => (
+                        {product.discountList.map((discount, index) => (
                           <div key={index} className='mb-2'>
                             <span>
                               {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
@@ -374,7 +374,7 @@ export const AdminPage = ({
             <div>
               <h3 className='text-lg font-semibold mb-2'>현재 쿠폰 목록</h3>
               <div className='space-y-2'>
-                {coupons.map((coupon, index) => (
+                {couponList.map((coupon, index) => (
                   <div
                     key={index}
                     data-testid={`coupon-${index + 1}`}
