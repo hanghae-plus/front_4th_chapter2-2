@@ -1,5 +1,5 @@
-import { CouponAddForm } from "./couponAddForm/CouponAddForm";
-import { CouponList } from "./couponList/CouponList";
+import { CouponAddForm } from './couponAddForm/CouponAddForm';
+import { CouponList } from './couponList/CouponList';
 
 export const CouponManagement = () => {
   return (

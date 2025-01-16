@@ -1,9 +1,6 @@
-import { create } from "zustand";
-import { Discount, Product } from "../../types";
-import {
-  INITIAL_NEW_DISCOUNT,
-  INITIAL_PRODUCT_LIST,
-} from "../constants/constants";
+import { create } from 'zustand';
+import { Discount, Product } from '../../types';
+import { INITIAL_NEW_DISCOUNT, INITIAL_PRODUCT_LIST } from '../constants/constants';
 
 export interface ProductStore {
   products: Product[];
@@ -20,17 +17,13 @@ export interface ProductStore {
   removeDiscount: (productId: string, index: number) => void;
   addProductDiscount: (productId: string) => void;
   toggleProductAccordion: (product: Product) => void;
-  handleEditingProductInput: (
-    productId: string,
-    key: keyof Product,
-    value: string | number
-  ) => void;
+  handleEditingProductInput: (productId: string, key: keyof Product, value: string | number) => void;
   completeProductEdit: () => void;
   updateEditProduct: (productId: string) => void;
   initialProducts(Products: Product[]): void;
 }
 
-const useProductStore = create<ProductStore>((set) => ({
+const useProductStore = create<ProductStore>(set => ({
   products: INITIAL_PRODUCT_LIST,
   openProductIds: new Map<string, boolean>(),
   selectedProducts: new Map<string, Product | null>(),
@@ -38,33 +31,30 @@ const useProductStore = create<ProductStore>((set) => ({
   editingProduct: null as Product | null,
   newDiscount: INITIAL_NEW_DISCOUNT,
 
-  toggleNewProductForm: () =>
-    set((state) => ({ isNewProductForm: !state.isNewProductForm })),
+  toggleNewProductForm: () => set(state => ({ isNewProductForm: !state.isNewProductForm })),
 
   updateProduct: (updatedProduct: Product) =>
-    set((state) => ({
-      products: state.products.map((p) =>
-        p.id === updatedProduct.id ? updatedProduct : p
-      ),
+    set(state => ({
+      products: state.products.map(p => (p.id === updatedProduct.id ? updatedProduct : p))
     })),
 
   addProduct: (newProduct: Product) => {
-    set((state) => ({
-      products: [...state.products, newProduct],
+    set(state => ({
+      products: [...state.products, newProduct]
     }));
   },
 
   handleProductStock: (productId: string, newStock: number) => {
-    set((state) => {
-      const updatedProduct = state.products.find((p) => p.id === productId);
+    set(state => {
+      const updatedProduct = state.products.find(p => p.id === productId);
       if (updatedProduct) {
         const newProduct = {
           ...updatedProduct,
-          stock: newStock ? newStock : 0,
+          stock: newStock ? newStock : 0
         };
         state.updateProduct(newProduct);
         return {
-          editingProduct: newProduct,
+          editingProduct: newProduct
         };
       }
       return state;
@@ -72,12 +62,12 @@ const useProductStore = create<ProductStore>((set) => ({
   },
 
   removeDiscount: (productId: string, index: number) =>
-    set((state) => {
-      const updatedProducts = state.products.map((product) => {
+    set(state => {
+      const updatedProducts = state.products.map(product => {
         if (product.id === productId) {
           return {
             ...product,
-            discounts: product.discounts.filter((_, i) => i !== index),
+            discounts: product.discounts.filter((_, i) => i !== index)
           };
         }
         return product;
@@ -87,18 +77,14 @@ const useProductStore = create<ProductStore>((set) => ({
         state.editingProduct && state.editingProduct.id === productId
           ? {
               ...state.editingProduct,
-              discounts: state.editingProduct.discounts.filter(
-                (_, i) => i !== index
-              ),
+              discounts: state.editingProduct.discounts.filter((_, i) => i !== index)
             }
           : state.editingProduct;
       const updatedSelectedProducts = new Map(state.selectedProducts);
       if (updatedSelectedProducts.has(productId)) {
         const selectedProduct = updatedSelectedProducts.get(productId);
         if (selectedProduct) {
-          selectedProduct.discounts = selectedProduct.discounts.filter(
-            (_, i) => i !== index
-          );
+          selectedProduct.discounts = selectedProduct.discounts.filter((_, i) => i !== index);
           updatedSelectedProducts.set(productId, selectedProduct);
         }
       }
@@ -106,19 +92,19 @@ const useProductStore = create<ProductStore>((set) => ({
       return {
         products: updatedProducts,
         editingProduct: updatedEditingProduct,
-        selectedProducts: updatedSelectedProducts,
+        selectedProducts: updatedSelectedProducts
       };
     }),
 
   addProductDiscount: (productId: string) => {
-    set((state) => {
-      const updatedProduct = state.products.find((p) => p.id === productId);
+    set(state => {
+      const updatedProduct = state.products.find(p => p.id === productId);
 
       if (updatedProduct) {
         const newDiscount = state.newDiscount;
         const newProduct = {
           ...updatedProduct,
-          discounts: [...updatedProduct.discounts, newDiscount],
+          discounts: [...updatedProduct.discounts, newDiscount]
         };
         const updatedSelectedProducts = new Map(state.selectedProducts);
         if (updatedSelectedProducts.has(productId)) {
@@ -130,12 +116,10 @@ const useProductStore = create<ProductStore>((set) => ({
         }
 
         return {
-          products: state.products.map((p) =>
-            p.id === newProduct.id ? newProduct : p
-          ),
+          products: state.products.map(p => (p.id === newProduct.id ? newProduct : p)),
           editingProduct: newProduct,
           newDiscount: { quantity: 0, rate: 0 },
-          selectedProducts: updatedSelectedProducts,
+          selectedProducts: updatedSelectedProducts
         };
       }
 
@@ -143,7 +127,7 @@ const useProductStore = create<ProductStore>((set) => ({
     });
   },
   toggleProductAccordion: (product: Product) => {
-    set((state) => {
+    set(state => {
       const productId = product.id;
       const newAccordionMap = new Map(state.openProductIds);
       const newProductsMap = new Map(state.selectedProducts);
@@ -159,24 +143,20 @@ const useProductStore = create<ProductStore>((set) => ({
 
       return {
         openProductIds: newAccordionMap,
-        selectedProducts: newProductsMap,
+        selectedProducts: newProductsMap
       };
     });
   },
   updateEditProduct: (productId: string) => {
-    set((state) => {
-      const editingProduct = state.products.find((p) => p.id === productId);
+    set(state => {
+      const editingProduct = state.products.find(p => p.id === productId);
       return {
-        editingProduct: editingProduct || null,
+        editingProduct: editingProduct || null
       };
     });
   },
-  handleEditingProductInput: (
-    productId: string,
-    key: keyof Product,
-    value: string | number
-  ) =>
-    set((state) => {
+  handleEditingProductInput: (productId: string, key: keyof Product, value: string | number) =>
+    set(state => {
       if (state.editingProduct && state.editingProduct.id === productId) {
         const updatedProduct = { ...state.editingProduct, [key]: value };
         return { editingProduct: updatedProduct };
@@ -185,17 +165,13 @@ const useProductStore = create<ProductStore>((set) => ({
     }),
 
   completeProductEdit: () =>
-    set((state) => {
+    set(state => {
       if (state.editingProduct) {
-        const updatedProducts = state.products.map((p) =>
-          p.id === state.editingProduct?.id ? state.editingProduct : p
-        );
+        const updatedProducts = state.products.map(p => (p.id === state.editingProduct?.id ? state.editingProduct : p));
 
         return {
-          products: updatedProducts.filter(
-            (product): product is Product => product !== null
-          ),
-          editingProduct: null,
+          products: updatedProducts.filter((product): product is Product => product !== null),
+          editingProduct: null
         };
       }
       return state;
@@ -203,12 +179,12 @@ const useProductStore = create<ProductStore>((set) => ({
 
   handleNewDiscount: (discount: Discount) =>
     set(() => ({
-      newDiscount: discount,
+      newDiscount: discount
     })),
   initialProducts: (products: Product[]) =>
     set(() => ({
-      products: products,
-    })),
+      products: products
+    }))
 }));
 
 export default useProductStore;

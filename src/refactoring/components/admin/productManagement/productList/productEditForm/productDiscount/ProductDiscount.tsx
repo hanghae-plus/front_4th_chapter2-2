@@ -1,4 +1,4 @@
-import { useProducts } from "../../../../../../hooks";
+import { useProducts } from '../../../../../../hooks';
 
 export interface ProductDiscountProps {
   productId: string;

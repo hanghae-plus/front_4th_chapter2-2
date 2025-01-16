@@ -1,14 +1,8 @@
-import { useProducts } from "../../../../../../../hooks";
-import Input from "../../../../../../atoms/Input";
+import { useProducts } from '../../../../../../../hooks';
+import Input from '../../../../../../atoms/Input';
 
 export const ProductEditDiscountAddForm = () => {
-  const {
-    newDiscount,
-    handleNewDiscount,
-    addProductDiscount,
-    editingProduct,
-    completeProductEdit,
-  } = useProducts();
+  const { newDiscount, handleNewDiscount, addProductDiscount, editingProduct, completeProductEdit } = useProducts();
 
   if (!editingProduct) {
     return;
@@ -20,10 +14,10 @@ export const ProductEditDiscountAddForm = () => {
           type="number"
           placeholder="수량"
           value={newDiscount.quantity}
-          onChange={(value) => {
+          onChange={value => {
             handleNewDiscount({
               ...newDiscount,
-              quantity: typeof value === "string" ? parseInt(value) : value,
+              quantity: typeof value === 'string' ? parseInt(value) : value
             });
           }}
         />
@@ -31,10 +25,10 @@ export const ProductEditDiscountAddForm = () => {
           type="number"
           placeholder="할인율 (%)"
           value={newDiscount.rate * 100}
-          onChange={(value) => {
+          onChange={value => {
             handleNewDiscount({
               ...newDiscount,
-              rate: typeof value === "string" ? parseInt(value) : value / 100,
+              rate: typeof value === 'string' ? parseInt(value) : value / 100
             });
           }}
         />

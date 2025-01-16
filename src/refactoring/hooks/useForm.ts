@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { INITIAL_PRODUCT } from "../constants/constants";
-import useProductStore from "../store/useProductStore";
-import { Product } from "../../types";
+import { useState } from 'react';
+import { INITIAL_PRODUCT } from '../constants/constants';
+import useProductStore from '../store/useProductStore';
+import { Product } from '../../types';
 
 export const useForm = () => {
   const {
@@ -10,7 +10,7 @@ export const useForm = () => {
     handleProductStock,
     toggleProductAccordion,
     toggleNewProductForm,
-    handleEditingProductInput,
+    handleEditingProductInput
   } = useProductStore();
 
   const [newProduct, setNewProduct] = useState(INITIAL_PRODUCT);
@@ -18,7 +18,7 @@ export const useForm = () => {
   function handleAddNewProduct() {
     const productWithId: Product = {
       ...newProduct,
-      id: `p${products.length + 1}`,
+      id: `p${products.length + 1}`
     };
     addProduct(productWithId);
     setNewProduct(INITIAL_PRODUCT);
@@ -32,6 +32,6 @@ export const useForm = () => {
     handleAddNewProduct,
     toggleProductAccordion,
     handleEditingProductInput,
-    handleProductStock,
+    handleProductStock
   };
 };

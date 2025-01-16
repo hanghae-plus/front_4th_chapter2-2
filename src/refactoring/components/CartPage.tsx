@@ -1,6 +1,6 @@
-import Title from "./atoms/Title.tsx";
-import { CartList } from "./cart/cartList/CartList.tsx";
-import { CartProductList } from "./cart/cartProduct/CartProductList/CartProductList.tsx";
+import Title from './atoms/Title.tsx';
+import { CartList } from './cart/cartList/CartList.tsx';
+import { CartProductList } from './cart/cartProduct/CartProductList/CartProductList.tsx';
 
 export const CartPage = () => {
   return (

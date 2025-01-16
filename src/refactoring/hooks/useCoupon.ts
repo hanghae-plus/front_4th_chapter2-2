@@ -1,14 +1,7 @@
-import useCouponStore from "../store/useCouponStore";
+import useCouponStore from '../store/useCouponStore';
 
 export const useCoupons = () => {
-  const {
-    coupons,
-    newCoupon,
-    addCoupon,
-    handleNewCoupon,
-    updateCoupon,
-    initialCoupons,
-  } = useCouponStore();
+  const { coupons, newCoupon, addCoupon, handleNewCoupon, updateCoupon, initialCoupons } = useCouponStore();
 
   return {
     coupons,
@@ -16,6 +9,6 @@ export const useCoupons = () => {
     addCoupon,
     handleNewCoupon,
     updateCoupon,
-    initialCoupons,
+    initialCoupons
   };
 };

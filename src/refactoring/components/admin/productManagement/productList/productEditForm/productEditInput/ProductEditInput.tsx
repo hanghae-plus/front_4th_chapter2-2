@@ -1,6 +1,6 @@
-import { useProducts } from "../../../../../../hooks";
-import { useForm } from "../../../../../../hooks/useForm";
-import Input from "../../../../../atoms/Input";
+import { useProducts } from '../../../../../../hooks';
+import { useForm } from '../../../../../../hooks/useForm';
+import Input from '../../../../../atoms/Input';
 
 export const ProductEditInput = () => {
   const { editingProduct } = useProducts();
@@ -18,9 +18,7 @@ export const ProductEditInput = () => {
         <Input
           id="productName"
           value={editingProduct?.name}
-          onChange={(value) =>
-            handleEditingProductInput(productId, "name", value.toString())
-          }
+          onChange={value => handleEditingProductInput(productId, 'name', value.toString())}
         />
       </div>
       <div className="mb-4">
@@ -28,12 +26,8 @@ export const ProductEditInput = () => {
         <Input
           type="number"
           value={editingProduct?.price}
-          onChange={(value) => {
-            handleEditingProductInput(
-              productId,
-              "price",
-              typeof value === "string" ? parseInt(value) : value
-            );
+          onChange={value => {
+            handleEditingProductInput(productId, 'price', typeof value === 'string' ? parseInt(value) : value);
           }}
         />
       </div>
@@ -42,11 +36,8 @@ export const ProductEditInput = () => {
         <Input
           type="number"
           value={editingProduct?.stock}
-          onChange={(value) => {
-            handleProductStock(
-              productId,
-              typeof value === "string" ? parseInt(value) : value
-            );
+          onChange={value => {
+            handleProductStock(productId, typeof value === 'string' ? parseInt(value) : value);
           }}
         />
       </div>

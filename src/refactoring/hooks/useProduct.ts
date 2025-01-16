@@ -1,4 +1,4 @@
-import useProductStore from "../store/useProductStore";
+import useProductStore from '../store/useProductStore';
 
 export const useProducts = () => {
   const {
@@ -15,7 +15,7 @@ export const useProducts = () => {
     removeDiscount,
     handleNewDiscount,
     newDiscount,
-    addProductDiscount,
+    addProductDiscount
   } = useProductStore();
 
   return {
@@ -32,6 +32,6 @@ export const useProducts = () => {
     removeDiscount,
     handleNewDiscount,
     newDiscount,
-    addProductDiscount,
+    addProductDiscount
   };
 };

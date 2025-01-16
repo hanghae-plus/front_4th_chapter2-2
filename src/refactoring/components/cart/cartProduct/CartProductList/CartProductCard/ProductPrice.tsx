@@ -1,5 +1,5 @@
 // CartProductList/ProductPrice.tsx
-import { formatCurrency } from "../../../../../utils/formatCurrency";
+import { formatCurrency } from '../../../../../utils/formatCurrency';
 
 interface ProductPriceProps {
   price: number;

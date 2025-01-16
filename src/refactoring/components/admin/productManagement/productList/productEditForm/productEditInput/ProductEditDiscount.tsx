@@ -1,5 +1,5 @@
-import { useProducts } from "../../../../../../hooks";
-import Title from "../../../../../atoms/Title";
+import { useProducts } from '../../../../../../hooks';
+import Title from '../../../../../atoms/Title';
 
 export const ProductEditDiscount = () => {
   const { editingProduct, removeDiscount } = useProducts();
@@ -9,7 +9,7 @@ export const ProductEditDiscount = () => {
   }
   return (
     <div>
-      <Title level={4} text={"할인 정보"} />
+      <Title level={4} text={'할인 정보'} />
       {editingProduct.discounts.map((discount, index) => (
         <div key={index} className="flex justify-between items-center mb-2">
           <span>

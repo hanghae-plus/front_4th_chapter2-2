@@ -1,8 +1,8 @@
-import { useProducts } from "../../../../../hooks";
-import { ProductDiscount } from "./productDiscount/ProductDiscount";
-import { ProductEditDiscount } from "./productEditInput/ProductEditDiscount";
-import { ProductEditDiscountAddForm } from "./productEditInput/productEditDiscountAddForm/ProductEditDiscountAddForm";
-import { ProductEditInput } from "./productEditInput/ProductEditInput";
+import { useProducts } from '../../../../../hooks';
+import { ProductDiscount } from './productDiscount/ProductDiscount';
+import { ProductEditDiscount } from './productEditInput/ProductEditDiscount';
+import { ProductEditDiscountAddForm } from './productEditInput/productEditDiscountAddForm/ProductEditDiscountAddForm';
+import { ProductEditInput } from './productEditInput/ProductEditInput';
 
 export interface ProductEditFormProps {
   productId: string;

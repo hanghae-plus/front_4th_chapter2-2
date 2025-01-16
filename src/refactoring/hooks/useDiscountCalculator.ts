@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from "../../types";
+import { CartItem, Coupon } from '../../types';
 
 export const calculateItemTotal = (item: CartItem) => {
   const { product, quantity } = item;
@@ -20,48 +20,33 @@ export const calculateTotalAfterDiscount = (cart: CartItem[]) => {
   }, 0);
 };
 
-export const applyCoupon = (
-  totalAfterDiscount: number,
-  selectedCoupon: Coupon | null
-) => {
+export const applyCoupon = (totalAfterDiscount: number, selectedCoupon: Coupon | null) => {
   if (!selectedCoupon) return totalAfterDiscount;
 
-  if (selectedCoupon.discountType === "amount") {
+  if (selectedCoupon.discountType === 'amount') {
     return Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-  } else if (selectedCoupon.discountType === "percentage") {
+  } else if (selectedCoupon.discountType === 'percentage') {
     return totalAfterDiscount * (1 - selectedCoupon.discountValue / 100);
   }
 
   return totalAfterDiscount;
 };
 
-export const calculateTotalDiscount = (
-  totalBeforeDiscount: number,
-  totalAfterDiscount: number
-) => {
+export const calculateTotalDiscount = (totalBeforeDiscount: number, totalAfterDiscount: number) => {
   return totalBeforeDiscount - totalAfterDiscount;
 };
 
-export const useDiscountCalculator = (
-  cart: CartItem[],
-  selectedCoupon: Coupon | null
-) => {
+export const useDiscountCalculator = (cart: CartItem[], selectedCoupon: Coupon | null) => {
   const cartTotals = () => {
     const totalBeforeDiscount = calculateTotalBeforeDiscount(cart);
     const totalAfterDiscountWithoutCoupon = calculateTotalAfterDiscount(cart);
-    const totalAfterDiscount = applyCoupon(
-      totalAfterDiscountWithoutCoupon,
-      selectedCoupon
-    );
-    const totalDiscount = calculateTotalDiscount(
-      totalBeforeDiscount,
-      totalAfterDiscount
-    );
+    const totalAfterDiscount = applyCoupon(totalAfterDiscountWithoutCoupon, selectedCoupon);
+    const totalDiscount = calculateTotalDiscount(totalBeforeDiscount, totalAfterDiscount);
 
     return {
       totalBeforeDiscount: Math.round(totalBeforeDiscount),
       totalAfterDiscount: Math.round(totalAfterDiscount),
-      totalDiscount: Math.round(totalDiscount),
+      totalDiscount: Math.round(totalDiscount)
     };
   };
 

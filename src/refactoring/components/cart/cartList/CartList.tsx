@@ -1,15 +1,14 @@
-import { useCart, useCoupons } from "../../../hooks";
-import Title from "../../atoms/Title";
-import { CartApplyCoupon } from "./cartApplyCoupon/CartApplyCoupon";
-import { CartOrder } from "./cartOrder/CartOrder";
-import { CartProductItem } from "./CartProductItem/CarProductItem";
+import { useCart, useCoupons } from '../../../hooks';
+import Title from '../../atoms/Title';
+import { CartApplyCoupon } from './cartApplyCoupon/CartApplyCoupon';
+import { CartOrder } from './cartOrder/CartOrder';
+import { CartProductItem } from './CartProductItem/CarProductItem';
 
 export const CartList = () => {
   const { cart, calculateTotal } = useCart();
   const { coupons } = useCoupons();
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
-    calculateTotal();
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   return (
     <div>

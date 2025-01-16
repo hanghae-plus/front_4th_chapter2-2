@@ -1,18 +1,11 @@
-import { Product } from "../../types";
-import { useCartStore } from "../store/useCartStore";
+import { Product } from '../../types';
+import { useCartStore } from '../store/useCartStore';
 
 export const useCart = () => {
-  const {
-    cart,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    applyCoupon,
-    calculateTotal,
-    selectedCoupon,
-  } = useCartStore();
+  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } =
+    useCartStore();
   const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
+    const cartItem = cart.find(item => item.product.id === product.id);
     return product.stock - (cartItem?.quantity || 0);
   };
   return {
@@ -23,6 +16,6 @@ export const useCart = () => {
     applyCoupon,
     selectedCoupon,
     calculateTotal,
-    getRemainingStock,
+    getRemainingStock
   };
 };
