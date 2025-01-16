@@ -11,6 +11,7 @@ export const ProductList = ({ products, addToCart, getRemainingStock, getMaxDisc
       {/* 검색 입력창 */}
       <input 
         type="text"
+        data-testid="search-bar"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="검색어를 입력하세요"
