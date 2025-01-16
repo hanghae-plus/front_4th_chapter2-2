@@ -1,17 +1,10 @@
 import { useState } from 'react';
+import { getNewSet } from '../models/adminProduct.ts';
 
 const useProductSet = () => {
   const [openProductIdList, setOpenProductIdList] = useState<Set<string>>(new Set());
   const toggleProductAccordion = (productId: string) => {
-    setOpenProductIdList((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
+    setOpenProductIdList((prevSet) => getNewSet(prevSet, productId));
   };
 
   return {
