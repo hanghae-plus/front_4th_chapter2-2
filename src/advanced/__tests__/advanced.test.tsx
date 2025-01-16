@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AdminPage } from '../../refactoring/domains/admin/AdminPage';
 import { CartPage } from '../../refactoring/domains/cart/CartPage';
-import { useStorage } from '../../refactoring/hooks';
+import { useForm, useStorage } from '../../refactoring/hooks';
 
 import type { Coupon, Product } from '../../types';
 import type { Mock } from 'vitest';
@@ -32,6 +32,15 @@ const mockProducts: Product[] = [
     discounts: [{ quantity: 10, rate: 0.2 }],
   },
 ];
+
+const mockProduct: Product = {
+  id: 'p1',
+  name: '상품1',
+  price: 10000,
+  stock: 20,
+  discounts: [{ quantity: 10, rate: 0.1 }],
+};
+
 const mockCoupons: Coupon[] = [
   {
     name: '5000원 할인 쿠폰',
@@ -240,14 +249,6 @@ describe('advanced > ', () => {
   describe('useStorage', () => {
     const key = 'testKey';
 
-    const mockProduct = {
-      id: 'p1',
-      name: '상품1',
-      price: 10000,
-      stock: 20,
-      discounts: [{ quantity: 10, rate: 0.1 }],
-    };
-
     beforeEach(() => {
       vi.stubGlobal('localStorage', {
         getItem: vi.fn(),
@@ -320,6 +321,91 @@ describe('advanced > ', () => {
       const { result } = renderHook(() => useStorage(key, mockProduct));
 
       expect(result.current.item).toEqual(mockProduct);
+    });
+  });
+
+  describe('useForm', () => {
+    const onSubmitMock = vi.fn();
+
+    test('올바른 초기값이 설정 되어야 한다.', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues: mockProduct,
+          onSubmit: onSubmitMock,
+        }),
+      );
+
+      expect(result.current.values).toEqual(mockProduct);
+    });
+
+    // ㅇㅇㅇㅇ
+
+    test('handleChange를 호출하면 Form 상태가 변경 되어야 한다', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues: mockProduct,
+          onSubmit: onSubmitMock,
+        }),
+      );
+
+      act(() => {
+        result.current.handleChange('price', 15000);
+      });
+
+      expect(result.current.values).toEqual({ ...mockProduct, price: 15000 });
+
+      act(() => {
+        result.current.handleChange('stock', 100);
+      });
+
+      expect(result.current.values).toEqual({ ...mockProduct, price: 15000, stock: 100 });
+    });
+
+    test('handleSubmit를 호출하면 onSubmit이 호출되어야 한다.', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues: mockProduct,
+          onSubmit: onSubmitMock,
+        }),
+      );
+
+      act(() => {
+        result.current.handleChange('price', 15000);
+      });
+
+      act(() => {
+        result.current.handleSubmit();
+      });
+
+      expect(onSubmitMock).toHaveBeenCalledTimes(1);
+      expect(onSubmitMock).toHaveBeenCalledWith({
+        ...mockProduct,
+        price: 15000,
+      });
+    });
+
+    test('resetForm를 호출하면 초기값으로 상태가 리셋되어야 한다.', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          initialValues: mockProduct,
+          onSubmit: onSubmitMock,
+        }),
+      );
+
+      act(() => {
+        result.current.handleChange('name', '새상품');
+      });
+
+      expect(result.current.values).toEqual({
+        ...mockProduct,
+        name: '새상품',
+      });
+
+      act(() => {
+        result.current.resetForm();
+      });
+
+      expect(result.current.values).toEqual(mockProduct);
     });
   });
 });
