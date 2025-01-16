@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useProducts } from './useProduct';
-import { useCoupons } from './useCoupon';
+import { useProducts, useCoupons } from '../hooks';
 import { initialProductList, initialCouponList } from '../data/initialData';
 
 export const useAppState = () => {

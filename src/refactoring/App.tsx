@@ -1,4 +1,4 @@
-import { useAppState } from './hooks/useAppState';
+import { useAppState } from './hooks';
 import { CartPage } from './pages/CartPage';
 import { AdminPage } from './pages/AdminPage';
 import { NavBar } from './components/NavBar';
