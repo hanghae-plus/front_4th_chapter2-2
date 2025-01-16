@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Coupon } from '../../../../types.ts';
-import { calculateCartTotal } from '../../../pages/cart/lib/cart.ts';
+import { calculateCartTotal } from '../lib/cart.ts';
 import { ICartItem } from '../../../shared/types';
 
 export const useCartTotal = () => {

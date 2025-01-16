@@ -1,6 +1,6 @@
 // useCart.ts
 import { useState } from 'react';
-import { updateCartItemQuantity } from '../../../pages/cart/lib/cart.ts';
+import { updateCartItemQuantity } from '../lib/cart.ts';
 import { ICartItem, IProduct } from '../../../shared/types';
 
 export const useCart = () => {

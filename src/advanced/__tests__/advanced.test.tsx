@@ -1,86 +1,35 @@
-import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/pages/cart/ui/CartPage.tsx';
 import { AdminPage } from '../../refactoring/pages/admin/ui/AdminPage.tsx';
-import { Coupon, Product } from '../../types';
-
-const mockProducts: Product[] = [
-  {
-    id: 'p1',
-    name: '상품1',
-    price: 10000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.1 }],
-  },
-  {
-    id: 'p2',
-    name: '상품2',
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
-  },
-  {
-    id: 'p3',
-    name: '상품3',
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
-  },
-];
-const mockCoupons: Coupon[] = [
-  {
-    name: '5000원 할인 쿠폰',
-    code: 'AMOUNT5000',
-    discountType: 'amount',
-    discountValue: 5000,
-  },
-  {
-    name: '10% 할인 쿠폰',
-    code: 'PERCENT10',
-    discountType: 'percentage',
-    discountValue: 10,
-  },
-];
+import {
+  CouponContextProvider,
+  ProductContextProvider,
+} from '../../refactoring/app/providers';
 
 const TestAdminPage = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
-
-  const handleProductUpdate = (updatedProduct: Product) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((p) =>
-        p.id === updatedProduct.id ? updatedProduct : p,
-      ),
-    );
-  };
-
-  const handleProductAdd = (newProduct: Product) => {
-    setProducts((prevProducts) => [...prevProducts, newProduct]);
-  };
-
-  const handleCouponAdd = (newCoupon: Coupon) => {
-    setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
-  };
-
   return (
-    <AdminPage
-      products={products}
-      coupons={coupons}
-      onProductUpdate={handleProductUpdate}
-      onProductAdd={handleProductAdd}
-      onCouponAdd={handleCouponAdd}
-    />
+    <ProductContextProvider>
+      <CouponContextProvider>
+        <AdminPage />
+      </CouponContextProvider>
+    </ProductContextProvider>
   );
 };
 
 describe('advanced > ', () => {
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
-      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
-      const product1 = screen.getByTestId('stock-p1');
-      const product2 = screen.getByTestId('stock-p2');
-      const product3 = screen.getByTestId('stock-p3');
+      render(
+        <ProductContextProvider>
+          <CouponContextProvider>
+            <CartPage />
+          </CouponContextProvider>
+        </ProductContextProvider>,
+      );
+      const product1 = screen.getByTestId('product-p1');
+      const product2 = screen.getByTestId('product-p2');
+      const product3 = screen.getByTestId('product-p3');
       const addToCartButtonsAtProduct1 =
         within(product1).getByText('장바구니에 추가');
       const addToCartButtonsAtProduct2 =
@@ -159,7 +108,7 @@ describe('advanced > ', () => {
     test('관리자 페이지 테스트 > ', async () => {
       render(<TestAdminPage />);
 
-      const $product1 = screen.getByTestId('stock-1');
+      const $product1 = screen.getByTestId('product-1');
 
       // 1. 새로운 상품 추가
       fireEvent.click(screen.getByText('새 상품 추가'));
@@ -176,7 +125,7 @@ describe('advanced > ', () => {
 
       fireEvent.click(screen.getByText('추가'));
 
-      const $product4 = screen.getByTestId('stock-4');
+      const $product4 = screen.getByTestId('product-4');
 
       expect($product4).toHaveTextContent('상품4');
       expect($product4).toHaveTextContent('15000원');

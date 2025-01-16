@@ -16,7 +16,10 @@ export function CartContextProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const cartContextValue = useCart();
   return (
-    <CartContext.Provider value={useCart()}>{children}</CartContext.Provider>
+    <CartContext.Provider value={cartContextValue}>
+      {children}
+    </CartContext.Provider>
   );
 }

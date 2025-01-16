@@ -1,19 +1,15 @@
-interface SelectProps {
-  value?: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+import { ComponentProps } from 'react';
+
+interface SelectProps extends ComponentProps<'select'> {
   options: {
     value: string | number;
     text: string;
   }[];
 }
 
-export function Select({ value, onChange, options }: SelectProps) {
+export function Select({ options, className, ...props }: SelectProps) {
   return (
-    <select
-      value={value}
-      onChange={onChange}
-      className="w-full p-2 border rounded"
-    >
+    <select {...props} className={`w-full p-2 border rounded ${className}`}>
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.text}

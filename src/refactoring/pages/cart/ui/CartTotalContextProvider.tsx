@@ -21,8 +21,9 @@ export function CartTotalContextProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const cartTotalContextValue = useCartTotal();
   return (
-    <CartTotalContext.Provider value={useCartTotal()}>
+    <CartTotalContext.Provider value={cartTotalContextValue}>
       {children}
     </CartTotalContext.Provider>
   );

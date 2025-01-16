@@ -1,26 +1,20 @@
-interface InputProps {
-  id?: string;
-  type: string;
-  value: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-}
+import { ComponentProps } from 'react';
 
-export function Input({
-  id,
-  type,
-  value,
-  onChange,
-  placeholder,
-}: InputProps): JSX.Element {
+type Props = Omit<ComponentProps<'input'>, 'size'> & {
+  size?: 'sm' | 'md' | 'lg';
+};
+
+const SizeMap = {
+  sm: 'w-1/3',
+  md: 'w-2/3',
+  lg: 'w-full',
+} as const;
+
+export function Input({ className, size = 'lg', ...props }: Props) {
   return (
     <input
-      id={id}
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="w-full p-2 border rounded"
+      {...props}
+      className={`p-2 border rounded ${className} ${SizeMap[size]}`}
     />
   );
 }

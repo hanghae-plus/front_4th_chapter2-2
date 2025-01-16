@@ -1,8 +1,8 @@
 import { Input } from '../../../shared/ui/inputs';
 import { useState } from 'react';
 import { IProduct } from '../../../shared/types';
-import { useDiscounts } from '../../../entities/discount/model/useDiscounts.ts';
 import { DiscountEdit } from '../../discount/ui/DiscountEdit.tsx';
+import { Label } from '../../../shared/ui/typography';
 
 interface ProductEditProps {
   product: IProduct;
@@ -16,20 +16,19 @@ export function ProductEdit({
   setIsEdit,
 }: ProductEditProps) {
   const [editingProduct, setEditingProduct] = useState<IProduct>(product);
-  const discountsProps = useDiscounts(product.discounts);
 
   const handleProductUpdate = (key: string, newValue: string | number) =>
     setEditingProduct({ ...editingProduct, [key]: newValue });
 
   const handleEditComplete = () => {
-    updateProduct({ ...editingProduct, discounts: discountsProps.discounts });
+    updateProduct({ ...editingProduct });
     setIsEdit(false);
   };
 
   return (
     <div>
       <div className="mb-4">
-        <label className="block mb-1">상품명: </label>
+        <Label>상품명: </Label>
         <Input
           type={'text'}
           value={editingProduct.name}
@@ -37,7 +36,7 @@ export function ProductEdit({
         />
       </div>
       <div className="mb-4">
-        <label className="block mb-1">가격: </label>
+        <Label>가격: </Label>
         <Input
           type="number"
           value={editingProduct.price}
@@ -47,7 +46,7 @@ export function ProductEdit({
         />
       </div>
       <div className="mb-4">
-        <label className="block mb-1">재고: </label>
+        <Label>재고: </Label>
         <Input
           type="number"
           value={editingProduct.stock}
@@ -56,7 +55,10 @@ export function ProductEdit({
           }
         />
       </div>
-      <DiscountEdit {...discountsProps} />
+      <DiscountEdit
+        editingProduct={editingProduct}
+        setEditingProduct={setEditingProduct}
+      />
       <button
         onClick={handleEditComplete}
         className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"

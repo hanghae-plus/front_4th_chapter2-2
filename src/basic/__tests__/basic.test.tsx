@@ -10,7 +10,7 @@ import {
 import { CartPage } from '../../refactoring/pages/cart/ui/CartPage.tsx';
 import { AdminPage } from '../../refactoring/pages/admin/ui/AdminPage.tsx';
 import { CartItem, Coupon, Product } from '../../types';
-import * as cartUtils from '../../refactoring/pages/cart/lib/cart.ts';
+import * as cartUtils from '../../refactoring/entities/cart/lib/cart.ts';
 import { useCoupons } from '../../refactoring/widgets/coupon/model';
 import { useProducts } from '../../refactoring/widgets/product/model';
 import { useCart } from '../../refactoring/entities/cart/model';
@@ -19,6 +19,31 @@ import {
   ProductContextProvider,
 } from '../../refactoring/app/providers';
 import { useCartTotal } from '../../refactoring/entities/cart/model/useCartTotal.ts';
+import { IProduct } from '../../refactoring/shared/types';
+
+const mockProducts: IProduct[] = [
+  {
+    id: 'p1',
+    name: '상품1',
+    price: 10000,
+    stock: 20,
+    discounts: [{ quantity: 10, rate: 0.1 }],
+  },
+  {
+    id: 'p2',
+    name: '상품2',
+    price: 20000,
+    stock: 20,
+    discounts: [{ quantity: 10, rate: 0.15 }],
+  },
+  {
+    id: 'p3',
+    name: '상품3',
+    price: 30000,
+    stock: 20,
+    discounts: [{ quantity: 10, rate: 0.2 }],
+  },
+];
 
 const mockCoupons: Coupon[] = [
   {
@@ -37,8 +62,8 @@ const mockCoupons: Coupon[] = [
 
 const TestAdminPage = () => {
   return (
-    <ProductContextProvider>
-      <CouponContextProvider>
+    <ProductContextProvider initialProducts={mockProducts}>
+      <CouponContextProvider initialCoupons={mockCoupons}>
         <AdminPage />
       </CouponContextProvider>
     </ProductContextProvider>
@@ -49,8 +74,8 @@ describe('basic > ', () => {
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
       render(
-        <ProductContextProvider>
-          <CouponContextProvider>
+        <ProductContextProvider initialProducts={mockProducts}>
+          <CouponContextProvider initialCoupons={mockCoupons}>
             <CartPage />
           </CouponContextProvider>
         </ProductContextProvider>,
