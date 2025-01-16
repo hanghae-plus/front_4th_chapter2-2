@@ -1,29 +1,15 @@
-import { ReactNode } from 'react';
 import { CartItem as CartItemType, Coupon, Product as ProductType } from '../../../types.ts';
 import { useCart } from "../../hooks/index.ts";
 import { Section } from '../Section.tsx';
 import { CartItem } from './CartItem.tsx';
 import { Product } from './Product.tsx';
 import { CouponSelect } from './CouponSelect.tsx';
+import { Title, Container } from '../Styled.tsx';
 
 interface Props {
   products: ProductType[];
   coupons: Coupon[];
 }
-
-const styled = (El: keyof JSX.IntrinsicElements, cn?: string) => {
-  return ({ children }: { children: ReactNode }) => <El className={cn}>{children}</El>;
-}
-
-const Title = Object.assign({}, {
-  Main: styled('h2', 'text-3xl font-bold mb-6'),
-  Sub: styled('h2', 'text-2xl font-semibold mb-4'),
-  Container: styled('h2', 'text-2xl font-semibold mb-2'),
-});
-
-const Container = Object.assign(styled('div', 'space-y-2'), {
-  Grid: styled('div', 'grid grid-cols-1 md:grid-cols-2 gap-6')
-})
 
 export const CartPage = ({ products, coupons }: Props) => {
   const {
