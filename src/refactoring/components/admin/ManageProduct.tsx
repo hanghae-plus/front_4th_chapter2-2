@@ -1,5 +1,5 @@
-import { Discount, Product } from "../../../types.ts";
-import { useState } from "react";
+import { Product } from "../../../types.ts";
+import { useAdmin } from "../../hooks/useAdmin.ts";
 
 interface Props {
   products: Product[];
@@ -8,103 +8,28 @@ interface Props {
 }
 
 export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: []
-  });
+  const {
+    newProduct,
+    showNewProductForm,
+    newDiscount,
 
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
+    setNewProduct,
+    setShowNewProductForm,
+    setNewDiscount,
+    
+    editingProduct,
+    openProductIds,
 
-  // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({...product});
-  };
-  
-  // 새로운 핸들러 함수 추가
-  const handleProductNameUpdate = (productId: string, newName: string) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 새로운 핸들러 함수 추가
-  const handlePriceUpdate = (productId: string, newPrice: number) => {
-    if (editingProduct && editingProduct.id === productId) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  // 수정 완료 핸들러 함수 추가
-  const handleEditComplete = () => {
-    if (editingProduct) {
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-    }
-  };
-
-  const handleStockUpdate = (productId: string, newStock: number) => {
-    const updatedProduct = products.find(p => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  const handleAddDiscount = (productId: string) => {
-    const updatedProduct = products.find(p => p.id === productId);
-    if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount]
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
-    }
-  };
-
-  const handleRemoveDiscount = (productId: string, index: number) => {
-    const updatedProduct = products.find(p => p.id === productId);
-    if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index)
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-    }
-  };
-
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: []
-    });
-    setShowNewProductForm(false);
-  };
+    editComplete,
+    handlePriceUpdate,
+    handleStockUpdate,
+    handleAddDiscount,
+    handleEditProduct,
+    handleAddNewProduct,
+    handleProductNameUpdate,
+    handleRemoveDiscount,
+    toggleProductAccordion
+  } = useAdmin();
 
   return (
       <div>
@@ -149,7 +74,7 @@ export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) 
               />
             </div>
             <button
-              onClick={handleAddNewProduct}
+              onClick={() => handleAddNewProduct(onProductAdd)}
               className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
             >
               추가
@@ -193,7 +118,7 @@ export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) 
                         <input
                           type="number"
                           value={editingProduct.stock}
-                          onChange={(e) => handleStockUpdate(product.id, parseInt(e.target.value))}
+                          onChange={(e) => handleStockUpdate(products, product.id, parseInt(e.target.value), onProductUpdate)}
                           className="w-full p-2 border rounded"
                         />
                       </div>
@@ -204,7 +129,7 @@ export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) 
                           <div key={index} className="flex justify-between items-center mb-2">
                             <span>{discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인</span>
                             <button
-                              onClick={() => handleRemoveDiscount(product.id, index)}
+                              onClick={() => handleRemoveDiscount(products, product.id, index, onProductUpdate)}
                               className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                             >
                               삭제
@@ -227,7 +152,7 @@ export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) 
                             className="w-1/3 p-2 border rounded"
                           />
                           <button
-                            onClick={() => handleAddDiscount(product.id)}
+                            onClick={() => handleAddDiscount(products, product.id, onProductUpdate)}
                             className="w-1/3 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                           >
                             할인 추가
@@ -235,7 +160,7 @@ export const ManageProduct = ({products, onProductAdd, onProductUpdate}: Props) 
                         </div>
                       </div>
                       <button
-                        onClick={handleEditComplete}
+                        onClick={() => editComplete(onProductUpdate)}
                         className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
                       >
                         수정 완료

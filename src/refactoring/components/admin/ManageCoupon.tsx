@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Coupon } from "../../../types";
+import { useAdmin } from "../../hooks/useAdmin";
 
 interface Props {
   coupons: Coupon[];
@@ -7,22 +7,11 @@ interface Props {
 }
 
 export const ManageCoupon = ({ coupons, onCouponAdd }: Props) => {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0
-  });
-
-  const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0
-    });
-  };
+  const { 
+    newCoupon, 
+    setNewCoupon, 
+    handleAddCoupon 
+  } = useAdmin();
 
   return (
       <div>
@@ -61,7 +50,7 @@ export const ManageCoupon = ({ coupons, onCouponAdd }: Props) => {
               />
             </div>
             <button
-              onClick={handleAddCoupon}
+              onClick={() => handleAddCoupon(onCouponAdd)}
               className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
             >
               쿠폰 추가
