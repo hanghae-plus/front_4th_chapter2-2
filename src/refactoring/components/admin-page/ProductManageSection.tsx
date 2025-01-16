@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { Discount, Product } from '../../../types.ts';
+import { Product } from '../../../types.ts';
+import { useToggle } from '../../hooks/useToggle.ts';
+import { useToggleSet } from '../../hooks/useToggleSet.ts';
 import { Title } from '../templates/Title.tsx';
 import { Button } from '../ui/Button.tsx';
 import { Card } from '../ui/Card.tsx';
 import { Input } from '../ui/Input.tsx';
+import { useDiscountForm } from './hooks/useDiscountForm.ts';
+import { useNewProductForm } from './hooks/useNewProductForm.ts';
 
 type PropsType = {
   products: Product[];
@@ -13,34 +17,12 @@ type PropsType = {
 export const ProductManageSection = (props: PropsType) => {
   const { products, onProductUpdate, onProductAdd } = props;
 
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+  const { items: openProductIds, toggle: toggleProductAccordion } = useToggleSet(new Set());
+  const { state: showProductForm, toggle: handleToggleProjectForm, onClose: onCloseProductForm } = useToggle(false);
 
+  const { discountForm, onChange: handleDiscountFormChange, reset: resetDiscountForm } = useDiscountForm();
+  const { newProduct, onChangeNewProduct, resetNewProduct } = useNewProductForm();
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newDiscount, setNewDiscount] = useState<Discount>({
-    quantity: 0,
-    rate: 0,
-  });
-
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
-
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
@@ -85,11 +67,11 @@ export const ProductManageSection = (props: PropsType) => {
     if (updatedProduct && editingProduct) {
       const newProduct = {
         ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
+        discounts: [...updatedProduct.discounts, discountForm],
       };
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
-      setNewDiscount({ quantity: 0, rate: 0 });
+      resetDiscountForm();
     }
   };
 
@@ -108,59 +90,38 @@ export const ProductManageSection = (props: PropsType) => {
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
     onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
+    resetNewProduct();
+    onCloseProductForm();
   };
 
   return (
     <div>
       <Title level={2}>상품 관리</Title>
-      <Button
-        variant="green"
-        className="px-4 py-2 mb-4"
-        onClick={() => setShowNewProductForm(!showNewProductForm)}
-      >
-        {showNewProductForm ? '취소' : '새 상품 추가'}
+      <Button variant="green" className="px-4 py-2 mb-4" onClick={handleToggleProjectForm}>
+        {showProductForm ? '취소' : '새 상품 추가'}
       </Button>
-      {showNewProductForm && (
+      {showProductForm && (
         <Card className="mb-4">
           <Title level={3}>새 상품 추가</Title>
           <Input
             id="productName"
             label="상품명"
             value={newProduct.name}
-            onChange={e =>
-              setNewProduct({ ...newProduct, name: e.target.value })
-            }
+            onChange={e => onChangeNewProduct('name', e.target.value)}
           />
           <Input
             id="productPrice"
             label="가격"
             type="number"
             value={newProduct.price}
-            onChange={e =>
-              setNewProduct({
-                ...newProduct,
-                price: parseInt(e.target.value),
-              })
-            }
+            onChange={e => onChangeNewProduct('price', parseInt(e.target.value))}
           />
           <Input
             id="productStock"
             label="재고"
             type="number"
             value={newProduct.stock}
-            onChange={e =>
-              setNewProduct({
-                ...newProduct,
-                stock: parseInt(e.target.value),
-              })
-            }
+            onChange={e => onChangeNewProduct('stock', parseInt(e.target.value))}
           />
           <Button fullWidth className="p-2" onClick={handleAddNewProduct}>
             추가
@@ -188,9 +149,7 @@ export const ProductManageSection = (props: PropsType) => {
                       wrapperClassName="mb-4"
                       labelClassName="mb-1 text-base font-medium"
                       value={editingProduct.name}
-                      onChange={e =>
-                        handleProductNameUpdate(product.id, e.target.value)
-                      }
+                      onChange={e => handleProductNameUpdate(product.id, e.target.value)}
                     />
                     <Input
                       label="가격:"
@@ -198,9 +157,7 @@ export const ProductManageSection = (props: PropsType) => {
                       labelClassName="mb-1 text-base font-medium"
                       type="number"
                       value={editingProduct.price}
-                      onChange={e =>
-                        handlePriceUpdate(product.id, parseInt(e.target.value))
-                      }
+                      onChange={e => handlePriceUpdate(product.id, parseInt(e.target.value))}
                     />
                     <Input
                       label="재고:"
@@ -208,29 +165,18 @@ export const ProductManageSection = (props: PropsType) => {
                       labelClassName="mb-1 text-base font-medium"
                       type="number"
                       value={editingProduct.stock}
-                      onChange={e =>
-                        handleStockUpdate(product.id, parseInt(e.target.value))
-                      }
+                      onChange={e => handleStockUpdate(product.id, parseInt(e.target.value))}
                     />
 
                     {/* 할인 정보 수정 부분 */}
                     <div>
                       <Title level={4}>할인 정보</Title>
                       {editingProduct.discounts.map((discount, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center mb-2"
-                        >
+                        <div key={index} className="flex justify-between items-center mb-2">
                           <span>
-                            {discount.quantity}개 이상 구매 시{' '}
-                            {discount.rate * 100}% 할인
+                            {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
                           </span>
-                          <Button
-                            variant="danger"
-                            onClick={() =>
-                              handleRemoveDiscount(product.id, index)
-                            }
-                          >
+                          <Button variant="danger" onClick={() => handleRemoveDiscount(product.id, index)}>
                             삭제
                           </Button>
                         </div>
@@ -239,41 +185,23 @@ export const ProductManageSection = (props: PropsType) => {
                         <input
                           type="number"
                           placeholder="수량"
-                          value={newDiscount.quantity}
-                          onChange={e =>
-                            setNewDiscount({
-                              ...newDiscount,
-                              quantity: parseInt(e.target.value),
-                            })
-                          }
+                          value={discountForm.quantity}
+                          onChange={e => handleDiscountFormChange('quantity', parseInt(e.target.value))}
                           className="w-1/3 p-2 border rounded"
                         />
                         <input
                           type="number"
                           placeholder="할인율 (%)"
-                          value={newDiscount.rate * 100}
-                          onChange={e =>
-                            setNewDiscount({
-                              ...newDiscount,
-                              rate: parseInt(e.target.value) / 100,
-                            })
-                          }
+                          value={discountForm.rate * 100}
+                          onChange={e => handleDiscountFormChange('rate', parseInt(e.target.value) / 100)}
                           className="w-1/3 p-2 border rounded"
                         />
-                        <Button
-                          variant="primary"
-                          className="w-1/3 p-2"
-                          onClick={() => handleAddDiscount(product.id)}
-                        >
+                        <Button variant="primary" className="w-1/3 p-2" onClick={() => handleAddDiscount(product.id)}>
                           할인 추가
                         </Button>
                       </div>
                     </div>
-                    <Button
-                      variant="green"
-                      className="mt-2"
-                      onClick={handleEditComplete}
-                    >
+                    <Button variant="green" className="mt-2" onClick={handleEditComplete}>
                       수정 완료
                     </Button>
                   </div>
@@ -282,16 +210,11 @@ export const ProductManageSection = (props: PropsType) => {
                     {product.discounts.map((discount, index) => (
                       <div key={index} className="mb-2">
                         <span>
-                          {discount.quantity}개 이상 구매 시{' '}
-                          {discount.rate * 100}% 할인
+                          {discount.quantity}개 이상 구매 시 {discount.rate * 100}% 할인
                         </span>
                       </div>
                     ))}
-                    <Button
-                      data-testid="modify-button"
-                      className="mt-2"
-                      onClick={() => handleEditProduct(product)}
-                    >
+                    <Button data-testid="modify-button" className="mt-2" onClick={() => handleEditProduct(product)}>
                       수정
                     </Button>
                   </div>
