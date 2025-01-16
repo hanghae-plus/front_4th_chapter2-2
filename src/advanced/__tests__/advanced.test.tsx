@@ -1,10 +1,12 @@
+/* eslint-disable sonarjs/no-nested-functions */
 import { useState } from 'react';
 import { describe, expect, test, vi } from 'vitest';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { CouponType, DiscountType, ProductType } from '../../refactoring/types';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { renderHook, act, fireEvent, render, screen, within } from '@testing-library/react';
 import { updateProductField, handleAddOrRemoveDiscount } from '../../refactoring/utils/product';
+import { useCart } from '../../refactoring/hooks';
 
 const mockProductList: ProductType[] = [
   {
@@ -339,6 +341,54 @@ describe('advanced > ', () => {
 
         expect(onProductUpdate).not.toHaveBeenCalled();
         expect(setEditingProduct).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('훅 테스트', () => {
+    describe('useCart 훅', () => {
+      const mockProduct: ProductType = {
+        id: 'p1',
+        name: '상품1',
+        price: 10000,
+        stock: 20,
+        discounts: [{ quantity: 10, rate: 0.1 }],
+      };
+
+      test('장바구니에 상품 추가', () => {
+        const { result } = renderHook(() => useCart());
+
+        // 장바구니가 비어있는지 확인
+        expect(result.current.cart).toHaveLength(0);
+        expect(result.current.calculateTotal().totalDiscount).toBe(0);
+
+        // 상품을 장바구니에 추가
+        act(() => {
+          result.current.addToCart(mockProduct);
+        });
+
+        // 상품이 장바구니에 추가된 후 상태 확인
+        expect(result.current.cart).toHaveLength(1);
+        expect(result.current.cart[0].product.id).toBe(mockProduct.id);
+        expect(result.current.calculateTotal().totalAfterDiscount).toBe(mockProduct.price);
+      });
+
+      test('장바구니에서 상품 삭제', () => {
+        const { result } = renderHook(() => useCart());
+
+        // 상품을 장바구니에 추가
+        act(() => {
+          result.current.addToCart(mockProduct);
+        });
+
+        // 상품 삭제
+        act(() => {
+          result.current.removeFromCart(mockProduct.id);
+        });
+
+        // 장바구니가 비었는지 확인
+        expect(result.current.cart).toHaveLength(0);
+        expect(result.current.calculateTotal().totalDiscount).toBe(0);
       });
     });
   });
