@@ -1,4 +1,5 @@
 import { Coupon } from '../../../../types';
+import { formatCouponDiscount } from '../../product/helpers';
 
 interface CouponSelectorProps {
   coupons: Coupon[];
@@ -24,11 +25,7 @@ export const CouponSelector = ({ coupons, selectedCoupon, onApplyCoupon }: Coupo
       </select>
       {selectedCoupon && (
         <p className="text-green-600">
-          적용된 쿠폰: {selectedCoupon.name}(
-          {selectedCoupon.discountType === 'amount'
-            ? `${selectedCoupon.discountValue}원`
-            : `${selectedCoupon.discountValue}%`}{' '}
-          할인)
+          적용된 쿠폰: {selectedCoupon.name}({formatCouponDiscount(selectedCoupon)} 할인)
         </p>
       )}
     </div>
