@@ -11,6 +11,7 @@ interface ProductListProps {
   onEditCancel: () => void
 }
 
+// 상품 목록 컴포넌트
 export const ProductList = ({
   products,
   openProductIds,

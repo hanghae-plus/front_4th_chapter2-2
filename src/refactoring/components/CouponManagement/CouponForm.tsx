@@ -5,6 +5,7 @@ interface CouponFormProps {
   onSubmit: (coupon: Coupon) => void
 }
 
+// 쿠폰 생성 폼
 export const CouponForm = ({ onSubmit }: CouponFormProps) => {
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',

@@ -7,6 +7,7 @@ interface CouponManagementProps {
   onCouponAdd: (newCoupon: Coupon) => void
 }
 
+// 쿠폰 관리 컴포넌트
 export const CouponManagement = ({ coupons, onCouponAdd }: CouponManagementProps) => {
   return (
     <div>

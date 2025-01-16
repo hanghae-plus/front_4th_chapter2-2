@@ -4,6 +4,7 @@ interface CouponListProps {
   coupons: Coupon[]
 }
 
+// 쿠폰 목록 표시
 export const CouponList = ({ coupons }: CouponListProps) => {
   return (
     <div>

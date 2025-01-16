@@ -7,6 +7,7 @@ interface ProductCardProps {
   onAddToCart: (product: Product) => void
 }
 
+// 상품 카드 컴포넌트
 export const ProductCard = ({ product, remainingStock, onAddToCart }: ProductCardProps) => {
   return (
     <div data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">

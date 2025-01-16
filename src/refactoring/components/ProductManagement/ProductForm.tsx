@@ -8,6 +8,7 @@ interface ProductFormProps {
   submitLabel?: string
 }
 
+// 상품 생성/수정 폼
 export const ProductForm = ({ initialProduct, onSubmit, onCancel, submitLabel = '저장' }: ProductFormProps) => {
   const [product, setProduct] = useState<Omit<Product, 'id'>>({
     name: '',
