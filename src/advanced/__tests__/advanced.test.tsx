@@ -1,10 +1,12 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
+import InvalidQuantityError from '../../refactoring/errors/InvalidQuantityError';
+import { useCart } from '../../refactoring/hooks/useCart';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { fromPercentage, isNegativeNumber } from '../../refactoring/utils/numberUtils';
-import { Coupon, Product } from '../../types';
+import { CartItem, Coupon, Product } from '../../types';
 
 const mockProductList: Product[] = [
   {
@@ -259,6 +261,51 @@ describe('advanced > ', () => {
 
       test('0일 때 false를 반환해야 합니다.', () => {
         expect(isNegativeNumber(0)).toBe(false);
+      });
+    });
+  });
+
+  describe('커스텀 훅 > ', () => {
+    describe('useCart > ', () => {
+      describe('카트 수량 업데이트 > ', () => {
+        test('상품 수량을 업데이트해야 합니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          const cartItem: CartItem = {
+            product: mockProductList[0],
+            quantity: 1,
+          };
+          act(() => {
+            result.current.addToCart(cartItem.product);
+            result.current.updateQuantity(cartItem.product.id, 5);
+          });
+
+          expect(result.current.cart[0].quantity).toBe(5);
+        });
+
+        test('상품 수량을 유효하지 않은 값으로 업데이트 할 수 없습니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          const cartItem: CartItem = {
+            product: mockProductList[0],
+            quantity: 1,
+          };
+          try {
+            act(() => {
+              result.current.updateQuantity(cartItem.product.id, -5);
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(InvalidQuantityError);
+          }
+
+          try {
+            act(() => {
+              result.current.updateQuantity(cartItem.product.id, '5' as any);
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(InvalidQuantityError);
+          }
+        });
       });
     });
   });

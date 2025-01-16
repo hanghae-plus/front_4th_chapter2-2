@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types';
+import InvalidQuantityError from '../errors/InvalidQuantityError';
 import {
   addOrUpdateProductInCart,
   calculateCartTotal,
   getDefaultCartTotal,
   updateCartItemQuantity,
 } from '../models/cart';
+import { isNegativeNumber } from '../utils/numberUtils';
 
 /**
  * 장바구니 관련 로직을 처리하는 커스텀 훅
@@ -26,6 +28,9 @@ export const useCart = () => {
 
   // 카트 상품 수량 업데이트
   const updateQuantity = (productId: string, newQuantity: number) => {
+    if (isNegativeNumber(newQuantity)) {
+      throw new InvalidQuantityError(newQuantity);
+    }
     setCart((cart) => updateCartItemQuantity(cart, productId, newQuantity));
   };
 
