@@ -23,7 +23,7 @@ export const useCart = () => {
     removeCartItem();
   };
 
-  // 2-3. 장바구니 내역에 상품의 갯수 조절하기
+  // 2-3. 장바구니 내역에 상품 업데이트하기
   const updateQuantity = (productId: string, newQuantity: number) => {
     setCart((prevCart) => updateCartItemQuantity(prevCart, productId, newQuantity));
   };
