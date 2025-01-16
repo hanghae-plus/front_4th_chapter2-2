@@ -1,5 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { CartItem, Coupon, Product } from "../../types";
+import {
+  getLocalStorageItem,
+  setLocalStorageItem,
+} from "../utils/storageUtils";
 import { calculateTotal as calculateDiscount } from "../utils/cartDiscountUtils";
 
 interface CartState {
@@ -16,9 +20,25 @@ interface CartState {
   };
 }
 
-export const useCart = (): CartState => {
-  const [cart, setCart] = useState<Array<CartItem>>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+const CART_STORAGE_KEY = "shopping-cart";
+const COUPON_STORAGE_KEY = "selected-coupon";
+
+export const useCartStorage = (): CartState => {
+  const [cart, setCart] = useState<Array<CartItem>>(() =>
+    getLocalStorageItem<Array<CartItem>>(CART_STORAGE_KEY, [])
+  );
+
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(() =>
+    getLocalStorageItem<Coupon | null>(COUPON_STORAGE_KEY, null)
+  );
+
+  useEffect(() => {
+    setLocalStorageItem(CART_STORAGE_KEY, cart);
+  }, [cart]);
+
+  useEffect(() => {
+    setLocalStorageItem(COUPON_STORAGE_KEY, selectedCoupon);
+  }, [selectedCoupon]);
 
   const getRemainingStock = useCallback(
     (product: Product) => {
