@@ -1,4 +1,4 @@
 export * from './lib';
-export { CartItem, CartSummary } from './ui';
+export { CartList, CartSummary, AddToCartButton } from './ui';
 export { useCart } from './model';
 export type { CartItem as CartItemType } from './model';

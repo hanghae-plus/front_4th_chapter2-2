@@ -1,4 +1,4 @@
-import { CartList } from '@advanced/widgets/cart';
+import { CartDetail } from '@advanced/widgets/cart';
 import { ProductList } from '@advanced/widgets/product';
 import { Heading } from '@advanced/shared/ui';
 
@@ -10,7 +10,7 @@ export function CartPage() {
       </Heading>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ProductList />
-        <CartList />
+        <CartDetail />
       </div>
     </div>
   );
