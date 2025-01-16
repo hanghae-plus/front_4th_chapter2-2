@@ -59,7 +59,6 @@ function ProductEditForm(props: ProductEditFormProps) {
       },
     });
 
-  console.log(values);
   return (
     <div className="mt-2">
       {editingProduct && editingProduct.id === product.id ? (
