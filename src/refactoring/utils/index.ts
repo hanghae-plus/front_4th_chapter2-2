@@ -13,3 +13,9 @@ export const fromPercentage = (percentage: number): number => {
  * 값이 음수인지 확인
  */
 export const isNegativeNumber = (value: number): boolean => value < 0;
+
+/**
+ * 주어진 금액에 비율을 적용
+ */
+export const applyRate = (amount: number, rate: number): number =>
+  amount * (1 - Math.min(Math.max(rate, 0), 1));

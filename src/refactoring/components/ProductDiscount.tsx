@@ -1,6 +1,6 @@
 import { Product } from '../../types';
 import { useProductDiscount } from '../hooks/useProductDiscount';
-import { fromPercentage } from '../utils/numberUtils';
+import { fromPercentage } from '../utils';
 
 interface Props {
   id: Product['id'];

@@ -7,7 +7,7 @@ import {
   getDefaultCartTotal,
   updateCartItemQuantity,
 } from '../models/cart';
-import { isNegativeNumber } from '../utils/numberUtils';
+import { isNegativeNumber } from '../utils';
 
 /**
  * 장바구니 관련 로직을 처리하는 커스텀 훅

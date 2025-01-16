@@ -1,5 +1,5 @@
 import { CartItem, Coupon, Product } from '../../types';
-import { fromPercentage } from '../utils/numberUtils';
+import { fromPercentage } from '../utils';
 import { calculateMaxDiscount } from './discount';
 
 /**

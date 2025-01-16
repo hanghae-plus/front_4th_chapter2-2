@@ -5,7 +5,7 @@ import InvalidQuantityError from '../../refactoring/errors/InvalidQuantityError'
 import { useCart } from '../../refactoring/hooks/useCart';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
-import { fromPercentage, isNegativeNumber } from '../../refactoring/utils/numberUtils';
+import { fromPercentage, isNegativeNumber } from '../../refactoring/utils';
 import { CartItem, Coupon, Product } from '../../types';
 
 const mockProductList: Product[] = [
