@@ -1,6 +1,6 @@
-import { CartItem, Coupon, Product } from '../../types';
-import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { CartItem, Coupon, Product } from '../../../../types';
+import { calculateCartTotal, updateCartItemQuantity } from '../../../models/cart';
+import { useLocalStorage } from '../../../hooks/useLocalStorage';
 
 export const useCart = () => {
   const [cart, setCart] = useLocalStorage<CartItem[]>('cart', []);
