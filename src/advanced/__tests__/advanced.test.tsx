@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from "../../refactoring/components/AdminPage";
 import { Coupon, Product } from '../../types';
+import { isSystemDarkMode } from '../../refactoring/models/utilColorMode';
 
 const mockProducts: Product[] = [
   {
@@ -79,7 +80,7 @@ describe('advanced > ', () => {
 
     test('장바구니 페이지 테스트 > ', async () => {
 
-      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
+      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -157,7 +158,7 @@ describe('advanced > ', () => {
     });
 
     test('관리자 페이지 테스트 > ', async () => {
-      render(<TestAdminPage/>);
+      render(<TestAdminPage />);
 
 
       const $product1 = screen.getByTestId('product-1');
@@ -232,8 +233,24 @@ describe('advanced > ', () => {
   })
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    test('[유틸 함수] 시스템의 테마가 다크 > isSystemDarkMode', () => {
+      Object.defineProperty(window, "matchMedia", {
+        value: (query: string) => ({
+          matches: query === "(prefers-color-scheme: dark)",
+        }),
+      });
+
+      expect(isSystemDarkMode()).toBe(true);
+    })
+
+    test('[유틸 함수] 시스템의 테마가 화이트 > isSystemDarkMode', () => {
+      Object.defineProperty(window, "matchMedia", {
+        value: (query: string) => ({
+          matches: query !== "(prefers-color-scheme: dark)",
+        }),
+      });
+
+      expect(isSystemDarkMode()).toBe(false);
     })
 
     test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
