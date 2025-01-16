@@ -1,4 +1,5 @@
-import { CartItem, Coupon } from '../../types';
+import { CartItem, Coupon, Product } from '../../types';
+import { calculateMaxDiscount } from './discount';
 
 /**
  * 한 종류의 상품 가격을 계산하는 함수
@@ -12,6 +13,14 @@ export const calculateItemTotal = (item: CartItem): number =>
  */
 const applyDiscount = (amount: number, discountRate: number): number =>
   discountRate > 0 ? amount * (1 - discountRate) : amount;
+
+/**
+ * 적용할 할인율을 계산하는 함수
+ */
+export const calculateAppliedDiscount = (item: CartItem) =>
+  calculateMaxDiscount(
+    item.product.discounts.filter((discount) => item.quantity >= discount.quantity),
+  );
 
 /**
  * 최대 할인율을 계산하는 함수
@@ -55,6 +64,16 @@ const calculateCouponDiscount = (totalAfterDiscount: number, coupon: Coupon | nu
 };
 
 /**
+ * 상품 추가 또는 수량 업데이트
+ */
+export const addOrUpdateProductInCart = (cart: CartItem[], product: Product): CartItem[] => {
+  const existingItem = cart.find((item) => item.product.id === product.id);
+  return existingItem
+    ? updateCartItemQuantity(cart, product.id, existingItem.quantity + 1)
+    : [...cart, { product, quantity: 1 }];
+};
+
+/**
  * 카트 아이템 수량을 업데이트하는 함수
  */
 export const updateCartItemQuantity = (
@@ -75,3 +94,18 @@ const updateItemQuantity = (item: CartItem, newQuantity: number): CartItem | nul
 
   return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
 };
+
+/**
+ * 상품 제거
+ */
+export const removeProductFromCart = (cart: CartItem[], productId: string): CartItem[] =>
+  cart.filter((item) => item.product.id !== productId);
+
+/**
+ * 기본 카트 총합 반환
+ */
+export const getDefaultCartTotal = () => ({
+  totalBeforeDiscount: 0,
+  totalAfterDiscount: 0,
+  totalDiscount: 0,
+});

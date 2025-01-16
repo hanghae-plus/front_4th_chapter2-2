@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Coupon } from '../../types';
-import { getInitialCoupon } from '../utils/couponUtils';
+import { getInitialCoupon } from '../models/coupon';
 
 export const useCouponManagement = (onCouponAdd: (newCoupon: Coupon) => void) => {
   const [newCoupon, setNewCoupon] = useState<Coupon>(getInitialCoupon());

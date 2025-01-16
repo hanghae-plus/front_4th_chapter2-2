@@ -1,7 +1,7 @@
 import { Product } from '../../types';
 import { useProductDiscount } from '../hooks/useProductDiscount';
 import { useProductEdit } from '../hooks/useProductEdit';
-import { getProductTitle, isProductEditing } from '../utils/productUtils';
+import { getProductTitle, isProductEditing } from '../models/product';
 import DiscountsWithModifyButton from './DiscountsWithModifyButton';
 import EditingProduct from './EditingProduct';
 import NewProductForm from './NewProductForm';

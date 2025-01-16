@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types';
-import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
 import {
   addOrUpdateProductInCart,
+  calculateCartTotal,
   getDefaultCartTotal,
   removeProductFromCart,
-} from '../utils/cartUtils';
+  updateCartItemQuantity,
+} from '../models/cart';
 
 /**
  * 장바구니 관련 로직을 처리하는 커스텀 훅
