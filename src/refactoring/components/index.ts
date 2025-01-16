@@ -1,5 +1,3 @@
-export * from '../pages/AdminPage'
-export * from '../pages/CartPage'
 export * from './ProductManagement'
 export * from './CouponManagement'
 export * from './CartManagement'
