@@ -2,6 +2,7 @@ import { Coupon, Product } from '@/shared/types/';
 import { useCartStore } from '@/entities/cart';
 import { getAppliedDiscount } from '@/entities/cart';
 import { CartItem, GridContainer, GridItem } from '@/widgets/CartItem';
+import { Button } from '@/shared/ui';
 
 interface Props {
   products: Product[];
@@ -41,24 +42,15 @@ export function CartPage({ products, coupons }: Props) {
                   </span>
                 </div>
                 <div>
-                  <button
-                    onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                    className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-                  >
+                  <Button variant="primary" onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>
                     -
-                  </button>
-                  <button
-                    onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                    className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-                  >
+                  </Button>
+                  <Button variant="primary" onClick={() => updateQuantity(item.product.id, item.quantity + 1)}>
                     +
-                  </button>
-                  <button
-                    onClick={() => removeFromCart(item.product.id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                  >
+                  </Button>
+                  <Button variant="danger" onClick={() => removeFromCart(item.product.id)}>
                     삭제
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
