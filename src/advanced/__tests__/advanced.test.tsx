@@ -337,7 +337,7 @@ describe('advanced > ', () => {
     });
 
     describe('formatCouponDiscount', () => {
-      it('금액 할인일 때 "원" 단위로 표시', () => {
+      describe('금액 할인 쿠폰이 주어졌을 때', () => {
         const coupon: Coupon = {
           name: '신규가입 쿠폰',
           code: 'NEW100',
@@ -345,10 +345,16 @@ describe('advanced > ', () => {
           discountValue: 1000,
         };
 
-        expect(formatCouponDiscount(coupon)).toBe('1000원');
+        it('원 단위로 표시해야 한다', () => {
+          // When
+          const result = formatCouponDiscount(coupon);
+
+          // Then
+          expect(result).toBe('1000원');
+        });
       });
 
-      it('퍼센트 할인일 때 "%" 단위로 표시', () => {
+      describe('퍼센트 할인 쿠폰이 주어졌을 때', () => {
         const coupon: Coupon = {
           name: '신규가입 쿠폰',
           code: 'NEW100',
@@ -356,10 +362,16 @@ describe('advanced > ', () => {
           discountValue: 10,
         };
 
-        expect(formatCouponDiscount(coupon)).toBe('10%');
+        it('% 단위로 표시해야 한다', () => {
+          // When
+          const result = formatCouponDiscount(coupon);
+
+          // Then
+          expect(result).toBe('10%');
+        });
       });
 
-      it('할인 값이 0일 때도 단위 표시', () => {
+      describe('할인 값이 0인 쿠폰이 주어졌을 때', () => {
         const amountCoupon: Coupon = {
           name: '테스트 쿠폰',
           code: 'TEST',
@@ -374,84 +386,179 @@ describe('advanced > ', () => {
           discountValue: 0,
         };
 
-        expect(formatCouponDiscount(amountCoupon)).toBe('0원');
-        expect(formatCouponDiscount(percentageCoupon)).toBe('0%');
+        it('각각의 단위를 표시해야 한다', () => {
+          // When
+          const amountResult = formatCouponDiscount(amountCoupon);
+          const percentageResult = formatCouponDiscount(percentageCoupon);
+
+          // Then
+          expect(amountResult).toBe('0원');
+          expect(percentageResult).toBe('0%');
+        });
       });
     });
 
     describe('validateCoupon', () => {
-      const validCoupon: Coupon = {
-        name: '신규가입 쿠폰',
-        code: 'NEW100',
-        discountType: 'amount',
-        discountValue: 1000,
-      };
+      describe('유효한 쿠폰이 주어졌을 때', () => {
+        const validCoupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'NEW100',
+          discountType: 'amount',
+          discountValue: 1000,
+        };
 
-      it('유효한 쿠폰은 검증 통과', () => {
-        const result = validateCoupon(validCoupon);
-        expect(result.isValid).toBe(true);
-        expect(result.errors).toHaveLength(0);
+        it('검증을 통과해야 한다', () => {
+          // When
+          const result = validateCoupon(validCoupon);
+
+          // Then
+          expect(result.isValid).toBe(true);
+          expect(result.errors).toHaveLength(0);
+        });
       });
 
-      it('쿠폰 이름이 비어있으면 에러', () => {
-        const result = validateCoupon({ ...validCoupon, name: '' });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('쿠폰 이름은 필수입니다');
+      describe('쿠폰 이름이 비어있을 때', () => {
+        const coupon: Coupon = {
+          name: '',
+          code: 'NEW100',
+          discountType: 'amount',
+          discountValue: 1000,
+        };
+
+        it('필수 입력 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('쿠폰 이름은 필수입니다');
+        });
       });
 
-      it('쿠폰 이름이 2글자 미만이면 에러', () => {
-        const result = validateCoupon({ ...validCoupon, name: '쿠' });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('쿠폰 이름은 2글자 이상이어야 합니다');
+      describe('쿠폰 이름이 1글자일 때', () => {
+        const coupon: Coupon = {
+          name: '쿠',
+          code: 'NEW100',
+          discountType: 'amount',
+          discountValue: 1000,
+        };
+
+        it('길이 제한 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('쿠폰 이름은 2글자 이상이어야 합니다');
+        });
       });
 
-      it('쿠폰 코드가 비어있으면 에러', () => {
-        const result = validateCoupon({ ...validCoupon, code: '' });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('쿠폰 코드는 필수입니다');
+      describe('쿠폰 코드가 비어있을 때', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: '',
+          discountType: 'amount',
+          discountValue: 1000,
+        };
+
+        it('필수 입력 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('쿠폰 코드는 필수입니다');
+        });
       });
 
-      it('쿠폰 코드가 영문 대문자와 숫자가 아니면 에러', () => {
-        const result = validateCoupon({ ...validCoupon, code: 'invalid-code' });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('쿠폰 코드는 영문 대문자와 숫자만 가능합니다');
+      describe('쿠폰 코드가 영문 대문자와 숫자가 아닌 문자를 포함할 때', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'invalid-code',
+          discountType: 'amount',
+          discountValue: 1000,
+        };
+
+        it('형식 검증 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('쿠폰 코드는 영문 대문자와 숫자만 가능합니다');
+        });
       });
 
-      it('할인 값이 음수이면 에러', () => {
-        const result = validateCoupon({ ...validCoupon, discountValue: -1 });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('할인 값은 0 이상이어야 합니다');
+      describe('할인 값이 음수일 때', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'NEW100',
+          discountType: 'amount',
+          discountValue: -1,
+        };
+
+        it('값 범위 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('할인 값은 0 이상이어야 합니다');
+        });
       });
 
-      it('퍼센트 할인이 100%를 초과하면 에러', () => {
-        const result = validateCoupon({
-          ...validCoupon,
+      describe('퍼센트 할인이 100%를 초과할 때', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'NEW100',
           discountType: 'percentage',
           discountValue: 101,
+        };
+
+        it('할인율 범위 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('할인율은 100% 이하여야 합니다');
         });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('할인율은 100% 이하여야 합니다');
       });
 
-      it('금액 할인이 1,000,000원을 초과하면 에러', () => {
-        const result = validateCoupon({
-          ...validCoupon,
+      describe('금액 할인이 1,000,000원을 초과할 때', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'NEW100',
           discountType: 'amount',
           discountValue: 1000001,
+        };
+
+        it('할인 금액 범위 에러가 발생해야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toContain('할인 금액은 1,000,000원 이하여야 합니다');
         });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('할인 금액은 1,000,000원 이하여야 합니다');
       });
 
-      it('여러 개의 에러를 동시에 검출', () => {
-        const result = validateCoupon({
+      describe('여러 검증 조건을 위반할 때', () => {
+        const coupon: Coupon = {
           name: '',
           code: 'invalid-code',
           discountType: 'percentage',
           discountValue: 101,
+        };
+
+        it('모든 에러가 수집되어야 한다', () => {
+          // When
+          const result = validateCoupon(coupon);
+
+          // Then
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toHaveLength(3);
         });
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toHaveLength(3);
       });
     });
   });
