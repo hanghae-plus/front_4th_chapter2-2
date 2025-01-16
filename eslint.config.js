@@ -6,8 +6,6 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import a11y from 'eslint-plugin-jsx-a11y';
 import vitest from 'eslint-plugin-vitest';
 import prettier from 'eslint-plugin-prettier';
-import airbnb from 'eslint-config-airbnb-typescript';
-
 export default [
   {
     files: ['*.ts', '*.tsx'],
