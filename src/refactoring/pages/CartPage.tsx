@@ -1,6 +1,5 @@
-import { Product } from "../../types.ts";
-import { useCart, useCoupons } from "../hooks";
-import { initialCoupons } from "../../store/globalStore.ts";
+import { Coupon, Product } from "../../types.ts";
+import { useCart } from "../hooks";
 import {
   CouponSelect,
   DetailInfoCard,
@@ -10,7 +9,11 @@ import {
 import { PageContainer, PageSection, Text } from "../components/shared";
 import { calculateTotal } from "../utils/cartUtils.ts";
 
-export const CartPage = ({ products }: { products: Product[] }) => {
+interface CartPageProps {
+  products: Product[];
+  coupons: Coupon[];
+}
+export const CartPage = ({ products, coupons }: CartPageProps) => {
   const {
     cart,
     removeFromCart,
@@ -20,11 +23,10 @@ export const CartPage = ({ products }: { products: Product[] }) => {
     addToCart,
     selectedCoupon,
   } = useCart();
-  const { coupons } = useCoupons(initialCoupons);
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
     calculateTotal(cart, selectedCoupon);
-    
+
   return (
     <PageContainer pageTitle="장바구니">
       <PageSection title="상품 목록">

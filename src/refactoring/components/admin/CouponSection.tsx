@@ -1,13 +1,14 @@
 import { Button, Input } from "../shared";
 import { useState } from "react";
 import { Coupon } from "../../../types.ts";
-import { useCoupons } from "../../hooks";
-import { initialCoupons } from "../../../store/globalStore.ts";
 import CurrentCouponList from "./CurrentCouponList.tsx";
 
-const CouponSection = () => {
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
+interface CouponSectionProps {
+  coupons: Coupon[];
+  onCouponAdd: (newCoupon: Coupon) => void;
+}
 
+const CouponSection = ({ coupons, onCouponAdd }: CouponSectionProps) => {
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: "",
     code: "",
@@ -62,7 +63,7 @@ const CouponSection = () => {
             />
           </div>
           <Button
-            onClick={() => addCoupon(newCoupon)}
+            onClick={() => onCouponAdd(newCoupon)}
             className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
           >
             쿠폰 추가

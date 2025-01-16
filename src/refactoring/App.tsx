@@ -2,8 +2,9 @@ import { useState } from "react";
 import { CartPage } from "./pages/CartPage.tsx";
 import { AdminPage } from "./pages/AdminPage.tsx";
 import { Product } from "../types.ts";
-import { useProducts } from "./hooks";
+import { useCoupons, useProducts } from "./hooks";
 import { Navigation } from "./components/shared";
+import { initialCoupons } from "../store/globalStore.ts";
 
 const initialProducts: Product[] = [
   {
@@ -34,6 +35,8 @@ const initialProducts: Product[] = [
 
 const App = () => {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
+  const { coupons, addCoupon } = useCoupons(initialCoupons);
+
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
@@ -48,9 +51,11 @@ const App = () => {
             products={products}
             onProductUpdate={updateProduct}
             onProductAdd={addProduct}
+            coupons={coupons}
+            onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} />
+          <CartPage products={products} coupons={coupons} />
         )}
       </main>
     </div>
