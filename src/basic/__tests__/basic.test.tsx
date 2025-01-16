@@ -1,6 +1,6 @@
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AdminPage } from '../../refactoring/domains/admin/AdminPage';
 import { CartPage } from '../../refactoring/domains/cart/CartPage';
@@ -432,6 +432,29 @@ describe('basic > ', () => {
       discountType: 'percentage',
       discountValue: 10,
     };
+
+    // Vitest에서 localStorage 모킹
+    const localStorageMock = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      clear: vi.fn(),
+      removeItem: vi.fn(),
+      length: 0,
+      key: vi.fn(),
+    };
+
+    beforeEach(() => {
+      // 각 테스트 전에 모든 mock을 초기화
+      vi.clearAllMocks();
+
+      // localStorage mock 구현
+      Object.defineProperty(window, 'localStorage', {
+        value: localStorageMock,
+      });
+
+      // 초기값 설정
+      localStorageMock.getItem.mockReturnValue(null);
+    });
 
     test('장바구니에 제품을 추가해야 합니다', () => {
       const { result } = renderHook(() => useCart());
