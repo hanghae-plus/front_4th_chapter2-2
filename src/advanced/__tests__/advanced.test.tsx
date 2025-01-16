@@ -277,20 +277,27 @@ describe('advanced > ', () => {
           discounts: [],
         },
       ];
-      const { result } = renderHook(() => useProducts(), {
-        wrapper: ({ children }) => (
-          <ProductContextProvider initProducts={initialProducts}>
-            {children}
-          </ProductContextProvider>
-        ),
-      });
 
       test('초기 상태를 제대로 반환해야 한다.', () => {
+        const { result } = renderHook(() => useProducts(), {
+          wrapper: ({ children }) => (
+            <ProductContextProvider initProducts={initialProducts}>
+              {children}
+            </ProductContextProvider>
+          ),
+        });
         // 초기 상태 확인
         expect(result.current.products).toEqual(initialProducts);
       });
 
       test('제품을 업데이트할 수 있다.', () => {
+        const { result } = renderHook(() => useProducts(), {
+          wrapper: ({ children }) => (
+            <ProductContextProvider initProducts={initialProducts}>
+              {children}
+            </ProductContextProvider>
+          ),
+        });
         const updatedProduct = {
           ...initialProducts[0],
           name: 'Updated Product',
@@ -310,6 +317,13 @@ describe('advanced > ', () => {
       });
 
       test('새로운 제품을 추가할 수 있다.', () => {
+        const { result } = renderHook(() => useProducts(), {
+          wrapper: ({ children }) => (
+            <ProductContextProvider initProducts={initialProducts}>
+              {children}
+            </ProductContextProvider>
+          ),
+        });
         const newProduct: Product = {
           id: '2',
           name: 'New Product',
