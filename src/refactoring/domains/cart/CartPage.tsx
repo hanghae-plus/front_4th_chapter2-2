@@ -1,5 +1,7 @@
 import { CartInfo, CartItemActions, CartItemCard, CouponSelector, OrderSummary, ProductItem } from './components';
+import { ProductSearchField } from './components/product/ProductSearchField';
 import { useCart } from './hooks/useCart';
+import { useSearchProduct } from './hooks/useSearchProduct';
 import { PageContainer } from '../../shared/page-container/PageContainer';
 import { Section } from '../../shared/section/Section';
 
@@ -15,12 +17,15 @@ export const CartPage = ({ products, coupons }: Props) => {
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
+  const { handleSearch, filteredProducts } = useSearchProduct(products);
+
   return (
     <PageContainer title="장바구니">
       <Section title="상품 목록">
         <div className="space-y-2">
-          {products.map((product) => (
-            <ProductItem product={product} cart={cart} onAddToCart={addToCart} />
+          <ProductSearchField onSearch={handleSearch} />
+          {filteredProducts.map((product) => (
+            <ProductItem key={product.id} product={product} cart={cart} onAddToCart={addToCart} />
           ))}
         </div>
       </Section>
