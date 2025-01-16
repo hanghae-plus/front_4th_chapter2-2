@@ -6,6 +6,11 @@ export const useProducts = (initialProducts: Product[]) => {
 
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
 
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const handleEditProduct = (product: Product | null) =>
+    setEditingProduct(product);
+
   // 새로운 상품 추가 가능
   const updateProduct = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
@@ -36,5 +41,7 @@ export const useProducts = (initialProducts: Product[]) => {
     addProduct,
     openProductIds,
     toggleProductAccordion,
+    editingProduct,
+    handleEditProduct,
   };
 };

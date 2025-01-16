@@ -11,13 +11,14 @@ interface Props {
 }
 
 const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
-  const { openProductIds, toggleProductAccordion } =
-    useProducts(initialProducts);
+  const {
+    openProductIds,
+    toggleProductAccordion,
+    editingProduct,
+    handleEditProduct,
+  } = useProducts(initialProducts);
   // 상품관리 > 상품 클릭 시 상세정보 폼
   const [showNewProductForm, setShowNewProductForm] = useState(false);
-
-  // 현재 수정중인 상품 정보
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // 쿠폰 관리
   const [newDiscount, setNewDiscount] = useState<Discount>({
@@ -32,16 +33,11 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
     discounts: [],
   });
 
-  // handleEditProduct 함수 수정
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct({ ...product });
-  };
-
   // 새로운 핸들러 함수 추가
   const handleProductNameUpdate = (productId: string, newName: string) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
+      handleEditProduct(updatedProduct);
     }
   };
 
@@ -49,7 +45,7 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
+      handleEditProduct(updatedProduct);
     }
   };
 
@@ -57,7 +53,7 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
   const handleEditComplete = () => {
     if (editingProduct) {
       onProductUpdate(editingProduct);
-      setEditingProduct(null);
+      handleEditProduct(null);
     }
   };
 
@@ -66,7 +62,7 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
       onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+      handleEditProduct(newProduct);
     }
   };
 
@@ -78,7 +74,7 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
         discounts: [...updatedProduct.discounts, newDiscount],
       };
       onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+      handleEditProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
     }
   };
@@ -91,7 +87,7 @@ const ProductSection = ({ products, onProductUpdate, onProductAdd }: Props) => {
         discounts: updatedProduct.discounts.filter((_, i) => i !== index),
       };
       onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
+      handleEditProduct(newProduct);
     }
   };
 
