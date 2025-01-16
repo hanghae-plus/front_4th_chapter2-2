@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Discount } from '../../models/types/Discount';
 import { Product } from '../../models/types/Product';
+import {
+  addProductDiscount,
+  removeProductDiscount,
+} from '../../models/discount';
 
 interface Arguments {
   products: Product[];
@@ -22,10 +26,7 @@ const useDiscount = ({
     const updatedProduct = products.find((p) => p.id === productId);
 
     if (updatedProduct) {
-      const product = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount],
-      };
+      const product = addProductDiscount(updatedProduct, newDiscount);
       updateProduct(product);
       updateEditingProduct(product);
       setNewDiscount({ quantity: 0, rate: 0 });
@@ -35,10 +36,7 @@ const useDiscount = ({
   const handleRemoveDiscount = (productId: string, index: number) => {
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
-      const product = {
-        ...updatedProduct,
-        discounts: updatedProduct.discounts.filter((_, i) => i !== index),
-      };
+      const product = removeProductDiscount(updatedProduct, index);
       updateProduct(product);
       updateEditingProduct(product);
     }
