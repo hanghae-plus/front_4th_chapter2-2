@@ -1,17 +1,8 @@
 import { CartItem } from './CartItem.tsx';
-import { ICartItem } from '../../../shared/types';
+import { useCartContext } from '../../../pages/cart/model';
 
-interface CartListProps {
-  cart: ICartItem[];
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeFromCart: (productId: string) => void;
-}
-
-export function CartList({
-  cart,
-  updateQuantity,
-  removeFromCart,
-}: CartListProps) {
+export function CartList() {
+  const { cart, updateQuantity, removeFromCart } = useCartContext();
   return (
     <div className="space-y-2">
       {cart.map((item) => (

@@ -1,17 +1,11 @@
 import { SectionTitle } from '../../../shared/ui/typography';
-import { ICoupon } from '../../../shared/types';
+import { useCouponContext } from '../../../entities/coupon/model';
+import { useCartContext } from '../../../pages/cart/model';
 
-interface ICouponSelectorProps {
-  coupons: ICoupon[];
-  selectedCoupon: ICoupon | null;
-  applyCoupon: (coupon: ICoupon) => void;
-}
+export function CouponSelector() {
+  const { coupons } = useCouponContext();
+  const { selectedCoupon, applyCoupon } = useCartContext();
 
-export function CouponSelector({
-  coupons,
-  selectedCoupon,
-  applyCoupon,
-}: ICouponSelectorProps) {
   return (
     <>
       <SectionTitle title={'쿠폰 적용'} />

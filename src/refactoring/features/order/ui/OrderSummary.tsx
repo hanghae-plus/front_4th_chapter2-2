@@ -1,14 +1,8 @@
 import { SectionTitle } from '../../../shared/ui/typography';
+import { useCartContext } from '../../../pages/cart/model';
 
-interface IOrderSummaryProps {
-  calculateTotal: () => {
-    totalBeforeDiscount: number;
-    totalAfterDiscount: number;
-    totalDiscount: number;
-  };
-}
-
-export function OrderSummary({ calculateTotal }: IOrderSummaryProps) {
+export function OrderSummary() {
+  const { calculateTotal } = useCartContext();
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
     calculateTotal();
 

@@ -3,18 +3,10 @@ import { SectionTitle } from '../../../shared/ui/typography';
 import { Input } from '../../../shared/ui/inputs';
 import { IDiscount, IProduct } from '../../../shared/types';
 import { ProductForm } from '../../../features/product/ui/ProductForm.tsx';
+import { useProductContext } from '../../../entities/product/model';
 
-interface ProductManagementProps {
-  products: IProduct[];
-  onProductUpdate: (product: IProduct) => void;
-  onProductAdd: (newProduct: IProduct) => void;
-}
-
-export function ProductManagement({
-  products,
-  onProductUpdate,
-  onProductAdd,
-}: ProductManagementProps) {
+export function ProductManagement() {
+  const { products, updateProduct, addProduct } = useProductContext();
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
   const [newDiscount, setNewDiscount] = useState<IDiscount>({
@@ -58,7 +50,7 @@ export function ProductManagement({
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
-      onProductUpdate(editingProduct);
+      updateProduct(editingProduct);
       setEditingProduct(null);
     }
   };
@@ -67,7 +59,7 @@ export function ProductManagement({
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
+      updateProduct(newProduct);
       setEditingProduct(newProduct);
     }
   };
@@ -79,7 +71,7 @@ export function ProductManagement({
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount],
       };
-      onProductUpdate(newProduct);
+      updateProduct(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
     }
@@ -92,7 +84,7 @@ export function ProductManagement({
         ...updatedProduct,
         discounts: updatedProduct.discounts.filter((_, i) => i !== index),
       };
-      onProductUpdate(newProduct);
+      updateProduct(newProduct);
       setEditingProduct(newProduct);
     }
   };
@@ -100,7 +92,7 @@ export function ProductManagement({
   return (
     <div>
       <SectionTitle title={'상품 관리'} />
-      <ProductForm onProductAdd={onProductAdd} />
+      <ProductForm onProductAdd={addProduct} />
       <div className="space-y-2">
         {products.map((product, index) => (
           <div

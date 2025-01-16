@@ -1,16 +1,17 @@
 import { IProduct } from '../../../shared/types';
+import { useCartContext } from '../../../pages/cart/model';
 
 interface StockProps {
   product: IProduct;
-  addToCart: (product: IProduct) => void;
-  getRemainingStock: (product: IProduct) => number;
 }
 
-export function Stock({
-  product,
-  addToCart,
-  getRemainingStock,
-}: StockProps): JSX.Element {
+export function Stock({ product }: StockProps): JSX.Element {
+  const { cart, addToCart } = useCartContext();
+  const getRemainingStock = (product: IProduct) => {
+    const cartItem = cart.find((item) => item.product.id === product.id);
+    return product.stock - (cartItem?.quantity || 0);
+  };
+
   const remainingStock = getRemainingStock(product);
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
