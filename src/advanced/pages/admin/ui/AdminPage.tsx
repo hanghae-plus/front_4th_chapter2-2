@@ -1,3 +1,4 @@
+import { CouponManagement } from '@advanced/widgets/coupon';
 import { ProductManagement } from '@advanced/widgets/product';
 import { Heading } from '@advanced/shared/ui';
 
@@ -9,7 +10,7 @@ export function AdminPage() {
       </Heading>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ProductManagement />
-        {/* <CouponManagement /> */}
+        <CouponManagement />
       </div>
     </div>
   );
