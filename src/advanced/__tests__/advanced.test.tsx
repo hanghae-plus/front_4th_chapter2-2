@@ -11,6 +11,15 @@ import { initialNewProduct } from '../../constant.ts';
 import useNewProduct from '../../refactoring/hooks/useNewProduct.ts';
 import useProductSet from '../../refactoring/hooks/useProductSet.ts';
 import useAdminProductList from '../../refactoring/hooks/useAdminProductList.ts';
+import {
+  addCartItemToCart,
+  calculateCartTotal,
+  calculateItemTotal,
+  getMaxApplicableDiscount,
+  getRemainingStock,
+  updateCartItemQuantity,
+} from '../../refactoring/models/cart.ts';
+import { getNewProduct, getNewSet } from '../../refactoring/models/adminProduct.ts';
 
 const mockProducts: Product[] = [
   {
@@ -235,6 +244,7 @@ describe('advanced > ', () => {
     });
   });
 
+  // 커스텀 훅 테스트
   describe('useAdminEditProduct 테스트', () => {
     const props = {
       productList: mockProducts,
@@ -616,6 +626,120 @@ describe('advanced > ', () => {
 
       // then
       expect(result.current.openProductIdList).toContain('p1');
+    });
+  });
+
+  // 계산함수 테스트
+  describe('cart 계산 함수 테스트 > ', () => {
+    test('calculateItemTotal 테스트', () => {
+      // given
+      const item = { product: mockProducts[0], quantity: 5 };
+
+      // when
+      const result = calculateItemTotal(item);
+
+      // then
+      expect(result).toBe(50000);
+    });
+    test('getMaxApplicableDiscount 테스트', () => {
+      // given
+      const item = { product: mockProducts[0], quantity: 10 };
+
+      // when
+      const result = getMaxApplicableDiscount(item);
+
+      // then
+      expect(result).toBe(0.1);
+    });
+    test('calculateCartTotal 테스트', () => {
+      // given
+      const cart = [
+        { product: mockProducts[0], quantity: 5 },
+        { product: mockProducts[1], quantity: 10 },
+        { product: mockProducts[2], quantity: 15 },
+      ];
+      const selectedCoupon = mockCoupons[1];
+
+      // when
+      const result = calculateCartTotal(cart, selectedCoupon);
+
+      // then
+      expect(result).toEqual({
+        totalAfterDiscount: 522000,
+        totalBeforeDiscount: 700000,
+        totalDiscount: 178000,
+      });
+    });
+    test('updateCartItemQuantity 테스트', () => {
+      // given
+      const cart = [
+        { product: mockProducts[0], quantity: 5 },
+        { product: mockProducts[1], quantity: 10 },
+        { product: mockProducts[2], quantity: 15 },
+      ];
+
+      // when
+      const result = updateCartItemQuantity(cart, 'p1', 10);
+
+      // then
+      expect(result).toEqual([
+        { product: mockProducts[0], quantity: 10 },
+        { product: mockProducts[1], quantity: 10 },
+        { product: mockProducts[2], quantity: 15 },
+      ]);
+    });
+    test('getRemainingStock 테스트', () => {
+      // given
+      const product = mockProducts[0];
+      const cart = [{ product, quantity: 5 }];
+
+      // when
+      const result = getRemainingStock(product, cart);
+
+      // then
+      expect(result).toBe(15);
+    });
+    test('addCartItemToCart 테스트', () => {
+      // given
+      const product = mockProducts[0];
+      const newProduct = mockProducts[1];
+      const cart = [{ product, quantity: 5 }];
+
+      // when
+      const result = addCartItemToCart(newProduct, cart);
+
+      // then
+      expect(result).toEqual([
+        { product, quantity: 5 },
+        { product: newProduct, quantity: 1 },
+      ]);
+    });
+  });
+  describe('adminProduct 계산 함수 테스트 > ', () => {
+    test('getNewProduct 테스트', () => {
+      // given
+      const updatedProduct = mockProducts[0];
+      const index = 0;
+
+      // when
+      const result = getNewProduct(updatedProduct, index);
+
+      // then
+      expect(result).toEqual({
+        ...updatedProduct,
+        discountList: [],
+      });
+    });
+    test('getNewSet 테스트', () => {
+      // given
+      const prevSet = new Set(['p1', 'p2']);
+      const productId = 'p2';
+
+      // when
+      const result = getNewSet(prevSet, productId);
+
+      // then
+      expect(result).toEqual(new Set(['p1']));
     });
   });
 });
