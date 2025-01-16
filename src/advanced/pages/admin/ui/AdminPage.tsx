@@ -1,3 +1,4 @@
+import { ProductManagement } from '@advanced/widgets/product';
 import { Heading } from '@advanced/shared/ui';
 
 export function AdminPage() {
@@ -7,8 +8,8 @@ export function AdminPage() {
         관리자 페이지
       </Heading>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* <ProductManagement />
-        <CouponManagement /> */}
+        <ProductManagement />
+        {/* <CouponManagement /> */}
       </div>
     </div>
   );
