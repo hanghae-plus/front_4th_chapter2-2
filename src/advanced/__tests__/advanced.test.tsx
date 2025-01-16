@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
-import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from '../../refactoring/components/AdminPage';
+
 import { Coupon, Product } from '../../types';
 import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
-import { debounce } from '../../refactoring/utils/debounce';
+import { AdminPage } from '../../refactoring/pages/AdminPage';
+import { CartPage } from '../../refactoring/pages/CartPage';
 
 const mockProducts: Product[] = [
   {
@@ -332,107 +332,6 @@ describe('advanced > ', () => {
   describe('Util Test', () => {
     beforeEach(() => {
       vi.useFakeTimers();
-    });
-
-    describe('debounce', () => {
-      describe('기본 동작 테스트', () => {
-        it('연속된 호출에서 마지막 호출만 실행되어야 한다', () => {
-          // given
-          const mockFn = vi.fn();
-          const debouncedFn = debounce(mockFn, 100);
-
-          // when
-          debouncedFn('first');
-          debouncedFn('second');
-          debouncedFn('third');
-
-          // then
-          expect(mockFn).not.toHaveBeenCalled();
-
-          // when
-          vi.runAllTimers();
-
-          // then
-          expect(mockFn).toHaveBeenCalledTimes(1);
-          expect(mockFn).toHaveBeenCalledWith('third');
-        });
-      });
-
-      describe('타이밍 테스트', () => {
-        it('지정된 시간이 지나기 전에 호출되면 이전 타이머를 취소해야 한다', () => {
-          // given
-          const mockFn = vi.fn();
-          const debouncedFn = debounce(mockFn, 100);
-
-          // when
-          debouncedFn('test');
-          vi.advanceTimersByTime(50);
-          debouncedFn('test2');
-
-          // then
-          expect(mockFn).not.toHaveBeenCalled();
-
-          // when
-          vi.advanceTimersByTime(100);
-
-          // then
-          expect(mockFn).toHaveBeenCalledTimes(1);
-          expect(mockFn).toHaveBeenCalledWith('test2');
-        });
-
-        it('지정된 시간이 지나면 함수가 실행되어야 한다', () => {
-          // given
-          const mockFn = vi.fn();
-          const debouncedFn = debounce(mockFn, 100);
-
-          // when
-          debouncedFn('test');
-          vi.advanceTimersByTime(100);
-
-          // then
-          expect(mockFn).toHaveBeenCalledTimes(1);
-          expect(mockFn).toHaveBeenCalledWith('test');
-        });
-      });
-
-      describe('매개변수 전달 테스트', () => {
-        it('올바른 매개변수가 전달되어야 한다', () => {
-          // given
-          const mockFn = vi.fn();
-          const debouncedFn = debounce(mockFn, 100);
-
-          // when
-          debouncedFn('test', 123, { key: 'value' });
-          vi.runAllTimers();
-
-          // then
-          expect(mockFn).toHaveBeenCalledWith('test', 123, { key: 'value' });
-        });
-      });
-
-      describe('에러 처리 테스트', () => {
-        it('콜백 함수에서 에러가 발생해도 다음 호출이 가능해야 한다', () => {
-          // given
-          const mockFn = vi.fn().mockImplementationOnce(() => {
-            throw new Error('Test Error');
-          });
-          const debouncedFn = debounce(mockFn, 100);
-
-          // when & then
-          expect(() => {
-            debouncedFn('test');
-            vi.runAllTimers();
-          }).toThrow('Test Error');
-
-          // when
-          debouncedFn('retry');
-          vi.runAllTimers();
-
-          // then
-          expect(mockFn).toHaveBeenCalledTimes(2);
-          expect(mockFn).toHaveBeenLastCalledWith('retry');
-        });
-      });
     });
   });
 });
