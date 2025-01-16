@@ -1,5 +1,5 @@
 import { Coupon } from '../../../../types';
-import { formatCouponDiscount } from '../../product/helpers';
+import { formatCouponDiscount } from '../../product/helpers/index';
 
 interface CouponSelectorProps {
   coupons: Coupon[];

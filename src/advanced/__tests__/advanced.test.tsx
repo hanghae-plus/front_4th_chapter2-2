@@ -6,7 +6,7 @@ import { Coupon, Product } from '../../types';
 import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
-import { formatCouponDiscount } from '../../refactoring/features/product/helpers';
+import { formatCouponDiscount } from '../../refactoring/features/product/helpers/index';
 
 const mockProducts: Product[] = [
   {
