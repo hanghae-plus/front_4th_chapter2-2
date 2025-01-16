@@ -6,9 +6,12 @@ interface useSearchProductsProps {
   products : Product[];
 }
 
+// 상품 검색을 관할하는 훅입니다.
 export const useSearchProducts = ({products} : useSearchProductsProps) => {
+  // 타이핑한 검색 키워드
   const [searchQuery, setSearchQuery] = useState<string>('');
   
+  // 타이핑한 키워드에 따라 나타난 검색 결과를 담고있는 변수
   const filteredProducts = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return products;
@@ -22,13 +25,15 @@ export const useSearchProducts = ({products} : useSearchProductsProps) => {
     });
   }, [searchQuery, products])
   
-  const func = debounceCallback((value) => {
+  // 검색을 할 때 debounce 처리를 도와주는 함수
+  const searchDebounce = debounceCallback((value) => {
     setSearchQuery(value)
   }, 300);
   
+  // 검색 타이핑을 할 때 onChange를 받을 함수
   const handleSearch = (event : ChangeEvent<HTMLInputElement>) : void => {
     const value = event.target.value;
-    func(value)
+    searchDebounce(value)
     
   }
   

@@ -39,12 +39,13 @@ export default function useAdminPage({products, coupons, onProductUpdate, onProd
     setEditingProduct({...product});
   };
   
-  // 새로운 핸들러 함수 추가
+  // 상품 이름 변경 함수
   const handleProductNameUpdate = (productId: string, newName: string) => {
     // validation 조건
     const validationResult = validationProductData(newName, "name");
     if (!validationResult.isValid) {
-      return validationResult.error;
+      alert(validationResult.error);
+      return;
     }
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, name: newName };
@@ -52,12 +53,13 @@ export default function useAdminPage({products, coupons, onProductUpdate, onProd
     }
   };
   
-  // 새로운 핸들러 함수 추가
+  // 상품 가격 수정함수
   const handlePriceUpdate = (productId: string, newPrice: number) => {
     // validation 조건
     const validationResult = validationProductData(newPrice, "price");
     if (!validationResult.isValid) {
-      return validationResult.error;
+      alert(validationResult.error);
+      return;
     }
     if (editingProduct && editingProduct.id === productId) {
       const updatedProduct = { ...editingProduct, price: newPrice };
@@ -73,11 +75,13 @@ export default function useAdminPage({products, coupons, onProductUpdate, onProd
     }
   };
   
+  // 상품 재고 수정 함수
   const handleStockUpdate = (productId: string, newStock: number) => {
     // validation 조건
     const validationResult = validationProductData(newStock, "stock");
     if (!validationResult.isValid) {
-      return validationResult.error;
+      alert(validationResult.error);
+      return;
     }
     const updatedProduct = products.find(p => p.id === productId);
     if (updatedProduct) {

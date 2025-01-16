@@ -1,21 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 
-export const debounce = (value, delay) => {
-  const [debounceValue, setDebounceValue] = useState(value);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebounceValue(value);
-    });
-    
-    return () => {
-      clearTimeout(timer);
-    }
-  }, [value, delay]);
-  
-  return debounceValue;
-}
-
+// debounce를 처리해주는 함수를 개발하여, 상품 검색 컴포넌트(useSearchProduct.ts)에서 사용 중입니다.
 export const debounceCallback = (callback, delay) => {
   const [timeoutId, setTimeoutId] = useState(null);
   

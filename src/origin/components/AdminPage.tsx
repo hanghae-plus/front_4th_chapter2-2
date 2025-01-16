@@ -28,10 +28,6 @@ export const AdminPage = ({products, coupons, onProductUpdate, onProductAdd, onC
     stock: 0,
     discounts: []
   });
-  
-  // const {coupons, addCoupon} = useCoupons(initialCoupons);
-  // const {products, updateProduct, addProduct} = useProducts(initialProducts);
-  
 
   const toggleProductAccordion = (productId: string) => {
     setOpenProductIds(prev => {
