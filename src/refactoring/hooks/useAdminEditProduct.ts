@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Product } from '../../types.ts';
+import { getNewProduct } from '../models/adminProduct.ts';
 
 interface UseAdminEditProductProps {
   productList: Product[];
@@ -46,10 +47,7 @@ const useAdminEditProduct = ({ productList, onProductUpdate }: UseAdminEditProdu
   const handleRemoveDiscount = (productId: string, index: number) => {
     const updatedProduct = productList.find((p) => p.id === productId);
     if (updatedProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discountList: updatedProduct.discountList.filter((_, i) => i !== index),
-      };
+      const newProduct = getNewProduct(updatedProduct, index);
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
