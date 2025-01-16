@@ -4,7 +4,7 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 import { CartPage } from '../../refactoring/components/Cart/CartPage.tsx';
 import { AdminPage } from '../../refactoring/components/Admin/AdminPage.tsx';
 import { CartItem, Coupon, Product } from '../../types';
-import { useCart, useCoupons, useProductList } from '../../refactoring/hooks';
+import { useCart, useCouponList, useProductList } from '../../refactoring/hooks';
 import * as cartUtils from '../../refactoring/models/cart';
 
 const mockProducts: Product[] = [
@@ -298,12 +298,12 @@ describe('basic > ', () => {
 
   describe('useCoupons > ', () => {
     test('쿠폰을 초기화할 수 있다.', () => {
-      const { result } = renderHook(() => useCoupons(mockCoupons));
+      const { result } = renderHook(() => useCouponList(mockCoupons));
       expect(result.current.couponList).toEqual(mockCoupons);
     });
 
     test('쿠폰을 추가할 수 있다', () => {
-      const { result } = renderHook(() => useCoupons(mockCoupons));
+      const { result } = renderHook(() => useCouponList(mockCoupons));
       const newCoupon: Coupon = {
         name: 'New Coupon',
         code: 'NEWCODE',
