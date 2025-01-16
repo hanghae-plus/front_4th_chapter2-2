@@ -8,6 +8,7 @@ import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { formatCouponDiscount } from '../../refactoring/features/product/helpers/index';
 import { validateCoupon } from '../../refactoring/features/coupon/helpers';
+import { useForm } from '../../refactoring/hooks/useForm';
 
 const mockProducts: Product[] = [
   {
@@ -229,6 +230,251 @@ describe('advanced > ', () => {
   describe('Hook Test', () => {
     beforeEach(() => {
       window.localStorage.clear();
+    });
+
+    describe('useForm', () => {
+      interface TestForm {
+        name: string;
+        age: number;
+      }
+
+      const initialValues: TestForm = {
+        name: '',
+        age: 0,
+      };
+
+      beforeEach(() => {
+        vi.clearAllMocks();
+      });
+
+      describe('초기화', () => {
+        it('초기값으로 폼이 설정되어야 한다', () => {
+          // When
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit: vi.fn(),
+            }),
+          );
+
+          // Then
+          expect(result.current.values).toEqual(initialValues);
+          expect(result.current.errors).toEqual([]);
+          expect(result.current.isValid).toBe(true);
+        });
+      });
+
+      describe('handleChange', () => {
+        it('특정 필드의 값을 변경할 수 있어야 한다', () => {
+          // Given
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit: vi.fn(),
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleChange('name', 'John');
+          });
+
+          // Then
+          expect(result.current.values.name).toBe('John');
+          expect(result.current.errors).toEqual([]);
+        });
+
+        it('값 변경시 에러가 초기화되어야 한다', () => {
+          // Given
+          const validate = vi.fn(() => ({ isValid: false, errors: ['Invalid'] }));
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              validate,
+              onSubmit: vi.fn(),
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleSubmit();
+          });
+          act(() => {
+            result.current.handleChange('name', 'John');
+          });
+
+          // Then
+          expect(result.current.errors).toEqual([]);
+        });
+      });
+
+      describe('handleSubmit', () => {
+        it('유효성 검사 없이 제출되어야 한다', () => {
+          // Given
+          const onSubmit = vi.fn();
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit,
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleSubmit();
+          });
+
+          // Then
+          expect(onSubmit).toHaveBeenCalledWith(initialValues);
+        });
+
+        it('유효성 검사 실패시 onSubmit이 호출되지 않아야 한다', () => {
+          // Given
+          const onSubmit = vi.fn();
+          const validate = vi.fn(() => ({ isValid: false, errors: ['Invalid'] }));
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              validate,
+              onSubmit,
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleSubmit();
+          });
+
+          // Then
+          expect(validate).toHaveBeenCalledWith(initialValues);
+          expect(onSubmit).not.toHaveBeenCalled();
+          expect(result.current.errors).toEqual(['Invalid']);
+        });
+
+        it('유효성 검사 통과시 onSubmit이 호출되어야 한다', () => {
+          // Given
+          const onSubmit = vi.fn();
+          const validate = vi.fn(() => ({ isValid: true, errors: [] }));
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              validate,
+              onSubmit,
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleSubmit();
+          });
+
+          // Then
+          expect(validate).toHaveBeenCalledWith(initialValues);
+          expect(onSubmit).toHaveBeenCalledWith(initialValues);
+          expect(result.current.errors).toEqual([]);
+        });
+
+        it('제출 후 폼이 리셋되어야 한다', () => {
+          // Given
+          const onSubmit = vi.fn();
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit,
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleChange('name', 'John');
+          });
+          act(() => {
+            result.current.handleSubmit();
+          });
+
+          // Then
+          expect(result.current.values).toEqual(initialValues);
+        });
+      });
+
+      describe('resetForm', () => {
+        it('폼을 초기 상태로 리셋해야 한다', () => {
+          // Given
+          const onReset = vi.fn();
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit: vi.fn(),
+              onReset,
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleChange('name', 'John');
+          });
+          act(() => {
+            result.current.resetForm();
+          });
+
+          // Then
+          expect(result.current.values).toEqual(initialValues);
+          expect(result.current.errors).toEqual([]);
+          expect(onReset).toHaveBeenCalled();
+        });
+
+        it('onReset이 없어도 동작해야 한다', () => {
+          // Given
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit: vi.fn(),
+            }),
+          );
+
+          // When & Then
+          expect(() =>
+            act(() => {
+              result.current.resetForm();
+            }),
+          ).not.toThrow();
+        });
+      });
+
+      describe('isValid', () => {
+        it('에러가 없을 때 true여야 한다', () => {
+          // Given
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              onSubmit: vi.fn(),
+            }),
+          );
+
+          // Then
+          expect(result.current.isValid).toBe(true);
+        });
+
+        it('에러가 있을 때 false여야 한다', () => {
+          // Given
+          const validate = vi.fn(() => ({ isValid: false, errors: ['Invalid'] }));
+          const { result } = renderHook(() =>
+            useForm({
+              initialValues,
+              validate,
+              onSubmit: vi.fn(),
+            }),
+          );
+
+          // When
+          act(() => {
+            result.current.handleSubmit();
+          });
+
+          // Then
+          expect(result.current.isValid).toBe(false);
+        });
+      });
     });
 
     describe('useLocalStorage', () => {
