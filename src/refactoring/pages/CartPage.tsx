@@ -4,12 +4,12 @@ import { CouponSelector } from '../features/coupon/components/Selector';
 import { ProductItem } from '../features/product/components/Item';
 import { useCart } from '../hooks';
 
-interface Props {
+interface CartPageProps {
   products: Product[];
   coupons: Coupon[];
 }
 
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({ products, coupons }: CartPageProps) => {
   const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
 
   const getRemainingStock = (product: Product) => {

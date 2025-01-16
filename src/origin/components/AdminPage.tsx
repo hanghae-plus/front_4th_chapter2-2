@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../types';
-import { formatCouponDiscount } from '../../refactoring/features/product/product-helpers';
 import { CouponItem } from '../../refactoring/features/coupon/components/Item';
 
-interface Props {
+interface AdminPageProps {
   products: Product[];
   coupons: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
@@ -11,7 +10,7 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
+export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: AdminPageProps) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
