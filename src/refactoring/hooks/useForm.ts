@@ -23,20 +23,10 @@ export const useForm = <T extends Record<string, any>>({
     }));
   };
 
-  const addToArray = <K extends keyof T>(
-    field: K,
-    item: T[K] extends Array<infer U> ? U : never,
-  ) => {
+  const setValue = <K extends keyof T>(field: K, value: T[K]) => {
     setValues((prev) => ({
       ...prev,
-      [field]: [...(prev[field] as any[]), item],
-    }));
-  };
-
-  const removeFromArray = <K extends keyof T>(field: K, index: number) => {
-    setValues((prev) => ({
-      ...prev,
-      [field]: (prev[field] as any[]).filter((_, i) => i !== index),
+      [field]: value,
     }));
   };
 
@@ -66,7 +56,6 @@ export const useForm = <T extends Record<string, any>>({
     handleChange,
     handleSubmit,
     resetForm,
-    addToArray,
-    removeFromArray,
+    setValue,
   };
 };

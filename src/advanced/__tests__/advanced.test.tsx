@@ -23,6 +23,7 @@ import {
 } from '../../refactoring/features/products/lib';
 import { getAppliedDiscount } from '../../refactoring/features/cart/lib/discount';
 import { useAddProduct } from '../../refactoring/hooks/useAddProduct';
+import { useCouponStore } from '../../refactoring/entities/coupon/model/useCouponStore';
 
 const mockProducts: Product[] = [
   {
@@ -90,6 +91,7 @@ describe('advanced > ', () => {
     beforeEach(() => {
       act(() => {
         useProductStore.getState().setProducts(mockProducts);
+        useCouponStore.getState().setCoupons(mockCoupons);
       });
     });
 
@@ -199,9 +201,18 @@ describe('advanced > ', () => {
       expect($product4).toHaveTextContent('재고: 30');
 
       // 2. 상품 선택 및 수정
-      fireEvent.click($product1);
-      fireEvent.click(within($product1).getByTestId('toggle-button'));
-      fireEvent.click(within($product1).getByTestId('modify-button'));
+
+      await act(async () => {
+        fireEvent.click($product1);
+      });
+
+      await act(async () => {
+        fireEvent.click(within($product1).getByTestId('toggle-button'));
+      });
+
+      await act(async () => {
+        fireEvent.click(within($product1).getByTestId('modify-button'));
+      });
 
       act(() => {
         fireEvent.change(within($product1).getByDisplayValue('20'), {
@@ -223,6 +234,7 @@ describe('advanced > ', () => {
 
       // 3. 상품 할인율 추가 및 삭제
       fireEvent.click($product1);
+
       fireEvent.click(within($product1).getByTestId('modify-button'));
 
       // 할인 추가
