@@ -1,30 +1,27 @@
-import { useState } from 'react';
-import { Product } from '../../../../types';
+import type { Product } from '../../../../types';
+import { useForm } from '../../../hooks/useForm';
 
 interface ProductFormProps {
   onProductAdd: (newProduct: Product) => void;
   onCancel: () => void;
 }
 
-export const ProductForm = ({ onProductAdd, onCancel }: ProductFormProps) => {
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
+type ProductFormValues = Omit<Product, 'id'>;
 
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
-    setNewProduct({
+export const ProductForm = ({ onProductAdd, onCancel }: ProductFormProps) => {
+  const { values, handleChange, handleSubmit } = useForm<ProductFormValues>({
+    initialValues: {
       name: '',
       price: 0,
       stock: 0,
       discounts: [],
-    });
-    onCancel();
-  };
+    },
+    onSubmit: (values) => {
+      const productWithId = { ...values, id: Date.now().toString() };
+      onProductAdd(productWithId);
+    },
+    onReset: onCancel,
+  });
 
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
@@ -36,8 +33,8 @@ export const ProductForm = ({ onProductAdd, onCancel }: ProductFormProps) => {
         <input
           id="productName"
           type="text"
-          value={newProduct.name}
-          onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+          value={values.name}
+          onChange={(e) => handleChange('name', e.target.value)}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -48,8 +45,8 @@ export const ProductForm = ({ onProductAdd, onCancel }: ProductFormProps) => {
         <input
           id="productPrice"
           type="number"
-          value={newProduct.price}
-          onChange={(e) => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
+          value={values.price}
+          onChange={(e) => handleChange('price', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -60,12 +57,12 @@ export const ProductForm = ({ onProductAdd, onCancel }: ProductFormProps) => {
         <input
           id="productStock"
           type="number"
-          value={newProduct.stock}
-          onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
+          value={values.stock}
+          onChange={(e) => handleChange('stock', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
       </div>
-      <button onClick={handleAddNewProduct} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+      <button onClick={handleSubmit} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
         추가
       </button>
     </div>
