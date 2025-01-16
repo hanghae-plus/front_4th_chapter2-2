@@ -11,7 +11,11 @@ import {
 import { Coupon, Product } from "../../types";
 import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
-import { storageManager, formatCurrency } from "../../refactoring/utils";
+import {
+  storageManager,
+  formatCurrency,
+  debounce,
+} from "../../refactoring/utils";
 import {
   useForm,
   useLocalStorage,
@@ -543,6 +547,69 @@ describe("advanced > ", () => {
           discounts: [{ quantity: 10, rate: 0.15 }],
         },
       ]);
+    });
+  });
+
+  describe("debounce 함수 테스트", () => {
+    test("지정된 딜레이 이후에 함수가 호출되어야 한다", async () => {
+      const mockFn = vi.fn();
+      const debouncedFn = debounce(mockFn, 300);
+
+      debouncedFn();
+      expect(mockFn).not.toHaveBeenCalled();
+
+      // 300ms 이후에 호출되는지 확인
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      expect(mockFn).toHaveBeenCalledTimes(1);
+    });
+
+    test("딜레이 시간 내에 여러 번 호출되면 타이머가 초기화되어야 한다", async () => {
+      const mockFn = vi.fn();
+      const debouncedFn = debounce(mockFn, 300);
+
+      debouncedFn();
+      debouncedFn();
+      debouncedFn();
+
+      // 300ms 전에 호출되지 않음
+      expect(mockFn).not.toHaveBeenCalled();
+
+      // 300ms 이후에 한 번만 호출됨
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      expect(mockFn).toHaveBeenCalledTimes(1);
+    });
+
+    test("올바른 인자가 함수에 전달되어야 한다", async () => {
+      const mockFn = vi.fn();
+      const debouncedFn = debounce(mockFn, 300);
+
+      debouncedFn("arg1", 42);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      expect(mockFn).toHaveBeenCalledWith("arg1", 42);
+    });
+
+    test("충분한 시간이 지나지 않으면 함수가 호출되지 않아야 한다", async () => {
+      const mockFn = vi.fn();
+      const debouncedFn = debounce(mockFn, 300);
+
+      debouncedFn();
+      await new Promise((resolve) => setTimeout(resolve, 200)); // 300ms보다 짧은 시간
+      expect(mockFn).not.toHaveBeenCalled();
+    });
+
+    test("빠른 연속 호출도 올바르게 처리되어야 한다", async () => {
+      const mockFn = vi.fn();
+      const debouncedFn = debounce(mockFn, 300);
+
+      debouncedFn();
+      await new Promise((resolve) => setTimeout(resolve, 100)); // 첫 번째 호출 이후 100ms
+      debouncedFn();
+      await new Promise((resolve) => setTimeout(resolve, 100)); // 두 번째 호출 이후 100ms
+      debouncedFn();
+
+      await new Promise((resolve) => setTimeout(resolve, 300)); // 마지막 호출 이후 300ms
+      expect(mockFn).toHaveBeenCalledTimes(1);
     });
   });
 });
