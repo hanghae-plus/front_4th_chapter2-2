@@ -1,12 +1,13 @@
 import { fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { act, useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-import { useForm } from '@/refactoring/hooks';
+import { useForm, useLocalStorage } from '@/refactoring/hooks';
 import { AdminPage } from '@/refactoring/pages/Admin/AdminPage';
 import { useCouponForm } from '@/refactoring/pages/Admin/CouponManagement/components/CouponAddForm/hooks/useCouponForm';
 import { useProductForm } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductUpdateForm/hooks/useProductForm';
 import { CartPage } from '@/refactoring/pages/Cart/CartPage';
+import { useCartLocalStorage } from '@/refactoring/pages/Cart/hooks/useCartLocalStorage';
 import type { Coupon, Discount, Product } from '@/types';
 
 const mockProducts: Product[] = [
@@ -352,6 +353,148 @@ describe('advanced > ', () => {
         result.current.updateDiscounts(newDiscounts);
       });
       expect(result.current.editingProduct.discounts).toEqual(newDiscounts);
+    });
+  });
+
+  describe('useLocalStorage > ', () => {
+    const key = 'testKey';
+    const initialValue = 'initialValue';
+
+    beforeEach(() => {
+      window.localStorage.clear();
+      vi.spyOn(window, 'alert').mockImplementation(() => {});
+    });
+
+    test('값이 저장되어 있지 않으면 초기 값을 반환해야 합니다.', () => {
+      const { result } = renderHook(() => useLocalStorage<string>({ key, initialValue }));
+
+      expect(result.current[0]).toBe(initialValue);
+    });
+
+    test('값을 저장하고 검색할 수 있어야 합니다.', () => {
+      const { result } = renderHook(() => useLocalStorage<string>({ key, initialValue }));
+
+      act(() => {
+        result.current[1]('newValue');
+      });
+
+      expect(result.current[0]).toBe('newValue');
+      expect(localStorage.getItem(key)).toBe(JSON.stringify('newValue'));
+    });
+
+    test('localStorage에서 저장되어 있다면, 저장된 값을 가지고 와야 합니다.', () => {
+      localStorage.setItem(key, JSON.stringify('storedValue'));
+
+      const { result } = renderHook(() => useLocalStorage<string>({ key, initialValue }));
+
+      expect(result.current[0]).toBe('storedValue');
+    });
+
+    test('JSON 파싱 오류를 잘 처리해야 합니다.', () => {
+      localStorage.setItem(key, '{');
+
+      const { result } = renderHook(() => useLocalStorage<string>({ key, initialValue }));
+
+      expect(result.current[0]).toBe(initialValue);
+      expect(window.alert).toHaveBeenCalled();
+    });
+  });
+});
+
+describe('useCartLocalStorage > ', () => {
+  const sampleProduct: Product = { id: '1', name: 'Sample Product', price: 100, stock: 10, discounts: [] };
+  const sampleCoupon: Coupon = {
+    name: '10% 할인 쿠폰',
+    code: 'DISCOUNT10',
+    discountType: 'percentage',
+    discountValue: 10
+  };
+
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  test('상품을 장바구니에 추가할 수 있어야 합니다.', () => {
+    const { result } = renderHook(() => useCartLocalStorage());
+
+    act(() => {
+      result.current.addToCart(sampleProduct);
+    });
+
+    expect(result.current.cart).toHaveLength(1);
+    expect(result.current.cart[0].product).toEqual(sampleProduct);
+  });
+
+  test('이미 존재하는 상품의 수량이 증가해야 합니다.', () => {
+    const { result } = renderHook(() => useCartLocalStorage());
+
+    act(() => {
+      result.current.addToCart(sampleProduct);
+    });
+
+    act(() => {
+      result.current.addToCart(sampleProduct);
+    });
+
+    expect(result.current.cart[0].quantity).toBe(2);
+  });
+
+  test('장바구니에서 상품을 제거할 수 있어야 합니다.', () => {
+    const { result } = renderHook(() => useCartLocalStorage());
+
+    act(() => {
+      result.current.addToCart(sampleProduct);
+    });
+
+    expect(result.current.cart).toHaveLength(1);
+
+    act(() => {
+      result.current.removeFromCart(sampleProduct.id);
+    });
+
+    expect(result.current.cart).toHaveLength(0);
+  });
+
+  test('상품의 수량을 업데이트할 수 있어야 합니다.', () => {
+    const { result } = renderHook(() => useCartLocalStorage());
+
+    act(() => {
+      result.current.addToCart(sampleProduct);
+    });
+
+    act(() => {
+      result.current.updateQuantity(sampleProduct.id, 5);
+    });
+
+    expect(result.current.cart[0].quantity).toBe(5);
+  });
+
+  test('쿠폰을 적용할 수 있어야 합니다.', () => {
+    const { result } = renderHook(() => useCartLocalStorage());
+
+    act(() => {
+      result.current.applyCoupon(sampleCoupon);
+    });
+
+    expect(result.current.selectedCoupon).toEqual(sampleCoupon);
+  });
+
+  test('총액이 올바르게 계산되어야 합니다.', () => {
+    const { result } = renderHook(() => useCartLocalStorage());
+
+    act(() => {
+      result.current.addToCart(sampleProduct);
+    });
+
+    act(() => {
+      result.current.applyCoupon(sampleCoupon);
+    });
+
+    const total = result.current.calculateTotal();
+    expect(total).toEqual({
+      totalAfterDiscount: 90,
+      totalBeforeDiscount: 100,
+      totalDiscount: 10
     });
   });
 });
