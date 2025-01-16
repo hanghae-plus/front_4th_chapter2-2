@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
 import { Coupon, Product } from '../types.ts';
-import { useCoupons, useProducts } from './hooks';
 import { Header } from './components/Header.tsx';
 import { initialCoupons } from './data/coupon.ts';
 import { initialProducts } from './data/product.ts';
 import { AdminPage } from './pages/AdminPage.tsx';
 import { CartPage } from './pages/CartPage.tsx';
+import { useCoupons } from './features/coupon/hooks/useCoupon.ts';
+import { useProducts } from './features/product/hooks/useProduct.ts';
 
 const App = () => {
   const { products, updateProduct, addProduct } = useProducts(initialProducts);
