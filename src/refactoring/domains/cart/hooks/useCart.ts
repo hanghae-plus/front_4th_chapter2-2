@@ -1,14 +1,13 @@
-import { useLocalStorage } from '../../../hooks';
+import { useState } from 'react';
+
+import { useStorage } from '../../../hooks/useStorage';
 import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../../../models/cart';
 
 import type { CartItem, Coupon, Product } from '../../../../types';
 
 export const useCart = () => {
-  const { storageItem: cart, setItem: setCart } = useLocalStorage<CartItem[]>('cart', []);
-  const { storageItem: selectedCoupon, setItem: setSelectedCoupon } = useLocalStorage<Coupon | null>(
-    'selectedCoupon',
-    null,
-  );
+  const { item: cart, setItem: setCart } = useStorage<CartItem[]>('cart', []);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const addToCart = (product: Product) => {
     const remainingStock = getRemainingStock(product, cart);

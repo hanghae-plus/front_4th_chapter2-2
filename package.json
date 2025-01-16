@@ -9,7 +9,7 @@
     "start:advanced": "vite serve --open ./index.refactoring.html --mode advanced",
     "test": "vitest",
     "test:origin": "vitest src/origin",
-    "test:basic": "vitest src/basic",
+    "test:basic": "vitest src/basic --mode refactoring",
     "test:advanced": "vitest src/advanced",
     "test:ui": "vitest --ui",
     "build": "tsc -b && vite build",
