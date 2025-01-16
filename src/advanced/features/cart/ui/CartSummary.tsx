@@ -1,3 +1,4 @@
+import { Heading } from '@advanced/shared/ui';
 import { calculateCartTotal } from '../lib';
 import { useCart } from '../model';
 
@@ -9,7 +10,9 @@ export function CartSummary() {
 
   return (
     <div className="mt-6 bg-white p-4 rounded shadow">
-      <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
+      <Heading as="h2" className="text-2xl font-semibold mb-2">
+        주문 요약
+      </Heading>
       <div className="space-y-1">
         <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
         <p className="text-green-600">

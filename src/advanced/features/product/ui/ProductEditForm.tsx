@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Discount, UpdateProduct } from '@advanced/entities/product';
-import { Input } from '@advanced/shared/ui';
+import { Heading, Input } from '@advanced/shared/ui';
 import { useGetProductByIdQuery, useUpdateProductMutation } from '../model';
 
 interface ProductEditFormProps {
@@ -73,7 +73,9 @@ export function ProductEditForm({
       />
       {/* 할인 정보 수정 부분 */}
       <div>
-        <h4 className="text-lg font-semibold mb-2">할인 정보</h4>
+        <Heading as="h4" className="text-lg font-semibold mb-2">
+          할인 정보
+        </Heading>
         {editingProduct.discounts.map((discount, index) => (
           <div key={index} className="flex justify-between items-center mb-2">
             <span>
