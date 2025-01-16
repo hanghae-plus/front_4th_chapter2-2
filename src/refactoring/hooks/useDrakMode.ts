@@ -14,13 +14,9 @@ export const useDarkMode = () => {
 			document.getElementById("wrapContent")?.classList.remove("bg-gray-100");
 			document.getElementById("wrapContent")?.classList.add("bg-gray-500");
 
-			document.querySelectorAll(".bg-blue-500").forEach((el) => {
-				el.classList.remove("bg-blue-500");
-				el.classList.add("bg-gray-500");
-			});
-			document.querySelectorAll(".bg-blue-500").forEach((el) => {
-				el.classList.remove("bg-blue-500");
-				el.classList.add("bg-gray-500");
+			document.querySelectorAll(".bg-blue-500").forEach((target) => {
+				target.classList.remove("bg-blue-500");
+				target.classList.add("bg-gray-500");
 			});
 		} else {
 			document.querySelector("nav")?.classList.remove("bg-gray-800");
@@ -29,9 +25,9 @@ export const useDarkMode = () => {
 			document.getElementById("wrapContent")?.classList.remove("bg-gray-500");
 			document.getElementById("wrapContent")?.classList.add("bg-gray-100");
 
-			document.querySelectorAll(".bg-gray-500").forEach((el) => {
-				el.classList.remove("bg-gray-500");
-				el.classList.add("bg-blue-500");
+			document.querySelectorAll(".bg-gray-500").forEach((target) => {
+				target.classList.remove("bg-gray-500");
+				target.classList.add("bg-blue-500");
 			});
 		}
 

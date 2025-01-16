@@ -14,7 +14,6 @@ const App = () => {
 
   // 초기 글자 크기 설정
   document.documentElement.style.fontSize = `${fontSize}px`;
-
   return (
     <div id="wrapContent" className="min-h-screen bg-gray-100">
       <nav className="bg-blue-600 text-white p-4">
@@ -23,16 +22,16 @@ const App = () => {
 
           <div className="flex gap-2">
             <button
-              onClick={increaseFontSize}
               className="bg-white text-blue-600 px-2 py-1 rounded hover:bg-blue-100 max-sm:text-xs max-sm:px-1 max-sm:py-1"
               title="확대"
+              onClick={increaseFontSize}
             >
               +
             </button>
             <button
-              onClick={decreaseFontSize}
               className="bg-white text-blue-600 px-2 py-1 rounded hover:bg-blue-100 max-sm:text-xs max-sm:px-1 max-sm:py-1"
               title="축소"
+              onClick={decreaseFontSize}
             >
               -
             </button>
