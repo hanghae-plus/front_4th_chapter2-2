@@ -4,6 +4,7 @@ import { ProductList } from '../components/cart/ProductList';
 import { CartList } from '../components/cart/CartList';
 import { CouponSection } from '../components/cart/CouponSection';
 import { OrderSummary } from '../components/cart/OrderSummary';
+import { getMaxDiscount, getRemainingStock } from '../utils/cartUtils.ts';
 
 interface Props {
   products: Product[];
@@ -20,15 +21,6 @@ export const CartPage = ({ products, coupons }: Props) => {
     calculateTotal,
     selectedCoupon,
   } = useCart();
-
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
 
   return (
     <div className='container mx-auto p-4'>
