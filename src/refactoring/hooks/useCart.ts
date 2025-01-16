@@ -1,4 +1,3 @@
-// useCart.ts
 import { CartItem, Coupon, Product } from '../../types';
 import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
 import { useLocalStorage } from '../hooks/useLocalStorage';
