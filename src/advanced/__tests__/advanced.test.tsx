@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { Coupon, Product } from '../../types';
+import { beforeEach } from 'node:test';
+import { useLocalStorage } from '../../refactoring/hooks';
 
 const mockProducts: Product[] = [
   {
@@ -229,12 +231,52 @@ describe('advanced > ', () => {
   });
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    const testProduct: Product = {
+      id: '1',
+      name: 'Test Product',
+      price: 100,
+      stock: 10,
+      discounts: [],
+    };
+
+    describe('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
+      test('', () => {
+        expect(true).toBe(true);
+      });
+    });
+    describe('useLocalStorage >', () => {
+      beforeEach(() => {
+        localStorage.clear();
+      });
+      test('로컬 스토리지에 값이 없는 경우 초기값을 반환한다.', () => {
+        const { result } = renderHook(() => useLocalStorage('testCart', testProduct));
+        expect(result.current[0]).toBe(testProduct);
+      });
+
+      test('로컬 스토리지에 기존 값이 있는 경우 기존 값을 반환한다.', () => {
+        localStorage.setItem('testCart', JSON.stringify(mockProducts));
+        const { result } = renderHook(() => useLocalStorage('testCart', testProduct));
+        expect(result.current.length).toBe(2);
+      });
+
+      test('setStorageValue로 새 값을 저장하면, localStorage와 state가 업데이트된다.', () => {
+        const { result } = renderHook(() => useLocalStorage('test', [1] as number[]));
+        act(() => {
+          result.current[1]([1, 2, 3]);
+        });
+        expect(result.current[0]).toEqual([1, 2, 3]);
+        expect(localStorage.getItem('test')).toEqual(JSON.stringify([1, 2, 3]));
+      });
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    test('setStorageValue로 함수를 넘길 경우, 이전 값를 기반으로 업데이트한다.', () => {
+      const { result } = renderHook(() => useLocalStorage('testNumber', 5));
+
+      act(() => {
+        result.current[1]((prev) => prev + 5);
+      });
+      expect(result.current[0]).toBe(10);
+      expect(localStorage.getItem('testNumber')).toBe('10');
     });
   });
 });
