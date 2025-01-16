@@ -28,15 +28,13 @@ export const CartPage = ({ products, coupons }: Props) => {
   };
 
   const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
+    return item.product.discounts.reduce(
+      (maxDiscount, discount) =>
+        item.quantity >= discount.quantity
+          ? Math.max(maxDiscount, discount.rate)
+          : maxDiscount,
+      0
+    );
   };
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
