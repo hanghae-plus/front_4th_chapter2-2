@@ -1,5 +1,4 @@
-import { Discount, Product } from "../../types";
-import { DiscountEditForm } from "./DiscountEditForm";
+import { Product } from "../../types";
 
 interface Props {
   editingProduct: Product;
@@ -7,11 +6,6 @@ interface Props {
   onProductNameUpdate: (productId: string, name: string) => void;
   onProductPriceUpdate: (productId: string, price: number) => void;
   onStockUpdate: (productId: string, stock: number) => void;
-  onEditComplete: () => void;
-  onDiscountAdd: (productId: string) => void;
-  onNewDiscountSet: (newDiscount: Discount) => void;
-  onRemoveDiscount: (productId: string, index: number) => void;
-  newDiscount: Discount;
 }
 
 export const ProductEditForm = ({
@@ -20,11 +14,6 @@ export const ProductEditForm = ({
   onProductNameUpdate,
   onProductPriceUpdate,
   onStockUpdate,
-  onEditComplete,
-  onDiscountAdd,
-  newDiscount,
-  onNewDiscountSet,
-  onRemoveDiscount,
 }: Props) => {
   return (
     <div>
@@ -57,21 +46,6 @@ export const ProductEditForm = ({
           className="w-full p-2 border rounded"
         />
       </div>
-      {/* 할인 정보 수정 부분 */}
-      <DiscountEditForm
-        productId={productId}
-        editingProductDiscounts={editingProduct.discounts}
-        onDiscountAdd={onDiscountAdd}
-        newDiscount={newDiscount}
-        onNewDiscountSet={onNewDiscountSet}
-        onRemoveDiscount={onRemoveDiscount}
-      />
-      <button
-        onClick={onEditComplete}
-        className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
-      >
-        수정 완료
-      </button>
     </div>
   );
 };

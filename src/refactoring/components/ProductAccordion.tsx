@@ -5,6 +5,7 @@ import { useOpenProductIds } from "../hooks/useOpenProductIds";
 import { useNewDiscount } from "../hooks/useNewDiscount";
 import { useEditingProduct } from "../hooks/useEditingProduct";
 import { useProductsContext } from "../contexts/ProductsContext";
+import { DiscountEditForm } from "./DiscountEditForm";
 
 interface Props {
   product: Product;
@@ -96,18 +97,30 @@ export const ProductAccordion = ({ product, index }: Props) => {
       {openProductIds.has(product.id) && (
         <div className="mt-2">
           {editingProduct && editingProduct.id === product.id ? (
-            <ProductEditForm
-              editingProduct={editingProduct}
-              productId={product.id}
-              onProductNameUpdate={handleProductNameUpdate}
-              onDiscountAdd={handleAddDiscount}
-              onEditComplete={handleEditComplete}
-              onNewDiscountSet={setNewDiscount}
-              onProductPriceUpdate={handlePriceUpdate}
-              onRemoveDiscount={handleRemoveDiscount}
-              onStockUpdate={handleStockUpdate}
-              newDiscount={newDiscount}
-            />
+            <>
+              {/* props가 너무 껴서 이렇게 일단 두 개로 분리함... */}
+              <ProductEditForm
+                productId={product.id}
+                editingProduct={editingProduct}
+                onProductNameUpdate={handleProductNameUpdate}
+                onProductPriceUpdate={handlePriceUpdate}
+                onStockUpdate={handleStockUpdate}
+              />
+              <DiscountEditForm
+                productId={product.id}
+                editingProductDiscounts={editingProduct.discounts}
+                onDiscountAdd={handleAddDiscount}
+                newDiscount={newDiscount}
+                onNewDiscountSet={setNewDiscount}
+                onRemoveDiscount={handleRemoveDiscount}
+              />
+              <button
+                onClick={handleEditComplete}
+                className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
+              >
+                수정 완료
+              </button>
+            </>
           ) : (
             <div>
               {product.discounts.map((discount, index) => (
