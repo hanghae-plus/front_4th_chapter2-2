@@ -47,7 +47,7 @@ export const ProductAccordion = ({
   };
 
   const handleStockUpdate = (productId: string, newStock: number) => {
-    // 얘를 통째로 훅으로 집어넣기엔 좀 그렇다. 뭐가 그렇지? 뭐가 찝찝한거지?
+    // 얘를 통째로 훅으로 집어넣기엔 좀 그렇다. 뭐가 그렇지? 뭐가 찝찝한거지? 이벤트 핸들링의 조합 정도는 얘가 처리해도 되니까? 흠...
     const updatedProduct = products.find((p) => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
