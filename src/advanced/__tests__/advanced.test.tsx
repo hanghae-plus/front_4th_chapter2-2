@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { AdminPage } from '../../refactoring/domains/admin/AdminPage';
 import { CartPage } from '../../refactoring/domains/cart/CartPage';
 import { useForm, useStorage } from '../../refactoring/hooks';
+import { debounce } from '../../refactoring/utils/debounce';
 
 import type { Coupon, Product } from '../../types';
 import type { Mock } from 'vitest';
@@ -236,13 +237,43 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    });
+  describe('debounce', () => {
+    test('함수를 호출하면서 전달 된 지연시간 이후에 콜백이 호출되어야 한다.', async () => {
+      vi.useFakeTimers();
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      const mockCallback = vi.fn();
+      const delay = 300;
+      const debouncedFunction = debounce(mockCallback, delay);
+
+      debouncedFunction();
+
+      expect(mockCallback).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(delay + 100);
+
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+
+      vi.useRealTimers();
+    });
+    test('지연시간 내에 호출이 반복된다면 타이머는 초기화 되어야 한다.', async () => {
+      vi.useFakeTimers();
+
+      const mockCallback = vi.fn();
+      const delay = 300;
+      const debouncedFunction = debounce(mockCallback, delay);
+
+      debouncedFunction();
+      vi.advanceTimersByTime(150);
+      expect(mockCallback).not.toHaveBeenCalled();
+
+      debouncedFunction();
+      vi.advanceTimersByTime(200);
+      expect(mockCallback).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(200);
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+
+      vi.useRealTimers();
     });
   });
 
