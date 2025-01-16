@@ -7,7 +7,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   isDisabled?: boolean;
   className?: string;
-  testId?: string | null;
+  testId?: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -25,7 +25,7 @@ export function TextButton({
   isDisabled = false,
   title,
   onClick,
-  testId = null,
+  testId = '',
 }: ButtonProps) {
   return (
     <button

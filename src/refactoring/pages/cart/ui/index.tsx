@@ -1,13 +1,16 @@
-import { CartItem, Coupon, Product } from '../../../../types';
+import { CartItem, Product } from '../../../../types';
 import { useCart } from '../../../features/cart/model/useCart';
 import { TextButton } from '../../../shared/ui';
+import { DiscountCondition } from '../../../entities/discount/ui/DiscountCondition';
+import { ProductDisplay } from '../../../entities/product/ui/ProductDisplay';
+import { formatPrice } from '../../../entities/product/lib';
+import { useProductContext } from '../../../features/product/lib/context';
+import { useCouponContext } from '../../../features/coupon/lib/context';
 
-interface Props {
-  products: Product[];
-  coupons: Coupon[];
-}
+export function CartPage() {
+  const { products } = useProductContext();
+  const { coupons } = useCouponContext();
 
-export function CartPage({ products, coupons }: Props) {
   const {
     cart,
     addToCart,
@@ -48,14 +51,10 @@ export function CartPage({ products, coupons }: Props) {
             {products.map((product) => {
               const remainingStock = getRemainingStock(product);
               return (
-                <div
-                  key={product.id}
-                  data-testid={`product-${product.id}`}
-                  className="bg-white p-3 rounded shadow"
-                >
+                <ProductDisplay key={product.id} product={product}>
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-semibold">{product.name}</span>
-                    <span className="text-gray-600">{product.price.toLocaleString()}원</span>
+                    <span className="text-gray-600">{formatPrice(product.price)}</span>
                   </div>
                   <div className="text-sm text-gray-500 mb-2">
                     <span
@@ -69,18 +68,7 @@ export function CartPage({ products, coupons }: Props) {
                       </span>
                     )}
                   </div>
-                  {product.discounts.length > 0 && (
-                    <ul className="list-disc list-inside text-sm text-gray-500 mb-2">
-                      {product.discounts.map((discount, index) => {
-                        const key = `${index}-${discount.rate}`;
-                        return (
-                          <li key={key}>
-                            {discount.quantity}개 이상: {(discount.rate * 100).toFixed(0)}% 할인
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
+                  <DiscountCondition discounts={product.discounts} />
                   <TextButton
                     variant="add"
                     title={remainingStock > 0 ? '장바구니에 추가' : '품절'}
@@ -88,7 +76,7 @@ export function CartPage({ products, coupons }: Props) {
                     isDisabled={remainingStock <= 0}
                     fullWidth
                   />
-                </div>
+                </ProductDisplay>
               );
             })}
           </div>

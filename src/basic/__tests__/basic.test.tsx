@@ -221,6 +221,7 @@ describe('basic > ', () => {
       });
       fireEvent.click(screen.getByText('할인 추가'));
 
+      console.log('test', screen.queryByText('5개 이상 구매 시 5% 할인'));
       expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
 
       // 할인 삭제

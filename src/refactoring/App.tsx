@@ -3,9 +3,8 @@ import { useState } from 'react';
 import { Coupon, Product } from '../types';
 import { AdminPage } from './pages/admin/ui';
 import { CartPage } from './pages/cart/ui';
-import { useCoupons } from './features/coupon/model/useCoupon';
-import { useProducts } from './features/product/model/useProduct';
 import { Header } from './widgets';
+import { AppContainer } from './app/ui/AppContainer';
 
 const initialProducts: Product[] = [
   {
@@ -50,8 +49,6 @@ const initialCoupons: Coupon[] = [
 ];
 
 function App() {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const toggleAdmin = () => {
@@ -59,22 +56,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header isAdmin={isAdmin} onToggleAdmin={toggleAdmin} />
-      <main className="container mx-auto mt-6">
-        {isAdmin ? (
-          <AdminPage
-            products={products}
-            coupons={coupons}
-            onProductUpdate={updateProduct}
-            onProductAdd={addProduct}
-            onCouponAdd={addCoupon}
-          />
-        ) : (
-          <CartPage products={products} coupons={coupons} />
-        )}
-      </main>
-    </div>
+    <AppContainer initialProducts={initialProducts} initialCoupons={initialCoupons}>
+      <div className="min-h-screen bg-gray-100">
+        <Header isAdmin={isAdmin} onToggleAdmin={toggleAdmin} />
+        <main className="container mx-auto mt-6">{isAdmin ? <AdminPage /> : <CartPage />}</main>
+      </div>
+    </AppContainer>
   );
 }
 
