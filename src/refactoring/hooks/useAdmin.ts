@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Product, Discount } from "src/types";
+import { calculateQuantity, calculateRate } from "../models/admin";
 
 interface AdminProps {
 	products: Product[];
@@ -42,7 +43,7 @@ export const useAdmin = ({
 	};
 
 	const handleStockUpdate = (productId: string, newStock: number) => {
-		const updatedProduct = products.find(p => p.id === productId);
+		const updatedProduct = products.find(product => product.id === productId);
 		if (updatedProduct) {
 			const newProduct = { ...updatedProduct, stock: newStock };
 			onProductUpdate(newProduct);
@@ -51,7 +52,7 @@ export const useAdmin = ({
 	};
 
 	const handleAddDiscount = (productId: string) => {
-		const updatedProduct = products.find(p => p.id === productId);
+		const updatedProduct = products.find(product => product.id === productId);
 		if (updatedProduct && editingProduct) {
 			const newProduct = {
 				...updatedProduct,
@@ -64,7 +65,7 @@ export const useAdmin = ({
 	};
 
 	const handleRemoveDiscount = (productId: string, index: number) => {
-		const updatedProduct = products.find(p => p.id === productId);
+		const updatedProduct = products.find(product => product.id === productId);
 		if (updatedProduct) {
 			const newProduct = {
 				...updatedProduct,
@@ -78,14 +79,14 @@ export const useAdmin = ({
 	const handleQuantityChange = (value: string) => {
     setNewDiscount(prev => ({
       ...prev,
-      quantity: parseInt(value) || 0
+      quantity: calculateQuantity(value)
     }));
   };
 
   const handleRateChange = (value: string) => {
     setNewDiscount(prev => ({
       ...prev,
-      rate: (parseInt(value) || 0) / 100
+      rate: calculateRate(value)
     }));
   };
 
