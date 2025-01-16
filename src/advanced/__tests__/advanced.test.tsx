@@ -383,6 +383,87 @@ describe('advanced > ', () => {
     });
   });
 
+  describe('useAddProduct 커스텀 훅 테스트', () => {
+    const mockAddProduct = vi.fn();
+
+    beforeEach(() => {
+      vi.mock('../entities/product/model/initializeNewProduct', () => ({
+        initializeNewProduct: vi.fn(() => ({
+          name: '',
+          price: 0,
+          stock: 0,
+          discounts: [],
+        })),
+      }));
+
+      vi.clearAllMocks();
+    });
+
+    test('초기값으로 초기화를 할 수 있다.', () => {
+      const { result } = renderHook(() =>
+        useAddProduct({
+          addProduct: mockAddProduct,
+        }),
+      );
+
+      expect(result.current.newProduct).toEqual({
+        name: '',
+        price: 0,
+        stock: 0,
+        discounts: [],
+      });
+      expect(result.current.showNewProductForm).toBe(false);
+    });
+
+    test('새 상품 추가 핸들러가 제대로 동작한다.', () => {
+      const { result } = renderHook(() =>
+        useAddProduct({
+          addProduct: mockAddProduct,
+        }),
+      );
+
+      // 새 상품 추가 폼 열기
+      act(() => {
+        result.current.setShowNewProductForm(true);
+      });
+
+      expect(result.current.showNewProductForm).toBe(true);
+
+      // 상품 데이터 설정
+      act(() => {
+        result.current.setNewProduct({
+          name: '테스트 상품',
+          price: 1000,
+          stock: 10,
+          discounts: [],
+        });
+      });
+
+      // 상품 추가
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      // 모의 함수가 올바르게 호출되었는지 확인
+      expect(mockAddProduct).toHaveBeenCalledWith({
+        id: expect.any(String), // 유니크 ID 확인
+        name: '테스트 상품',
+        price: 1000,
+        stock: 10,
+        discounts: [],
+      });
+
+      // 상태 초기화 확인
+      expect(result.current.newProduct).toEqual({
+        name: '',
+        price: 0,
+        stock: 0,
+        discounts: [],
+      });
+      expect(result.current.showNewProductForm).toBe(false);
+    });
+  });
+
   describe('자유롭게 작성해보세요.', () => {
     test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
       expect(true).toBe(false);
