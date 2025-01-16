@@ -43,3 +43,16 @@ export const initialCoupons: Coupon[] = [
 ];
 
 export const initialNewDiscount: Discount = { quantity: 0, rate: 0 };
+export const initialNewCoupon: Coupon = {
+  name: '',
+  code: '',
+  discountType: 'percentage',
+  discountValue: 0,
+};
+
+export const initialNewProduct: Omit<Product, 'id'> = {
+  name: '',
+  price: 0,
+  stock: 0,
+  discountList: [],
+};

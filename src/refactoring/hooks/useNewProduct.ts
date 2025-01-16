@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import { FormElementType, Product } from '../../types.ts';
+import { initialNewProduct } from '../../constant.ts';
 
 interface UseNewProductProps {
   onProductAdd: (product: Product) => void;
@@ -7,22 +8,12 @@ interface UseNewProductProps {
 
 const useNewProduct = ({ onProductAdd }: UseNewProductProps) => {
   const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discountList: [],
-  });
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>(initialNewProduct);
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
     onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discountList: [],
-    });
+    setNewProduct(initialNewProduct);
     setShowNewProductForm(false);
   };
 

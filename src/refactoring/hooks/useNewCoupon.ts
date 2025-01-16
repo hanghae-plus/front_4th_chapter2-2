@@ -1,26 +1,17 @@
 import { ChangeEvent, useState } from 'react';
 import { Coupon, FormElementType } from '../../types.ts';
+import { initialNewCoupon } from '../../constant.ts';
 
 interface UseNewCouponProps {
   onCouponAdd: (coupon: Coupon) => void;
 }
 
 const useNewCoupon = ({ onCouponAdd }: UseNewCouponProps) => {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
+  const [newCoupon, setNewCoupon] = useState<Coupon>(initialNewCoupon);
 
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
+    setNewCoupon(initialNewCoupon);
   };
 
   const handleChangeCoupon =
