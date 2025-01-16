@@ -1,6 +1,6 @@
-import { Coupon } from '../../types'
-import { useCart } from '../hooks'
-import { formatCouponDisplay } from '../utils/formatUtils'
+import { Coupon } from '../../../types'
+import { useCart } from '../../hooks'
+import { formatCouponDisplay } from '../../utils/formatUtils'
 
 interface ApplyCouponProps {
   coupons: Coupon[]

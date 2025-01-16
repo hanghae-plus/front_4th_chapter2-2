@@ -1,4 +1,4 @@
-import { Product } from '../../types'
+import { Product } from '../../../types'
 import { CartButton } from './CartButton'
 
 interface ProductCardProps {
