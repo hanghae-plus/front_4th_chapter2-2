@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { useDiscountCalculator } from "./useDiscountCalculator";
+import { calculateTotal as calculateDiscount } from "../utils/cart-discount-utils";
 
 interface CartState {
   cart: Array<CartItem>;
@@ -19,7 +19,6 @@ interface CartState {
 export const useCart = (): CartState => {
   const [cart, setCart] = useState<Array<CartItem>>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-  const { calculateTotal: calculateDiscount } = useDiscountCalculator();
 
   const getRemainingStock = useCallback(
     (product: Product) => {
@@ -89,7 +88,7 @@ export const useCart = (): CartState => {
 
   const calculateTotal = useCallback(() => {
     return calculateDiscount(cart, selectedCoupon);
-  }, [calculateDiscount, cart, selectedCoupon]);
+  }, [cart, selectedCoupon]);
 
   return {
     cart,
