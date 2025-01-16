@@ -11,6 +11,7 @@ import { validateCoupon } from '../../refactoring/features/coupon/helpers';
 import { useForm } from '../../refactoring/hooks/useForm';
 import { formatCouponDiscount } from '../../refactoring/features/product/helpers/\bindex';
 import { SortOption, useSort } from '../../refactoring/hooks/useSort';
+import { formatCurrency } from '../../refactoring/utils/formatCurrency';
 
 const mockProducts: Product[] = [
   {
@@ -779,6 +780,131 @@ describe('advanced > ', () => {
           // Then
           expect(amountResult).toBe('0원');
           expect(percentageResult).toBe('0%');
+        });
+      });
+    });
+
+    describe('formatCurrency', () => {
+      describe('기본 동작 테스트', () => {
+        it('옵션 없이 숫자를 한국 원화로 포맷팅한다', () => {
+          // given
+          const amount = 1000;
+
+          // when
+          const result = formatCurrency(amount);
+
+          // then
+          expect(result).toBe('₩1,000');
+        });
+      });
+
+      describe('옵션 처리 테스트', () => {
+        it('통화 기호를 숨기는 옵션이 적용된다', () => {
+          // given
+          const amount = 1000;
+          const options = { hideCurrencySymbol: true };
+
+          // when
+          const result = formatCurrency(amount, options);
+
+          // then
+          expect(result).toBe('1,000');
+        });
+
+        it('다른 로케일과 통화로 포맷팅한다', () => {
+          // given
+          const amount = 1000;
+          const options = { locale: 'en-US', currency: 'USD' };
+
+          // when
+          const result = formatCurrency(amount, options);
+
+          // then
+          expect(result).toBe('$1,000.00');
+        });
+
+        it('인도네시아 루피아로 포맷팅한다', () => {
+          // given
+          const amount = 1000;
+          const options = { locale: 'id-ID', currency: 'IDR' };
+
+          // when
+          const result = formatCurrency(amount, options);
+
+          // then
+          const expected = `Rp${'\u00a0'}1.000`;
+          expect(result).toBe(expected);
+        });
+      });
+
+      describe('잘못된 입력 처리 테스트', () => {
+        it('NaN이 입력되면 0을 반환한다', () => {
+          // given
+          const amount = NaN;
+
+          // when
+          const result = formatCurrency(amount);
+
+          // then
+          expect(result).toBe('0');
+        });
+
+        it('undefined가 입력되면 0을 반환한다', () => {
+          // given
+          const amount = undefined as any;
+
+          // when
+          const result = formatCurrency(amount);
+
+          // then
+          expect(result).toBe('0');
+        });
+
+        it('null이 입력되면 0을 반환한다', () => {
+          // given
+          const amount = null as any;
+
+          // when
+          const result = formatCurrency(amount);
+
+          // then
+          expect(result).toBe('0');
+        });
+      });
+
+      describe('금액 형식 테스트', () => {
+        it('천 단위 구분자가 포함된다', () => {
+          // given
+          const amount = 1000000;
+
+          // when
+          const result = formatCurrency(amount, { hideCurrencySymbol: true });
+
+          // then
+          expect(result).toBe('1,000,000');
+        });
+
+        it('음수를 처리한다', () => {
+          // given
+          const amount = -1000;
+
+          // when
+          const result = formatCurrency(amount);
+
+          // then
+          expect(result).toBe('-₩1,000');
+        });
+
+        it('소수점이 있는 숫자를 처리한다', () => {
+          // given
+          const amount = 1000.5;
+          const options = { locale: 'en-US', currency: 'USD' };
+
+          // when
+          const result = formatCurrency(amount, options);
+
+          // then
+          expect(result).toBe('$1,000.50');
         });
       });
     });

@@ -12,12 +12,30 @@ export const formatCurrency = (amount: number, options: CurrencyFormatOptions = 
   }
 
   if (hideCurrencySymbol) {
-    return amount.toLocaleString(locale);
+    return new Intl.NumberFormat(locale).format(amount);
   }
 
-  return new Intl.NumberFormat(locale, {
+  const formatOptions: Intl.NumberFormatOptions = {
     style: 'currency',
-    currency: currency,
+    currency,
     currencyDisplay: 'narrowSymbol',
-  }).format(amount);
+  };
+
+  if (locale === 'ko-KR' || locale === 'id-ID') {
+    formatOptions.maximumFractionDigits = 0;
+    formatOptions.minimumFractionDigits = 0;
+  }
+
+  if (currency === 'USD') {
+    formatOptions.maximumFractionDigits = 2;
+    formatOptions.minimumFractionDigits = 2;
+  }
+
+  let formatted = new Intl.NumberFormat(locale, formatOptions).format(amount);
+
+  if (currency === 'IDR') {
+    formatted = formatted.replace(/\s/g, '\u00a0');
+  }
+
+  return formatted;
 };
