@@ -16,7 +16,7 @@ const App = () => {
   document.documentElement.style.fontSize = `${fontSize}px`;
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div id="wrapContent" className="min-h-screen bg-gray-100">
       <nav className="bg-blue-600 text-white p-4">
         <div className="container mx-auto flex justify-between items-center gap-2">
           <h1 className="text-2xl font-bold max-sm:text-base">쇼핑몰 관리 시스템</h1>
