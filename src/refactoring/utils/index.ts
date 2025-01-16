@@ -19,3 +19,11 @@ export const isNegativeNumber = (value: number): boolean => value < 0;
  */
 export const applyRate = (amount: number, rate: number): number =>
   amount * (1 - Math.min(Math.max(rate, 0), 1));
+
+/**
+ * 객체의 특정 키의 값을 업데이트
+ */
+export const updateKey = <T extends object, K extends keyof T>(obj: T, key: K, value: T[K]): T => ({
+  ...obj,
+  [key]: value,
+});

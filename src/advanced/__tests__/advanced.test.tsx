@@ -5,7 +5,7 @@ import InvalidQuantityError from '../../refactoring/errors/InvalidQuantityError'
 import { useCart } from '../../refactoring/hooks/useCart';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
-import { fromPercentage, isNegativeNumber } from '../../refactoring/utils';
+import { fromPercentage, isNegativeNumber, updateKey } from '../../refactoring/utils';
 import { CartItem, Coupon, Product } from '../../types';
 
 const mockProductList: Product[] = [
@@ -261,6 +261,19 @@ describe('advanced > ', () => {
 
       test('0일 때 false를 반환해야 합니다.', () => {
         expect(isNegativeNumber(0)).toBe(false);
+      });
+    });
+
+    describe('updateKey > ', () => {
+      test('객체의 특정 키의 값을 업데이트해야 합니다.', () => {
+        const obj = { a: 1, b: 2, c: 3 };
+        expect(updateKey(obj, 'b', 10)).toEqual({ a: 1, b: 10, c: 3 });
+      });
+
+      test('원본 객체를 변경하지 않아야 합니다.', () => {
+        const obj = { a: 1, b: 2, c: 3 };
+        updateKey(obj, 'b', 10);
+        expect(obj).toEqual({ a: 1, b: 2, c: 3 });
       });
     });
   });

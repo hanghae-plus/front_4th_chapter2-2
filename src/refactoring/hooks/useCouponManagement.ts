@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Coupon } from '../../types';
 import { getInitialCoupon } from '../models/coupon';
+import { updateKey } from '../utils';
 
 export const useCouponManagement = (onCouponAdd: (newCoupon: Coupon) => void) => {
   const [newCoupon, setNewCoupon] = useState<Coupon>(getInitialCoupon());
@@ -10,8 +11,9 @@ export const useCouponManagement = (onCouponAdd: (newCoupon: Coupon) => void) =>
     setNewCoupon(getInitialCoupon());
   };
 
-  const updateCouponWith = (attributeName: keyof Coupon, attribute: unknown) => {
-    setNewCoupon({ ...newCoupon, [attributeName]: attribute });
+  const updateCouponWith = (attributeName: keyof Coupon, attribute: Coupon[keyof Coupon]) => {
+    const updatedCoupon = updateKey(newCoupon, attributeName, attribute);
+    setNewCoupon(updatedCoupon);
   };
 
   return {

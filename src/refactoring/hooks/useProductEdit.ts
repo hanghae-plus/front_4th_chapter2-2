@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Product } from '../../types';
+import { updateKey } from '../utils';
 import { useProduct } from './useProduct';
 
 export const useProductEdit = (onProductUpdate: ReturnType<typeof useProduct>['updateProduct']) => {
@@ -13,10 +14,10 @@ export const useProductEdit = (onProductUpdate: ReturnType<typeof useProduct>['u
   const updateProductWith = (
     id: string,
     attributeName: keyof Omit<Product, 'id'>,
-    attribute: unknown,
+    attribute: Product[keyof Omit<Product, 'id'>],
   ) => {
     if (editingProduct && editingProduct.id === id) {
-      const updatedProduct = { ...editingProduct, [attributeName]: attribute };
+      const updatedProduct = updateKey(editingProduct, attributeName, attribute);
       setEditingProduct(updatedProduct);
     }
   };
