@@ -6,8 +6,6 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import a11y from 'eslint-plugin-jsx-a11y';
 import vitest from 'eslint-plugin-vitest';
 import prettier from 'eslint-plugin-prettier';
-import airbnb from 'eslint-config-airbnb-typescript';
-
 export default [
   {
     files: ['*.ts', '*.tsx'],
@@ -34,7 +32,6 @@ export default [
       prettier,
     },
     rules: {
-      ...airbnb.rules,
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off', // React 17+ JSX transform 사용
       'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
