@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { CartPage } from '@/pages/CartPage';
 import { AdminPage } from '@/pages/AdminPage';
-import { useCoupons, useProducts } from '@/features/hooks';
-import { initialProducts } from '@/entities/product';
+import { useCoupons } from '@/features/hooks';
+import { initialProducts, useProducts } from '@/entities/product';
 import { initialCoupons } from '@/entities/coupon';
 
 function App() {

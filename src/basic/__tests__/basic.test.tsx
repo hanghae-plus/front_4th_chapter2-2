@@ -4,9 +4,10 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 import { CartPage } from '@/pages/CartPage/';
 import { AdminPage } from '@/pages/AdminPage/';
 import { CartItem, Coupon, Product } from '@/shared/types/';
-import { useCoupons, useProducts } from '@/features/hooks';
 import * as cartUtils from '@/entities/cart/model/';
 import { useCartStore } from '@/entities/cart';
+import { useProducts } from '@/entities/product';
+import { useCoupons } from '@/entities/coupon';
 
 beforeEach(() => {
   useCartStore.setState({ cart: [], selectedCoupon: null });
