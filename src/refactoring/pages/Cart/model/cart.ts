@@ -1,6 +1,6 @@
 import type { CartItem, Coupon } from '@/types';
 
-const calculateItemSubTotal = (item: CartItem) => {
+const calculateTotalBeforeDiscount = (item: CartItem) => {
   const { price } = item.product;
   const { quantity } = item;
 
@@ -8,10 +8,10 @@ const calculateItemSubTotal = (item: CartItem) => {
 };
 
 export const calculateItemTotal = (item: CartItem) => {
-  const itemSubTotal = calculateItemSubTotal(item);
+  const totalBeforeDiscount = calculateTotalBeforeDiscount(item);
   const discount = getMaxApplicableDiscount(item);
 
-  return itemSubTotal * (1 - discount);
+  return totalBeforeDiscount * (1 - discount);
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
@@ -28,7 +28,7 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
   let totalAfterDiscount = 0;
 
   cart.forEach(item => {
-    totalBeforeDiscount += calculateItemSubTotal(item);
+    totalBeforeDiscount += calculateTotalBeforeDiscount(item);
     totalAfterDiscount += calculateItemTotal(item);
   });
 
