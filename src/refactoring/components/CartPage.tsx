@@ -1,10 +1,9 @@
 import { CartItem, Coupon, Product } from "../../types.ts";
 import { useCart, useLocalStorage } from "../hooks";
 import CartItemDisplay from "./carts/CartItemDisplay.tsx";
-import DiscountInfo from "./carts/DiscountInfo.tsx";
-import ProductPrice from "./carts/ProductPrice.tsx";
 import OrderSummary from "./carts/OrderSummary.tsx";
 import ApplyCoupon from "./carts/ApplyCoupon.tsx";
+import ProductList from "./carts/ProductList.tsx";
 
 interface Props {
   products: Product[];
@@ -46,39 +45,14 @@ export const CartPage = ({ products, coupons }: Props) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
-          <div className="space-y-2">
-            {products.map((product) => {
-              const remainingStock = getRemainingStock(product);
-              return (
-                <div
-                  key={product.id}
-                  data-testid={`product-${product.id}`}
-                  className="bg-white p-3 rounded shadow"
-                >
-                  <ProductPrice
-                    product={product}
-                    remainingStock={remainingStock}
-                  />
-                  <DiscountInfo product={product} />
-                  <button
-                    onClick={() => addToCart(product)}
-                    className={`w-full px-3 py-1 rounded ${
-                      remainingStock > 0
-                        ? "bg-blue-500 text-white hover:bg-blue-600"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
-                    disabled={remainingStock <= 0}
-                  >
-                    {remainingStock > 0 ? "장바구니에 추가" : "품절"}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+          <ProductList
+            products={products}
+            addToCart={addToCart}
+            getRemainingStock={getRemainingStock}
+          />
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-
           <div className="space-y-2">
             {cart.map((item) => {
               const appliedDiscount = getAppliedDiscount(item);
