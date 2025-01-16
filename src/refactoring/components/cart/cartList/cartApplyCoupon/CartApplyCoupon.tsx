@@ -1,6 +1,6 @@
-import { Coupon } from "../../../../types";
-import { useCart } from "../../../hooks";
-import Title from "../../atoms/Title";
+import { Coupon } from "../../../../../types";
+import { useCart } from "../../../../hooks";
+import Title from "../../../atoms/Title";
 
 interface CouponSectionProps {
   coupons: Coupon[];

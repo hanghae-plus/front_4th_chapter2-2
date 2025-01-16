@@ -1,5 +1,5 @@
-import { formatCurrency } from "../../../utils/formatCurrency";
-import Title from "../../atoms/Title";
+import { formatCurrency } from "../../../../utils/formatCurrency";
+import Title from "../../../atoms/Title";
 
 interface OrderSummaryProps {
   totalBeforeDiscount: number;

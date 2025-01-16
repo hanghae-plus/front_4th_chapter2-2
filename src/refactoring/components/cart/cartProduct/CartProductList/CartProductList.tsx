@@ -1,16 +1,21 @@
-import { Product } from "../../../../../types";
+import { useCart, useProducts } from "../../../../hooks";
 import Title from "../../../atoms/Title";
-import { CartProductCard } from "../CartProductCard/CartProductCard";
+import { CartProductCard } from "./CartProductCard/CartProductCard";
 
-interface CartProductListProps {
-  products: Product[];
-}
+export const CartProductList = () => {
+  const { getRemainingStock } = useCart();
+  const { products } = useProducts();
 
-export const CartProductList = ({ products }: CartProductListProps) => {
   return (
     <div>
       <Title level={2} mbNum={4} text="상품 목록" />
-      <CartProductCard products={products} />
+      {products.map((product) => (
+        <CartProductCard
+          key={product.id}
+          product={product}
+          remainingStock={getRemainingStock(product)}
+        />
+      ))}
     </div>
   );
 };

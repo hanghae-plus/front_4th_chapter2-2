@@ -1,16 +1,13 @@
-import { Coupon } from "../../../../../types";
-import { useCart } from "../../../../hooks";
-import Title from "../../../atoms/Title";
-import { CartApplyCoupon } from "../../cartCoupon/CartApplyCoupon";
-import { CartOrder } from "../../cartOrder/CartOrder";
-import { CartProductItem } from "../../CartProductItem/CarProductItem";
+import { useCart, useCoupons } from "../../../hooks";
+import Title from "../../atoms/Title";
+import { CartApplyCoupon } from "./cartApplyCoupon/CartApplyCoupon";
+import { CartOrder } from "./cartOrder/CartOrder";
+import { CartProductItem } from "./CartProductItem/CarProductItem";
 
-interface CartListProps {
-  coupons: Coupon[];
-}
-
-export const CartList = ({ coupons }: CartListProps) => {
+export const CartList = () => {
   const { cart, calculateTotal } = useCart();
+  const { coupons } = useCoupons();
+
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } =
     calculateTotal();
 

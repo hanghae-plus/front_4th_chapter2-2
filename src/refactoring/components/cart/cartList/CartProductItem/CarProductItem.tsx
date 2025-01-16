@@ -1,6 +1,6 @@
-import { CartItem } from "../../../../types";
-import { useCart } from "../../../hooks";
-import { getMaxApplicableDiscount } from "../../../models/cart";
+import { CartItem } from "../../../../../types";
+import { useCart } from "../../../../hooks";
+import { getMaxApplicableDiscount } from "../../../../models/cart";
 
 interface CartItemProps {
   cart: CartItem[];

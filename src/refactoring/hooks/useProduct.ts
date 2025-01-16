@@ -1,20 +1,37 @@
-import { useState } from "react";
-import { Product } from "../../types.ts";
+import useProductStore from "../store/useProductStore";
 
-export const useProducts = (initialProducts: Product[]) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const updateProduct = (updatedProduct: Product) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
-    );
-  };
+export const useProducts = () => {
+  const {
+    products,
+    openProductIds,
+    selectedProducts,
+    isNewProductForm,
+    editingProduct,
+    initialProducts,
+    addProduct,
+    completeProductEdit,
+    updateProduct,
+    updateEditProduct,
+    removeDiscount,
+    handleNewDiscount,
+    newDiscount,
+    addProductDiscount,
+  } = useProductStore();
 
-  const addProduct = (newProduct: Product) => {
-    setProducts((prevProducts) => [...prevProducts, newProduct]);
-  };
   return {
     products,
-    updateProduct,
+    isNewProductForm,
+    openProductIds,
+    editingProduct,
+    selectedProducts,
+    initialProducts,
     addProduct,
+    completeProductEdit,
+    updateEditProduct,
+    updateProduct,
+    removeDiscount,
+    handleNewDiscount,
+    newDiscount,
+    addProductDiscount,
   };
 };

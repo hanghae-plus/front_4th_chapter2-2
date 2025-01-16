@@ -1,5 +1,5 @@
-import { Product } from "../../../../../types";
-import { useCart } from "../../../../hooks";
+import { Product } from "../../../../../../../types";
+import { useCart } from "../../../../../../hooks";
 
 interface AddToCartButtonProps {
   remainingStock: number;
