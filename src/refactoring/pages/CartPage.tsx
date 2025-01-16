@@ -5,6 +5,7 @@ import { useCart } from '../features/cart/hooks/useCart';
 import { ProductItem } from '../features/product/components/Item';
 import { ProductSortType, useProductSort } from '../features/product/hooks/useProductSort';
 import { calculateAppliedDiscount, getRemainingStock } from '../features/cart/helpers';
+import { formatCurrency } from '../utils/formatCurrency';
 
 interface CartPageProps {
   products: Product[];
@@ -69,9 +70,13 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
           <div className="mt-6 bg-white p-4 rounded shadow">
             <h2 className="text-2xl font-semibold mb-2">주문 요약</h2>
             <div className="space-y-1">
-              <p>상품 금액: {totalBeforeDiscount.toLocaleString()}원</p>
-              <p className="text-green-600">할인 금액: {totalDiscount.toLocaleString()}원</p>
-              <p className="text-xl font-bold">최종 결제 금액: {totalAfterDiscount.toLocaleString()}원</p>
+              <p>상품 금액: {formatCurrency(totalBeforeDiscount, { hideCurrencySymbol: true })}원</p>
+              <p className="text-green-600">
+                할인 금액: {formatCurrency(totalDiscount, { hideCurrencySymbol: true })}원
+              </p>
+              <p className="text-xl font-bold">
+                최종 결제 금액: {formatCurrency(totalAfterDiscount, { hideCurrencySymbol: true })}원
+              </p>
             </div>
           </div>
         </div>

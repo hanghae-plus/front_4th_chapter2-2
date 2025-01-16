@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Product, Discount } from '../../../../types';
 import { useAccordion } from '../../../hooks/useAccordion';
+import { formatCurrency } from '../../../utils/formatCurrency';
 
 interface ProductAccordionProps {
   product: Product;
@@ -76,7 +77,7 @@ export const ProductAccordion = ({ product, onProductUpdate }: ProductAccordionP
         onClick={() => toggleAccordion(product.id)}
         className="w-full text-left font-semibold"
       >
-        {product.name} - {product.price}원 (재고: {product.stock})
+        {product.name} - {formatCurrency(product.price, { hideCurrencySymbol: true })}원 (재고: {product.stock})
       </button>
       {isOpen && (
         <div className="mt-2">

@@ -173,7 +173,7 @@ describe('advanced > ', () => {
       const $product4 = screen.getByTestId('product-4');
 
       expect($product4).toHaveTextContent('상품4');
-      expect($product4).toHaveTextContent('15000원');
+      expect($product4).toHaveTextContent('15,000원');
       expect($product4).toHaveTextContent('재고: 30');
 
       // 2. 상품 선택 및 수정
@@ -190,7 +190,7 @@ describe('advanced > ', () => {
       fireEvent.click(within($product1).getByText('수정 완료'));
 
       expect($product1).toHaveTextContent('수정된 상품1');
-      expect($product1).toHaveTextContent('12000원');
+      expect($product1).toHaveTextContent('12,000원');
       expect($product1).toHaveTextContent('재고: 25');
 
       // 3. 상품 할인율 추가 및 삭제
