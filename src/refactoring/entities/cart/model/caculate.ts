@@ -1,4 +1,5 @@
 import { CartItem, Coupon } from '@/shared/types';
+import { calculateDifference, calculateTotal } from '@/shared/libs';
 
 export const calculateItemTotal = (item: CartItem) => {
   const { price } = item.product;
@@ -8,7 +9,7 @@ export const calculateItemTotal = (item: CartItem) => {
     return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
   }, 0);
 
-  return price * quantity * (1 - discount);
+  return price * quantity * calculateDifference(1, discount);
 };
 
 export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
@@ -18,25 +19,25 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
   cart.forEach((item) => {
     const { price } = item.product;
     const { quantity } = item;
-    totalBeforeDiscount += price * quantity;
+    totalBeforeDiscount += calculateTotal(price, quantity);
 
     const discount = item.product.discounts.reduce((maxDiscount, d) => {
       return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
     }, 0);
 
-    totalAfterDiscount += price * quantity * (1 - discount);
+    totalAfterDiscount += totalBeforeDiscount * calculateDifference(1, discount);
   });
 
-  let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+  let totalDiscount = calculateDifference(totalBeforeDiscount, totalAfterDiscount);
 
   // 쿠폰 적용
   if (selectedCoupon) {
     if (selectedCoupon.discountType === 'amount') {
       totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
     } else {
-      totalAfterDiscount *= 1 - selectedCoupon.discountValue / 100;
+      totalAfterDiscount *= calculateDifference(1, selectedCoupon.discountValue) / 100;
     }
-    totalDiscount = totalBeforeDiscount - totalAfterDiscount;
+    totalDiscount = calculateDifference(totalBeforeDiscount, totalAfterDiscount);
   }
 
   return {
