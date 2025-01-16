@@ -7,6 +7,7 @@
     "start:origin": "vite serve --open ./index.origin.html",
     "start:basic": "vite serve --open ./index.refactoring.html",
     "start:advanced": "vite serve --open ./index.refactoring2.html",
+    "start:api-mock": "vite serve --open ./index.refactoring3.html",
     "test": "vitest",
     "test:origin": "vitest src/origin",
     "test:basic": "vitest src/basic",
