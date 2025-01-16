@@ -6,6 +6,8 @@ export interface Product {
   discounts: Discount[];
 }
 
+export interface NewProduct extends Omit<Product, 'id'> {}
+
 export interface Discount {
   quantity: number;
   rate: number;
