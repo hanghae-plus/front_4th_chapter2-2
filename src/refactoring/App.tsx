@@ -32,3 +32,5 @@ export default App;
 
 // Todo: 1. AdminPage 컨텍스트로 분리 -> 테스트에서 실패나네.. 어쩔 수 없는 과정이려나.
 // Todo: 2. CartPage 리팩토링
+// Todo: 3. Discount도 context로 분리해야하려나?
+// ! 이게 계층적으로 잘 분리된 코드인지 잘 모르겠음...

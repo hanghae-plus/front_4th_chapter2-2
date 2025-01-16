@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from "../../types";
+import { CartItem, Coupon, Product } from "../../types";
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
   return item.product.discounts.reduce((maxDiscount, d) => {
@@ -6,6 +6,12 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
       ? d.rate
       : maxDiscount;
   }, 0);
+};
+
+export const getMaxDiscount = (
+  discounts: { quantity: number; rate: number }[]
+) => {
+  return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
 };
 
 export const calculateItemTotal = (item: CartItem) => {
@@ -27,7 +33,7 @@ export const calculateCartTotal = (
   cart.forEach((item) => {
     const { price } = item.product;
     const { quantity } = item;
-    totalBeforeDiscount += price * quantity; // -> 이것도 뺄 수 있다. 아 순수해~~
+    totalBeforeDiscount += price * quantity;
     totalAfterDiscount += calculateItemTotal(item);
   });
 
@@ -69,4 +75,20 @@ export const updateCartItemQuantity = (
       return item;
     })
     .filter((item): item is CartItem => item !== null);
+};
+
+export const getRemainingStock = (product: Product, cart: CartItem[]) => {
+  const cartItem = cart.find((item) => item.product.id === product.id);
+  return product.stock - (cartItem?.quantity || 0);
+};
+
+export const getAppliedDiscount = (item: CartItem) => {
+  const { discounts } = item.product;
+  const { quantity } = item;
+
+  return discounts.reduce((maxDiscount, discount) => {
+    return quantity >= discount.quantity
+      ? Math.max(maxDiscount, discount.rate)
+      : maxDiscount;
+  }, 0);
 };
