@@ -1,6 +1,6 @@
 import { CartItem } from '../../types';
 import { useCart } from '../hooks/useCart';
-import { calculateAppliedDiscount } from '../models/cart';
+import { getMaxApplicableDiscount } from '../models/cart';
 
 interface Props {
   cart: CartItem[];
@@ -14,7 +14,7 @@ export default function CartList({ cart, onQuantityUpdate, onRemoveFromCart }: P
 
       <div className='space-y-2'>
         {cart.map((item) => {
-          const appliedDiscount = calculateAppliedDiscount(item);
+          const appliedDiscount = getMaxApplicableDiscount(item);
           return (
             <div
               key={item.product.id}

@@ -15,20 +15,14 @@ const applyDiscount = (amount: number, discountRate: number): number =>
   discountRate > 0 ? amount * (1 - discountRate) : amount;
 
 /**
- * 적용할 할인율을 계산하는 함수
+ * 적용 가능한 최대 할인율을 계산하는 함수
+ * - 상품 수량이 할인 조건(product.quantity > discount.quantity)을 만족하는 경우에만 할인 적용
+ * - 주어진 상품의 할인 목록 중 적용 가능한 할인 중 최대 할인율을 반환
  */
-export const calculateAppliedDiscount = (item: CartItem) =>
+export const getMaxApplicableDiscount = (item: CartItem) =>
   calculateMaxDiscount(
     item.product.discounts.filter((discount) => item.quantity >= discount.quantity),
   );
-
-/**
- * 최대 할인율을 계산하는 함수
- */
-export const getMaxApplicableDiscount = (item: CartItem) =>
-  item.product.discounts
-    .filter((discount) => item.quantity >= discount.quantity)
-    .reduce((max, discount) => Math.max(max, discount.rate), 0);
 
 /**
  * 카트 총합을 계산하는 함수
