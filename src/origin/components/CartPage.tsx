@@ -144,11 +144,10 @@ export const CartPage = ({ products, coupons }: Props) => {
                   )}
                   <button
                     onClick={() => addToCart(product)}
-                    className={`w-full px-3 py-1 rounded ${
-                      remainingStock > 0
+                    className={`w-full px-3 py-1 rounded ${remainingStock > 0
                         ? 'bg-blue-500 text-white hover:bg-blue-600'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
+                      }`}
                     disabled={remainingStock <= 0}
                   >
                     {remainingStock > 0 ? '장바구니에 추가' : '품절'}
@@ -168,15 +167,15 @@ export const CartPage = ({ products, coupons }: Props) => {
                 <div key={item.product.id} className="flex justify-between items-center bg-white p-3 rounded shadow">
                   <div>
                     <span className="font-semibold">{item.product.name}</span>
-                    <br/>
+                    <br />
                     <span className="text-sm text-gray-600">
-                  {item.product.price}원 x {item.quantity}
+                      {item.product.price}원 x {item.quantity}
                       {appliedDiscount > 0 && (
                         <span className="text-green-600 ml-1">
-                      ({(appliedDiscount * 100).toFixed(0)}% 할인 적용)
-                    </span>
+                          ({(appliedDiscount * 100).toFixed(0)}% 할인 적용)
+                        </span>
                       )}
-                </span>
+                    </span>
                   </div>
                   <div>
                     <button
