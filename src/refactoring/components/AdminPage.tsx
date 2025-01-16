@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../types.ts';
-import { CouponList } from './coupon/CouponList.tsx';
+import { ProductForm } from './product/ProductForm.tsx';
+import { CouponManagement } from './coupon/CouponManagement.tsx';
+import { Heading } from './shared/Heading.tsx';
 
 interface Props {
   products: Product[];
@@ -122,7 +124,8 @@ export function AdminPage({
     });
   };
 
-  const handleAddNewProduct = () => {
+  const handleAddNewProduct = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const productWithId = { ...newProduct, id: Date.now().toString() };
     onProductAdd(productWithId);
     setNewProduct({
@@ -136,7 +139,9 @@ export function AdminPage({
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
+      <Heading as="h1" className="text-3xl font-bold mb-6">
+        관리자 페이지
+      </Heading>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
@@ -147,72 +152,11 @@ export function AdminPage({
             {showNewProductForm ? '취소' : '새 상품 추가'}
           </button>
           {showNewProductForm && (
-            <div className="bg-white p-4 rounded shadow mb-4">
-              <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
-              <div className="mb-2">
-                <label
-                  htmlFor="productName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  상품명
-                </label>
-                <input
-                  id="productName"
-                  type="text"
-                  value={newProduct.name}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, name: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label
-                  htmlFor="productPrice"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  가격
-                </label>
-                <input
-                  id="productPrice"
-                  type="number"
-                  value={newProduct.price}
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      price: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label
-                  htmlFor="productStock"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  재고
-                </label>
-                <input
-                  id="productStock"
-                  type="number"
-                  value={newProduct.stock}
-                  onChange={(e) =>
-                    setNewProduct({
-                      ...newProduct,
-                      stock: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <button
-                onClick={handleAddNewProduct}
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                추가
-              </button>
-            </div>
+            <ProductForm
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              onSubmit={handleAddNewProduct}
+            />
           )}
           <div className="space-y-2">
             {products.map((product, index) => (
@@ -363,65 +307,12 @@ export function AdminPage({
             ))}
           </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
-          <div className="bg-white p-4 rounded shadow">
-            <div className="space-y-2 mb-4">
-              <input
-                type="text"
-                placeholder="쿠폰 이름"
-                value={newCoupon.name}
-                onChange={(e) =>
-                  setNewCoupon({ ...newCoupon, name: e.target.value })
-                }
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                placeholder="쿠폰 코드"
-                value={newCoupon.code}
-                onChange={(e) =>
-                  setNewCoupon({ ...newCoupon, code: e.target.value })
-                }
-                className="w-full p-2 border rounded"
-              />
-              <div className="flex gap-2">
-                <select
-                  value={newCoupon.discountType}
-                  onChange={(e) =>
-                    setNewCoupon({
-                      ...newCoupon,
-                      discountType: e.target.value as 'amount' | 'percentage',
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="amount">금액(원)</option>
-                  <option value="percentage">할인율(%)</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="할인 값"
-                  value={newCoupon.discountValue}
-                  onChange={(e) =>
-                    setNewCoupon({
-                      ...newCoupon,
-                      discountValue: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <button
-                onClick={handleAddCoupon}
-                className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-              >
-                쿠폰 추가
-              </button>
-            </div>
-            <CouponList coupons={coupons} />
-          </div>
-        </div>
+        <CouponManagement
+          coupons={coupons}
+          newCoupon={newCoupon}
+          setNewCoupon={setNewCoupon}
+          handleAddCoupon={handleAddCoupon}
+        />
       </div>
     </div>
   );
