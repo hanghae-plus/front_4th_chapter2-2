@@ -1,8 +1,8 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent } from 'react';
 
 import { CartItem, Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
-import { useProductSearch } from '../hooks/useProductSearch.ts';
+import { useSearch } from '../hooks/useSearch.ts';
 import { getRemainingStock } from '../models/cart.ts';
 
 interface Props {
@@ -11,7 +11,6 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
-  const [searchQuery, setSearchQuery] = useState('');
   const {
     cart,
     addToCart,
@@ -21,7 +20,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     calculateTotal,
     selectedCoupon,
   } = useCart();
-  const searchProduct = useProductSearch(products);
+  const { setQuery, searchResults: filteredProducts } = useSearch(products, ['name']);
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
@@ -48,10 +47,8 @@ export const CartPage = ({ products, coupons }: Props) => {
     const formData = new FormData(e.currentTarget);
     const query = formData.get('search') as string;
 
-    setSearchQuery(query);
+    setQuery(query);
   };
-
-  const filteredProducts = searchProduct(searchQuery);
 
   return (
     <div className="container mx-auto p-4">
