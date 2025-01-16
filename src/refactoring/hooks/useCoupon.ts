@@ -7,15 +7,10 @@ import { Coupon } from '../../types';
 export const useCoupon = (initialCoupons: Coupon[]) => {
   const [coupons, setCoupons] = useState<Coupon[]>(initialCoupons);
 
-  const addCoupon = (newCoupon: Coupon) => setCoupons(addCouponInList(coupons, newCoupon));
+  const addCoupon = (newCoupon: Coupon) => setCoupons((coupons) => [...coupons, newCoupon]);
 
   return {
     coupons,
     addCoupon,
   };
 };
-
-/**
- * 새로운 쿠폰을 쿠폰 목록에 추가하는 순수 함수
- */
-const addCouponInList = (coupons: Coupon[], newCoupon: Coupon) => [...coupons, newCoupon];
