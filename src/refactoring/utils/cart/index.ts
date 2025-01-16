@@ -1,4 +1,4 @@
-import { CartItem, Product } from "../../../types";
+import { CartItem, Product } from "../../models";
 
 export const getRemainingStock = (product: Product, cart: CartItem[]) => {
   const cartItem = cart.find((item) => item.product.id === product.id);
