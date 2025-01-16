@@ -25,7 +25,7 @@ export const ProductAdmin = ({}: Props) => {
       )}
       <div className="space-y-2">
         {products.map((product, index) => (
-          <ProductAccordion product={product} index={index} />
+          <ProductAccordion product={product} index={index} key={index} />
         ))}
       </div>
     </div>
