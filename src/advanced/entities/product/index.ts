@@ -1,2 +1,4 @@
-export { getProducts, addProduct, updateProduct } from './api';
-export type { Product, UpdateProduct } from './model';
+export * from './api';
+export * from './lib';
+export type { Product, UpdateProduct, Discount } from './model';
+export { ProductDiscountList } from './ui';
