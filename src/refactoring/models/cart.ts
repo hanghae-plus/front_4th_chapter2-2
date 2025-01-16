@@ -22,7 +22,7 @@ export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null,
 ) => {
-  let totalBeforeDiscount = cart.reduce(
+  const totalBeforeDiscount = cart.reduce(
     (totalCost, item) => totalCost + item.product.price * item.quantity,
     0,
   );
