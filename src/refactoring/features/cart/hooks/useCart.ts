@@ -1,10 +1,9 @@
 import { CartItem, Coupon, Product } from '../../../../types';
 import { calculateCartTotal, updateCartItemQuantity } from '../helpers';
-import { useLocalStorage } from '../../../hooks/useLocalStorage';
+import { useCartStorage } from './useCartStorage';
 
 export const useCart = () => {
-  const [cart, setCart] = useLocalStorage<CartItem[]>('cart', []);
-  const [selectedCoupon, setSelectedCoupon] = useLocalStorage<Coupon | null>('selectedCoupon', null);
+  const { cart, setCart, selectedCoupon, setSelectedCoupon } = useCartStorage();
 
   const addToCart = (product: Product) => {
     setCart((currentCart) => {
