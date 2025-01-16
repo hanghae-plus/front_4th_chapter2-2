@@ -58,41 +58,6 @@ const mockCoupons: Coupon[] = [
     discountValue: 10,
   },
 ];
-/**
- * const TestAdminPage = () => {
- *   const products = JSON.parse(localStorage.getItem('productList')!) as Product[];
- *   const coupons = JSON.parse(localStorage.getItem('couponList')!) as Coupon[];
- *
- *   const handleProductUpdate = (updatedProduct: Product) => {
- *     const mockProductList = JSON.parse(localStorage.getItem('productList')!) as Product[];
- *     localStorage.setItem(
- *       'productList',
- *       JSON.stringify(mockProductList.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))),
- *     );
- *   };
- *
- *   const handleProductAdd = (newProduct: Product) => {
- *     const mockProductList = JSON.parse(localStorage.getItem('productList')!) as Product[];
- *     localStorage.setItem('productList', JSON.stringify([...mockProductList, newProduct]));
- *   };
- *
- *   const handleCouponAdd = (newCoupon: Coupon) => {
- *     const mockCouponList = JSON.parse(localStorage.getItem('couponList')!) as Coupon[];
- *     localStorage.setItem('couponList', JSON.stringify([...mockCouponList, newCoupon]));
- *   };
- *
- *   return (
- *     <AdminPage
- *       productList={products}
- *       couponList={coupons}
- *       onProductUpdate={handleProductUpdate}
- *       onProductAdd={handleProductAdd}
- *       onCouponAdd={handleCouponAdd}
- *     />
- *   );
- * };
- * @constructor
- */
 
 const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(() => {
