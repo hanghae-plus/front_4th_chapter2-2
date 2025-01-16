@@ -1,5 +1,2 @@
-export {
-  useGetProductsQuery,
-  useAddProductMutation,
-  useUpdateProductMutation,
-} from './model';
+export * from './model';
+export { ProductAddForm, ProductEditForm } from './ui';
