@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import {
   act,
   fireEvent,
@@ -8,8 +8,8 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { CartPage } from "../../refactoring/components/CartPage";
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { CartPage } from "../../refactoring/pages/CartPage.tsx";
+import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { CartItem, Coupon, Product } from "../../types";
 import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
 import * as cartUtils from "../../refactoring/models/cart";
@@ -52,13 +52,36 @@ const mockCoupons: Coupon[] = [
   },
 ];
 
+const mockStorage = (() => {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: (index: number) => Object.keys(store)[index] || null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  } as Storage;
+})();
+
 const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
 
   const handleProductUpdate = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
-      prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      prevProducts.map((p) =>
+        p.id === updatedProduct.id ? updatedProduct : p,
+      ),
     );
   };
 
@@ -228,24 +251,24 @@ describe("basic > ", () => {
       fireEvent.click(screen.getByText("할인 추가"));
 
       expect(
-        screen.queryByText("5개 이상 구매 시 5% 할인")
+        screen.queryByText("5개 이상 구매 시 5% 할인"),
       ).toBeInTheDocument();
 
       // 할인 삭제
       fireEvent.click(screen.getAllByText("삭제")[0]);
       expect(
-        screen.queryByText("10개 이상 구매 시 10% 할인")
+        screen.queryByText("10개 이상 구매 시 10% 할인"),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByText("5개 이상 구매 시 5% 할인")
+        screen.queryByText("5개 이상 구매 시 5% 할인"),
       ).toBeInTheDocument();
 
       fireEvent.click(screen.getAllByText("삭제")[0]);
       expect(
-        screen.queryByText("10개 이상 구매 시 10% 할인")
+        screen.queryByText("10개 이상 구매 시 10% 할인"),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByText("5개 이상 구매 시 5% 할인")
+        screen.queryByText("5개 이상 구매 시 5% 할인"),
       ).not.toBeInTheDocument();
 
       // 4. 쿠폰 추가
@@ -454,6 +477,12 @@ describe("basic > ", () => {
       discountValue: 10,
     };
 
+    beforeEach(() => {
+      Object.defineProperty(window, "localStorage", {
+        value: mockStorage,
+      });
+    });
+
     test("장바구니에 제품을 추가해야 합니다", () => {
       const { result } = renderHook(() => useCart());
 
@@ -484,6 +513,8 @@ describe("basic > ", () => {
 
       act(() => {
         result.current.addToCart(testProduct);
+      });
+      act(() => {
         result.current.updateQuantity(testProduct.id, 5);
       });
 
@@ -505,7 +536,11 @@ describe("basic > ", () => {
 
       act(() => {
         result.current.addToCart(testProduct);
+      });
+      act(() => {
         result.current.updateQuantity(testProduct.id, 2);
+      });
+      act(() => {
         result.current.applyCoupon(testCoupon);
       });
 
