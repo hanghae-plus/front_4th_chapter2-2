@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Coupon, Product } from '../../types.ts';
-import { ProductAccordion } from '../features/products/components/Accordion';
-import { ProductForm } from '../features/products/components/Form.tsx';
+import { ProductManagement } from '../features/products/components/Management.tsx';
+
 interface AdminPageProps {
   products: Product[];
   coupons: Coupon[];
@@ -11,26 +11,12 @@ interface AdminPageProps {
 }
 
 export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: AdminPageProps) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
-  const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
     discountType: 'percentage',
     discountValue: 0,
   });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
@@ -46,30 +32,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">관리자 페이지</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">상품 관리</h2>
-          <button
-            onClick={() => setShowNewProductForm(!showNewProductForm)}
-            className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
-          >
-            {showNewProductForm ? '취소' : '새 상품 추가'}
-          </button>
-          {showNewProductForm && (
-            <ProductForm onProductAdd={onProductAdd} onCancel={() => setShowNewProductForm(false)} />
-          )}
-          <div className="space-y-2">
-            {products.map((product, index) => (
-              <div key={product.id} data-testid={`product-${index + 1}`}>
-                <ProductAccordion
-                  product={product}
-                  isOpen={openProductIds.has(product.id)}
-                  onToggle={toggleProductAccordion}
-                  onProductUpdate={onProductUpdate}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProductManagement products={products} onProductUpdate={onProductUpdate} onProductAdd={onProductAdd} />
 
         <div>
           <h2 className="text-2xl font-semibold mb-4">쿠폰 관리</h2>
