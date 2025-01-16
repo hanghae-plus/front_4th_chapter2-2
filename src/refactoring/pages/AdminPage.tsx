@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Coupon, Product } from '../../types.ts';
-import { ProductAccordion } from '../features/products/components/Accordion.tsx';
-
-interface Props {
+import { ProductAccordion } from '../features/products/components/Accordion';
+import { ProductForm } from '../features/products/components/Form.tsx';
+interface AdminPageProps {
   products: Product[];
   coupons: Coupon[];
   onProductUpdate: (updatedProduct: Product) => void;
@@ -10,15 +10,9 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
+export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: AdminPageProps) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [showNewProductForm, setShowNewProductForm] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
@@ -36,18 +30,6 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
       }
       return newSet;
     });
-  };
-
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
-    setNewProduct({
-      name: '',
-      price: 0,
-      stock: 0,
-      discounts: [],
-    });
-    setShowNewProductForm(false);
   };
 
   const handleAddCoupon = () => {
@@ -73,51 +55,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
             {showNewProductForm ? '취소' : '새 상품 추가'}
           </button>
           {showNewProductForm && (
-            <div className="bg-white p-4 rounded shadow mb-4">
-              <h3 className="text-xl font-semibold mb-2">새 상품 추가</h3>
-              <div className="mb-2">
-                <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
-                  상품명
-                </label>
-                <input
-                  id="productName"
-                  type="text"
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">
-                  가격
-                </label>
-                <input
-                  id="productPrice"
-                  type="number"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div className="mb-2">
-                <label htmlFor="productStock" className="block text-sm font-medium text-gray-700">
-                  재고
-                </label>
-                <input
-                  id="productStock"
-                  type="number"
-                  value={newProduct.stock}
-                  onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <button
-                onClick={handleAddNewProduct}
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                추가
-              </button>
-            </div>
+            <ProductForm onProductAdd={onProductAdd} onCancel={() => setShowNewProductForm(false)} />
           )}
           <div className="space-y-2">
             {products.map((product, index) => (
