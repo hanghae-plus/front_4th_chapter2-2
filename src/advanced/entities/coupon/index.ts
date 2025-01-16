@@ -1,2 +1,2 @@
-export { getCoupons, addCoupon } from './model';
+export { getCoupons, addCoupon } from './api';
 export type { Coupon } from './model';
