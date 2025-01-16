@@ -1,61 +1,52 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useMemo } from "react";
 
-type FormValues<T> = T;
+type FormValues<T> = { [K in keyof T]: T[K] };
 
-interface FormField<T> {
-  value: T;
-}
-
-type FormState<T> = Record<string, FormField<T>>;
+type FormState<T> = { [K in keyof T]: T[K] };
 
 interface UseFormReturn<T> {
-  register: (name: string) => {
-    name: string;
-    value: T;
+  register: <K extends keyof T>(
+    name: K
+  ) => {
+    name: K;
+    value: T[K];
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   };
-  setValue: (name: string, value: T) => void;
-  getValue: (name: string) => FormField<T> | undefined;
+  setValue: <K extends keyof T>(name: K, value: T[K]) => void;
+  getValue: <K extends keyof T>(name: K) => T[K] | undefined;
   handleSubmit: (
     onSubmit: (values: FormValues<T>) => void
   ) => (e: React.FormEvent) => void;
 }
 
-interface DefaultValues<T> {
-  [key: string]: T;
+interface UseFormOptions<T> {
+  defaultValues?: Partial<T>;
 }
 
-interface UseFormOptions {
-  defaultValues?: DefaultValues<unknown>;
-}
-
-export const useForm = <T>(options?: UseFormOptions): UseFormReturn<T> => {
+export const useForm = <T extends Record<string, any>>(
+  options?: UseFormOptions<T>
+): UseFormReturn<T> => {
   const initialFormState = useMemo(() => {
     const defaultValues = options?.defaultValues || {};
-
-    return Object.keys(defaultValues).reduce((acc, key) => {
-      return {
-        ...acc,
-        [key]: defaultValues[key] as FormField<T>,
-      };
-    }, {} as FormState<T>);
+    return { ...defaultValues } as FormState<T>;
   }, [options?.defaultValues]);
 
   const [formState, setFormState] = useState<FormState<T>>(initialFormState);
 
-  const updateField = useCallback((name: string, updates: T) => {
+  const updateField = useCallback(<K extends keyof T>(name: K, value: T[K]) => {
     setFormState((prev) => ({
       ...prev,
-      [name]: updates as FormField<T>,
+      [name]: value,
     }));
   }, []);
 
   const register = useCallback(
-    (name: string) => ({
+    <K extends keyof T>(name: K) => ({
       name,
-      value: formState[name]?.value as T,
+      value: formState[name],
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value as unknown as T;
+        const value = e.target.value as unknown as T[K];
         updateField(name, value);
       },
     }),
@@ -63,23 +54,21 @@ export const useForm = <T>(options?: UseFormOptions): UseFormReturn<T> => {
   );
 
   const setValue = useCallback(
-    (name: string, value: T) => {
+    <K extends keyof T>(name: K, value: T[K]) => {
       updateField(name, value);
     },
     [updateField]
   );
 
-  const getValue = useCallback((name: string) => formState[name], [formState]);
+  const getValue = useCallback(
+    <K extends keyof T>(name: K) => formState[name],
+    [formState]
+  );
 
   const handleSubmit = useCallback(
     (onSubmit: (values: FormValues<T>) => void) => (e: React.FormEvent) => {
       e.preventDefault();
-      const values = Object.entries(formState).reduce(
-        (acc, [key, value]) => ({ ...acc, [key]: value }),
-        {} as FormValues<T>
-      );
-
-      onSubmit(values);
+      onSubmit({ ...formState });
     },
     [formState]
   );
