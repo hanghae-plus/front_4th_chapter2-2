@@ -20,6 +20,7 @@ import {
   addProductDiscount,
   removeProductDiscount,
 } from '../refactoring/models/discount';
+import { useCreateProduct } from '../refactoring/hooks/admin/useCreateProduct';
 
 const mockProducts: Product[] = [
   {
@@ -481,6 +482,112 @@ describe('advanced > ', () => {
           code: '',
           discountType: 'percentage',
           discountValue: 0,
+        });
+      });
+
+      test('추가될 할인의 이름을 설정할 수 있어야 한다.', () => {
+        const { result } = renderHook(() =>
+          useCreateCoupon({
+            onCouponAdd: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewCouponName('New Coupon');
+        });
+
+        expect(result.current.newCoupon.name).toBe('New Coupon');
+      });
+
+      test('추가될 할인의 코드를 설정할 수 있어야 한다.', () => {
+        const { result } = renderHook(() =>
+          useCreateCoupon({
+            onCouponAdd: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewCouponCode('NEW10');
+        });
+
+        expect(result.current.newCoupon.code).toBe('NEW10');
+      });
+
+      test('추가될 할인의 타입을 설정할 수 있어야 한다.', () => {
+        const { result } = renderHook(() =>
+          useCreateCoupon({
+            onCouponAdd: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewCouponDiscountType('amount');
+        });
+
+        expect(result.current.newCoupon.discountType).toBe('amount');
+
+        act(() => {
+          result.current.handlers.handleUpdateNewCouponDiscountType(
+            'percentage',
+          );
+        });
+
+        expect(result.current.newCoupon.discountType).toBe('percentage');
+      });
+
+      test('추가될 할인률을 설정할 수 있어야 한다.', () => {
+        const { result } = renderHook(() =>
+          useCreateCoupon({
+            onCouponAdd: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewCouponDiscountValue(10);
+        });
+
+        expect(result.current.newCoupon.discountValue).toBe(10);
+      });
+    });
+
+    describe('useCreateProduct > ', () => {
+      let anotherMockProducts: Product[] = [...mockProducts];
+
+      beforeEach(() => {
+        anotherMockProducts = [...mockProducts];
+      });
+
+      test('할인 추가 동작이 제대로 동작해야 한다.', () => {
+        const { result } = renderHook(() =>
+          useCreateProduct({
+            addProduct: (product: Product) => {
+              // ID가 숫자로 된 문자열인지 확인
+              expect(product.id).toMatch(/^\d+$/); // 숫자만 포함한 문자열인지 확인
+              // ID가 현재 시간에 기반해 생성되었는지 범위 확인 (대략적인 검증)
+              const now = Date.now();
+              const idAsNumber = Number(product.id);
+              expect(idAsNumber).toBeGreaterThan(now - 1000); // 1초 이전
+              expect(idAsNumber).toBeLessThanOrEqual(now);
+              expect(product.name).toBe('New Product');
+              expect(product.discounts).toEqual([]);
+            },
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewProductName('New Product');
+          result.current.handlers.handleUpdateNewProductPrice(100);
+          result.current.handlers.handleUpdateNewProductStock(10);
+        });
+
+        expect(result.current.newProduct).toEqual({
+          discounts: [],
+          name: 'New Product',
+          price: 100,
+          stock: 10,
+        });
+        act(() => {
+          result.current.handlers.handleAddNewProduct();
         });
       });
 
