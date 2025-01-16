@@ -6,6 +6,7 @@ import { Coupon, Product } from '../../types';
 import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
+import { formatCouponDiscount } from '../../refactoring/features/product/helpers';
 
 const mockProducts: Product[] = [
   {
@@ -332,6 +333,49 @@ describe('advanced > ', () => {
   describe('Util Test', () => {
     beforeEach(() => {
       vi.useFakeTimers();
+    });
+
+    describe('formatCouponDiscount', () => {
+      it('금액 할인일 때 "원" 단위로 표시', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'NEW100',
+          discountType: 'amount',
+          discountValue: 1000,
+        };
+
+        expect(formatCouponDiscount(coupon)).toBe('1000원');
+      });
+
+      it('퍼센트 할인일 때 "%" 단위로 표시', () => {
+        const coupon: Coupon = {
+          name: '신규가입 쿠폰',
+          code: 'NEW100',
+          discountType: 'percentage',
+          discountValue: 10,
+        };
+
+        expect(formatCouponDiscount(coupon)).toBe('10%');
+      });
+
+      it('할인 값이 0일 때도 단위 표시', () => {
+        const amountCoupon: Coupon = {
+          name: '테스트 쿠폰',
+          code: 'TEST',
+          discountType: 'amount',
+          discountValue: 0,
+        };
+
+        const percentageCoupon: Coupon = {
+          name: '테스트 쿠폰',
+          code: 'TEST',
+          discountType: 'percentage',
+          discountValue: 0,
+        };
+
+        expect(formatCouponDiscount(amountCoupon)).toBe('0원');
+        expect(formatCouponDiscount(percentageCoupon)).toBe('0%');
+      });
     });
   });
 });
