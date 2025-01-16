@@ -20,7 +20,7 @@ const useDiscount = ({
 
   const handleAddDiscount = (productId: string) => {
     const updatedProduct = products.find((p) => p.id === productId);
-    // if (updatedProduct && editingProduct) {
+
     if (updatedProduct) {
       const product = {
         ...updatedProduct,

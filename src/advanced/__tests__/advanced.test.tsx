@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   act,
   fireEvent,
@@ -14,6 +14,7 @@ import { Coupon } from '../refactoring/models/types/Coupon';
 import { Product } from '../refactoring/models/types/Product';
 import ProductContextProvider from '../refactoring/components/shared/product/context/ProductContextProvider';
 import { useProducts } from '../refactoring/hooks';
+import { useDiscount } from '../refactoring/hooks/admin/useDiscount';
 
 const mockProducts: Product[] = [
   {
@@ -322,6 +323,87 @@ describe('advanced > ', () => {
 
         expect(result.current.products).toHaveLength(2);
         expect(result.current.products[1]).toEqual(newProduct);
+      });
+    });
+
+    describe('useDiscount > ', () => {
+      let anotherMockProducts: Product[] = [...mockProducts];
+
+      beforeEach(() => {
+        anotherMockProducts = [...mockProducts];
+      });
+
+      test('할인 추가 동작이 제대로 동작해야 한다.', () => {
+        const updateProduct = (product: Product) => {
+          expect(product.id).toBe('p1');
+          expect(product.discounts).toEqual([
+            ...anotherMockProducts[0].discounts,
+            { quantity: 0, rate: 0 },
+          ]);
+        };
+
+        const { result } = renderHook(() =>
+          useDiscount({
+            products: anotherMockProducts,
+            updateProduct,
+            updateEditingProduct: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleAddDiscount('p1');
+        });
+      });
+
+      test('할인 삭제 동작이 제대로 동작해야 한다.', () => {
+        const updateProduct = (product: Product) => {
+          expect(product.id).toBe('p1');
+          expect(product.discounts.length).toBe(0);
+        };
+
+        const { result } = renderHook(() =>
+          useDiscount({
+            products: anotherMockProducts,
+            updateProduct,
+            updateEditingProduct: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleRemoveDiscount('p1', 0);
+        });
+      });
+
+      test('신규할인 수량 업데이트 동작이 제대로 동작해야 한다.', () => {
+        const { result } = renderHook(() =>
+          useDiscount({
+            products: anotherMockProducts,
+            updateProduct: vi.fn(),
+            updateEditingProduct: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewDiscountQuantity(10);
+        });
+
+        expect(result.current.newDiscount.quantity).toBe(10);
+      });
+
+      test('신규할인 할인율 업데이트 동작이 제대로 동작해야 한다.', () => {
+        const { result } = renderHook(() =>
+          useDiscount({
+            products: anotherMockProducts,
+            updateProduct: vi.fn(),
+            updateEditingProduct: vi.fn(),
+          }),
+        );
+
+        act(() => {
+          result.current.handlers.handleUpdateNewDiscountRate(50);
+        });
+
+        expect(result.current.newDiscount.rate).toBe(50);
       });
     });
   });
