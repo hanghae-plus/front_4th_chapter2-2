@@ -69,6 +69,7 @@ export const useCart = () => {
   return {
     cart,
     addToCart,
+    getRemainingStock,
     removeFromCart,
     updateQuantity,
     applyCoupon,
