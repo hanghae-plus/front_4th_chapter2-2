@@ -1,17 +1,17 @@
 import { Product } from '@types';
 import { Heading } from '../shared/Heading';
 
-interface ProductFormProps {
+interface ProductAddFormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   newProduct: Omit<Product, 'id'>;
   setNewProduct: React.Dispatch<React.SetStateAction<Omit<Product, 'id'>>>;
 }
 
-export function ProductForm({
+export function ProductAddForm({
   newProduct,
   setNewProduct,
   onSubmit,
-}: ProductFormProps) {
+}: ProductAddFormProps) {
   return (
     <form className="bg-white p-4 rounded shadow mb-4" onSubmit={onSubmit}>
       <Heading as="h3" className="text-xl font-semibold mb-2">
