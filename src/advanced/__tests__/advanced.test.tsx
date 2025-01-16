@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within, renderHook } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from "../../refactoring/components/AdminPage";
-import { Coupon, Product } from '../../types';
+import { Coupon, Product, CartItem } from '../../types';
+import * as discountUtils from "../../refactoring/utils/discount";
+import { useAdmin } from "../../refactoring/hooks/useAdmin";
 
 const mockProducts: Product[] = [
   {
@@ -232,13 +234,152 @@ describe('advanced > ', () => {
   })
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+    describe("discountUtils", () => {
+      describe("getMaxDiscount", () => {
+        test("최대 할인율 반환하기", () => {
+          const discounts = mockProducts.flatMap(product => product.discounts)
+          const getMaxDiscount = discountUtils.getMaxDiscount(discounts);
+          expect(getMaxDiscount).toBe(0.2);
+        });
+      });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
-  })
-})
+      describe("getAppliedDiscount", () => {
+        const testProduct: Product = {
+          id: "1",
+          name: "Test Case",
+          price: 100,
+          stock: 10,
+          discounts: [
+            { quantity: 2, rate: 0.1 },
+            { quantity: 5, rate: 0.5 },
+          ],
+        };
+    
+        test("상황에 맞는 할인율 반환하기", () => {
+          const firstCase: CartItem = { product: testProduct, quantity: 1 };
+          const secondCase: CartItem = { product: testProduct, quantity: 5 };
+    
+          expect(discountUtils.getAppliedDiscount(firstCase)).toBe(0);
+          expect(discountUtils.getAppliedDiscount(secondCase)).toBe(0.5);
+        });
+      });
+    });
 
+    describe("useAdmin", () => {
+      describe("handleAddCoupon", () => {
+        test("쿠폰이 newCoupon에 잘 초기화(추가) 하기", () => {
+          // 훅을 사용하여 상태와 메서드에 접근
+          const { result } = renderHook(() => useAdmin());
+          const couponValue: Coupon = {
+            name: "New Coupon",
+            code: "NEWCODE",
+            discountType: "amount",
+            discountValue: 5000,
+          };
+          let couponAdded = null;
+          const onCouponAdd = (coupon: Coupon) => {
+            couponAdded = coupon;
+          };
+
+          act(() => {
+            result.current.setNewCoupon(couponValue);
+          });
+          // 비동기 때문인가 따로 해야하는듯 하다
+          act(() => {
+            result.current.handleAddCoupon(onCouponAdd);
+          });
+
+          // `onCouponAdd`가 쿠폰을 정상적으로 받았는지 확인
+          expect(couponAdded).toEqual(couponValue);
+
+          // `newCoupon` 상태가 초기화되었는지 확인
+          expect(result.current.newCoupon).toEqual({
+            name: '',
+            code: '',
+            discountType: 'percentage',
+            discountValue: 0
+          });
+        });
+      });
+
+      describe("handleProductNameUpdate", () => {
+        test("상품 이름을 업데이트하기", () => {
+          const { result } = renderHook(() => useAdmin());
+    
+          const product: Product = { 
+            id: "1", 
+            name: "Old Product", 
+            price: 100, 
+            stock: 10,
+            discounts: [] 
+          };
+    
+          // handleEditProduct로 업데이트할 상품을 수정
+          act(() => {
+            result.current.handleEditProduct(product);
+          });
+    
+          // 이름 업데이트
+          act(() => {
+            result.current.handleProductNameUpdate("1", "New Product");
+          });
+    
+          // 이름이 업데이트되었는지 확인
+          expect(result.current.editingProduct?.name).toBe("New Product");
+        });
+      });
+
+      describe("handleAddNewProduct", () => {
+        test("새로운 상품을 추가하기", () => {
+          const { result } = renderHook(() => useAdmin());
+    
+          const newProduct = { name: "New Product", price: 100, stock: 10, discounts: [] };
+    
+          // newProduct 값을 설정
+          act(() => {
+            result.current.setNewProduct(newProduct);
+          });
+    
+          // handleAddNewProduct 실행
+          act(() => {
+            result.current.handleAddNewProduct(() => {});
+          });
+    
+          // 상태가 초기화되었는지 확인
+          expect(result.current.newProduct).toEqual({
+            name: '',
+            price: 0,
+            stock: 0,
+            discounts: []
+          });
+        });
+      });
+
+      describe("toggleProductAccordion", () => {
+        test("특정 제품의 accordion을 토글하기", () => {
+          const { result } = renderHook(() => useAdmin());
+    
+          // 초기 상태에서 토글이 열린 제품이 없는지 확인
+          expect(result.current.openProductIds.size).toBe(0);
+    
+          // product 의 id 가 1인 경우가 케이스
+          act(() => {
+            result.current.toggleProductAccordion("1");
+          });
+    
+          // id 가 1 인 product 가 토글되었는지 확인
+          expect(result.current.openProductIds.size).toBe(1);
+          expect(result.current.openProductIds.has("1")).toBe(true);
+    
+          // id 가 1 인 accordion 의 토글을 닫기
+          act(() => {
+            result.current.toggleProductAccordion("1");
+          });
+    
+          // id 가 1 인 accordion 의 토글이 닫혔는지 확인
+          expect(result.current.openProductIds.size).toBe(0);
+        });
+      });
+    });
+  });
+});
