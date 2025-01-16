@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IProduct } from '../../../shared/types';
 import { useProductContext } from '../../../entities/product/model';
 import { ProductEdit } from './ProductEdit.tsx';
+import { EditingProductProvider } from './EditingProductContextProvider.tsx';
 
 interface ProductDetailProps {
   productId: string;
@@ -16,11 +17,9 @@ export function ProductDetail({ productId }: ProductDetailProps) {
   return (
     <div className="mt-2">
       {isEdit ? (
-        <ProductEdit
-          product={product}
-          updateProduct={updateProduct}
-          setIsEdit={setIsEdit}
-        />
+        <EditingProductProvider editProduct={product}>
+          <ProductEdit updateProduct={updateProduct} setIsEdit={setIsEdit} />
+        </EditingProductProvider>
       ) : (
         <div>
           {product.discounts.map((discount, index) => (

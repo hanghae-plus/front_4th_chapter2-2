@@ -1,23 +1,18 @@
 import { Input } from '../../../shared/ui/inputs';
 import { useState } from 'react';
-import { IDiscount, IProduct } from '../../../shared/types';
+import { IDiscount } from '../../../shared/types';
+import { useEditingProductContext } from '../../product/model';
 
-interface DiscountFormProps {
-  setEditingProduct: React.Dispatch<React.SetStateAction<IProduct>>;
-}
-
-export function DiscountForm({ setEditingProduct }: DiscountFormProps) {
+export function DiscountForm() {
   const [newDiscount, setNewDiscount] = useState<IDiscount>({
     quantity: 0,
     rate: 0,
   });
+  const { handleAddProductDiscount } = useEditingProductContext();
 
   const handleAddDiscount = () => {
     setNewDiscount({ quantity: 0, rate: 0 });
-    setEditingProduct((prev) => ({
-      ...prev,
-      discounts: [...prev.discounts, newDiscount],
-    }));
+    handleAddProductDiscount(newDiscount);
   };
 
   return (

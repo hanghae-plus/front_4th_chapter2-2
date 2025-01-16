@@ -1,22 +1,12 @@
-import { IDiscount, IProduct } from '../../../shared/types';
+import { useEditingProductContext } from '../../product/model';
 
 interface DiscountProps {
   index: number;
-  discount: IDiscount;
-  setEditingProduct: React.Dispatch<React.SetStateAction<IProduct>>;
 }
 
-export function Discount({
-  index,
-  discount,
-  setEditingProduct,
-}: DiscountProps) {
-  const handleRemoveDiscount = (index: number) => {
-    setEditingProduct((prev) => ({
-      ...prev,
-      discounts: prev.discounts.filter((_, i) => i !== index),
-    }));
-  };
+export function Discount({ index }: DiscountProps) {
+  const { editingProduct, handleRemoveDiscount } = useEditingProductContext();
+  const discount = editingProduct.discounts[index];
 
   return (
     <div className="flex justify-between items-center mb-2">
