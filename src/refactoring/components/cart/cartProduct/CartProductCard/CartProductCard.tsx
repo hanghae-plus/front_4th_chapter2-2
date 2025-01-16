@@ -1,7 +1,7 @@
 import { Product } from "../../../../../types";
 import { useCart } from "../../../../hooks";
 import { formatCurrency } from "../../../../utils/formatCurrency";
-import { AddToCartButton } from "../addToCartButton/AddToCartButton";
+import { AddToCartButton } from "../AddToCartButton/AddToCartButton";
 
 interface CartProductCardProps {
   products: Product[];
