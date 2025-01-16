@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Coupon, Product } from '../../types.ts';
-import { ProductManagement } from '../features/products/components/Management.tsx';
+import { ProductManagement } from '../features/product/components/Management.tsx';
 
 interface AdminPageProps {
   products: Product[];
