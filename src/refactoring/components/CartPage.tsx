@@ -1,8 +1,9 @@
 import { FormEvent, useState } from 'react';
+
 import { CartItem, Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
-import { getRemainingStock } from '../models/cart.ts';
 import { useProductSearch } from '../hooks/useProductSearch.ts';
+import { getRemainingStock } from '../models/cart.ts';
 
 interface Props {
   products: Product[];
@@ -46,6 +47,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const query = formData.get('search') as string;
+
     setSearchQuery(query);
   };
 

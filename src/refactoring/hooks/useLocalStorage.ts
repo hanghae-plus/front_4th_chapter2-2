@@ -1,21 +1,23 @@
-export const useLocalStorage = <T>(key: string) => {
-  const saveToStorage = (data: T) => {
-    localStorage.setItem(key, JSON.stringify(data));
-  };
+import { useState } from 'react';
 
-  const getFromStorage = (): T | null => {
+export const useLocalStorage = <T>(key: string, initialValue: T) => {
+  const [storedValue, setStoredValue] = useState<T>(() => {
     const item = localStorage.getItem(key);
 
-    return item ? JSON.parse(item) : null;
+    return item ? JSON.parse(item) : initialValue;
+  });
+
+  const saveToStorage = (value: T | ((prevValue: T) => T)) => {
+    const valueToStore = value instanceof Function ? value(storedValue) : value;
+
+    setStoredValue(valueToStore);
+    localStorage.setItem(key, JSON.stringify(valueToStore));
   };
 
   const clearStorage = () => {
+    setStoredValue(initialValue);
     localStorage.removeItem(key);
   };
 
-  return {
-    saveToStorage,
-    getFromStorage,
-    clearStorage,
-  };
+  return { storedValue, saveToStorage, clearStorage };
 };

@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { CartItem, Coupon, Product } from '../../types';
@@ -435,7 +443,10 @@ describe('basic > ', () => {
     };
 
     beforeEach(() => {
-      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => null);
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+        if (key === 'CART') return JSON.stringify([]);
+        return null;
+      });
       vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
       vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {});
     });
@@ -465,11 +476,14 @@ describe('basic > ', () => {
       expect(result.current.cart).toHaveLength(0);
     });
 
-    test('제품 수량을 업데이트해야 합니다', () => {
+    test('제품 수량을 업데이트해야 합니다', async () => {
       const { result } = renderHook(() => useCart());
 
-      act(() => {
+      await act(async () => {
         result.current.addToCart(testProduct);
+      });
+
+      await act(async () => {
         result.current.updateQuantity(testProduct.id, 5);
       });
 
@@ -486,19 +500,27 @@ describe('basic > ', () => {
       expect(result.current.selectedCoupon).toEqual(testCoupon);
     });
 
-    test('합계를 정확하게 계산해야 합니다', () => {
+    test('합계를 정확하게 계산해야 합니다', async () => {
       const { result } = renderHook(() => useCart());
 
-      act(() => {
+      await act(async () => {
         result.current.addToCart(testProduct);
+      });
+
+      await act(async () => {
         result.current.updateQuantity(testProduct.id, 2);
+      });
+
+      await act(async () => {
         result.current.applyCoupon(testCoupon);
       });
 
-      const total = result.current.calculateTotal();
-      expect(total.totalBeforeDiscount).toBe(200);
-      expect(total.totalAfterDiscount).toBe(180);
-      expect(total.totalDiscount).toBe(20);
+      await waitFor(() => {
+        const total = result.current.calculateTotal();
+        expect(total.totalBeforeDiscount).toBe(200);
+        expect(total.totalAfterDiscount).toBe(180);
+        expect(total.totalDiscount).toBe(20);
+      });
     });
   });
 });

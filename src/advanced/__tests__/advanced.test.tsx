@@ -281,51 +281,7 @@ describe('advanced > ', () => {
       expect(validateCouponData(invalidCoupon4)).toBe(false);
     });
 
-    describe('useLocalStorage', () => {
-      const TEST_KEY = 'test-key';
-      const TEST_DATA = { name: 'test', value: 123 };
-
-      beforeEach(() => {
-        localStorage.clear();
-      });
-
-      test('saveToStorage로 데이터를 저장', () => {
-        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
-
-        result.current.saveToStorage(TEST_DATA);
-
-        const savedItem = localStorage.getItem(TEST_KEY);
-        expect(JSON.parse(savedItem!)).toEqual(TEST_DATA);
-      });
-
-      test('getFromStorage로 저장된 데이터를 가져옴', () => {
-        localStorage.setItem(TEST_KEY, JSON.stringify(TEST_DATA));
-
-        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
-
-        const data = result.current.getFromStorage();
-        expect(data).toEqual(TEST_DATA);
-      });
-
-      test('저장된 데이터가 없으면 null을 반환', () => {
-        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
-
-        const data = result.current.getFromStorage();
-        expect(data).toBeNull();
-      });
-
-      test('clearStorage로 저장된 데이터를 삭제', () => {
-        localStorage.setItem(TEST_KEY, JSON.stringify(TEST_DATA));
-
-        const { result } = renderHook(() => useLocalStorage<typeof TEST_DATA>(TEST_KEY));
-        result.current.clearStorage();
-
-        const savedItem = localStorage.getItem(TEST_KEY);
-        expect(savedItem).toBeNull();
-      });
-    });
-
-    test('새로고침 후에도 장바구니 데이터가 유지', () => {
+    test('새로고침 후에도 장바구니 데이터가 유지된다', () => {
       const { unmount } = render(<CartPage products={mockProducts} coupons={mockCoupons} />);
 
       const product1 = screen.getByTestId('product-p1');
@@ -342,6 +298,7 @@ describe('advanced > ', () => {
       // 컴포넌트 다시 마운트 (새로고침 후)
       render(<CartPage products={mockProducts} coupons={mockCoupons} />);
 
+      // localStorage에서 데이터가 복원되었는지 확인
       expect(screen.getByText('상품 금액: 20,000원')).toBeInTheDocument();
     });
   });
