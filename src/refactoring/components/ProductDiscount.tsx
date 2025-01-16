@@ -1,5 +1,6 @@
 import { Product } from '../../types';
 import { useProductDiscount } from '../hooks/useProductDiscount';
+import { fromPercentage } from '../utils/numberUtils';
 
 interface Props {
   id: Product['id'];
@@ -40,7 +41,7 @@ export default function ProductDiscount({ id, editingProduct, productDiscount }:
           onChange={(e) =>
             updateDiscount({
               ...newDiscount,
-              rate: parseInt(e.target.value) / 100,
+              rate: fromPercentage(parseInt(e.target.value)),
             })
           }
           className='w-1/3 p-2 border rounded'

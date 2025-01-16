@@ -1,4 +1,5 @@
 import { CartItem, Coupon, Product } from '../../types';
+import { fromPercentage } from '../utils/numberUtils';
 import { calculateMaxDiscount } from './discount';
 
 /**
@@ -54,7 +55,7 @@ const calculateCouponDiscount = (totalAfterDiscount: number, coupon: Coupon | nu
 
   return coupon.discountType === 'amount'
     ? coupon.discountValue
-    : totalAfterDiscount * (coupon.discountValue / 100);
+    : totalAfterDiscount * fromPercentage(coupon.discountValue);
 };
 
 /**
