@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../types';
+import {useCoupons, useProducts} from "../../refactoring/hooks";
+import {initialCoupons, initialProducts} from "../../refactoring/constants/constants.ts";
 
 interface Props {
   products: Product[];
@@ -9,7 +11,7 @@ interface Props {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
-export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
+export const AdminPage = ({products, coupons, onProductUpdate, onProductAdd, onCouponAdd}) => {
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
@@ -80,6 +82,10 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   const handleAddDiscount = (productId: string) => {
     const updatedProduct = products.find(p => p.id === productId);
     if (updatedProduct && editingProduct) {
+      // const newProduct = {
+      //   ...updatedProduct,
+      //   discounts: [updatedProduct.discounts.filter(d => d.rate !== newDiscount.rate && d.quantity !== newDiscount.quantity), newDiscount]
+      // };
       const newProduct = {
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount]
