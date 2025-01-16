@@ -383,6 +383,82 @@ describe('advanced > ', () => {
           }
         });
       });
+
+      describe('카트 총액 계산 > ', () => {
+        test('빈 카트의 경우 기본값을 반환합니다.', () => {
+          const { result } = renderHook(() => useCart());
+
+          const total = result.current.calculateTotal();
+          expect(total).toEqual({
+            totalBeforeDiscount: 0,
+            totalAfterDiscount: 0,
+            totalDiscount: 0,
+          });
+        });
+
+        test('할인이 없는 상품의 경우 정가로 계산됩니다.', () => {
+          const { result } = renderHook(() => useCart());
+          const withoutDiscount = {
+            id: 'p1',
+            price: 2000,
+            discounts: [
+              {
+                quantity: 0,
+                rate: 0,
+              },
+            ],
+            stock: 10,
+            name: '상품',
+          };
+
+          act(() => {
+            result.current.addToCart(withoutDiscount);
+          });
+
+          const total = result.current.calculateTotal();
+          expect(total.totalBeforeDiscount).toBe(2000);
+          expect(total.totalAfterDiscount).toBe(2000);
+          expect(total.totalDiscount).toBe(0);
+        });
+
+        test('수량 할인이 적용된 상품이 올바르게 계산됩니다.', () => {
+          const { result } = renderHook(() => useCart());
+          const product1 = {
+            id: 'p1',
+            price: 1000,
+            discounts: [
+              {
+                quantity: 1,
+                rate: 0.1,
+              },
+            ],
+            stock: 2,
+            name: '상품1',
+          };
+          const product2 = {
+            id: 'p2',
+            price: 1000,
+            discounts: [
+              {
+                quantity: 1,
+                rate: 0.1,
+              },
+            ],
+            stock: 10,
+            name: '상품2',
+          };
+
+          act(() => {
+            result.current.addToCart(product1); // 1000원 상품
+            result.current.addToCart(product2); // 1000원 상품
+          });
+
+          const total = result.current.calculateTotal();
+          expect(total.totalBeforeDiscount).toBe(2000); // 1000 * 2
+          expect(total.totalAfterDiscount).toBe(1800); // 2000 * 0.9
+          expect(total.totalDiscount).toBe(200);
+        });
+      });
     });
   });
 });
