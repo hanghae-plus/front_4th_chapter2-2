@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Product } from "../../types.ts";
+import { useLocalStorage } from "./useLocalStorage.ts";
 
 /**
  * 상품 관리 훅
@@ -7,7 +7,10 @@ import { Product } from "../../types.ts";
  * @returns 상품 목록, 상품 업데이트 함수, 상품 추가 함수
  */
 export const useProducts = (initialProducts: Product[]) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useLocalStorage<Product[]>(
+    "products",
+    initialProducts
+  );
 
   const updateProduct = (updatedProduct: Product) => {
     setProducts((prevProducts) =>

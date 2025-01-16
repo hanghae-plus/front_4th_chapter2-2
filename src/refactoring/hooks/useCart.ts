@@ -1,14 +1,21 @@
-import { useState } from "react";
-import { CartItem, Coupon, Product } from "../../types";
+import { CartItem, Coupon, Grade, Product } from "../../types";
 import { calculateCartTotal } from "../models/cart";
+import { useLocalStorage } from "./useLocalStorage";
 
 /**
  * 장바구니 관리 훅
  * @returns 장바구니 목록, 장바구니 추가 함수, 장바구니 삭제 함수, 장바구니 수량 업데이트 함수, 쿠폰 적용 함수, 총 금액 계산 함수
  */
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [cart, setCart] = useLocalStorage<CartItem[]>("cart", []);
+  const [selectedCoupon, setSelectedCoupon] = useLocalStorage<Coupon | null>(
+    "selectedCoupon",
+    null
+  );
+  const [selectedGrade, setSelectedGrade] = useLocalStorage<Grade | null>(
+    "selectedGrade",
+    null
+  );
 
   const addToCart = (product: Product) => {
     const isExistProduct = cart.find((item) => item.product.id === product.id);
@@ -44,7 +51,12 @@ export const useCart = () => {
     setSelectedCoupon(coupon);
   };
 
-  const calculateTotal = () => calculateCartTotal(cart, selectedCoupon);
+  const applyGrade = (grade: Grade) => {
+    setSelectedGrade(grade);
+  };
+
+  const calculateTotal = () =>
+    calculateCartTotal(cart, selectedCoupon, selectedGrade);
 
   return {
     cart,
@@ -54,5 +66,7 @@ export const useCart = () => {
     applyCoupon,
     calculateTotal,
     selectedCoupon,
+    applyGrade,
+    selectedGrade,
   };
 };
