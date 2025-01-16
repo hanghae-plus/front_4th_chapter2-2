@@ -1,5 +1,6 @@
 import { IProduct } from '../../../shared/types';
-import { useCartContext } from '../../../pages/cart/model';
+import { useCartContext } from '../../../entities/cart/model';
+import { getMaxDiscount, getRemainingStock } from '../lib';
 
 interface StockProps {
   product: IProduct;
@@ -7,16 +8,8 @@ interface StockProps {
 
 export function Stock({ product }: StockProps): JSX.Element {
   const { cart, addToCart } = useCartContext();
-  const getRemainingStock = (product: IProduct) => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
 
-  const remainingStock = getRemainingStock(product);
-
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  };
+  const remainingStock = getRemainingStock(cart, product);
 
   return (
     <div
