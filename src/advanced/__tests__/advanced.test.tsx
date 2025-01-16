@@ -12,8 +12,7 @@ import { CartPage } from "../../refactoring/components";
 import { AdminPage } from "../../refactoring/components";
 import { Coupon, Product } from "../../types";
 import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
-import { beforeEach } from "node:test";
-import { localStorageUtil } from "../../refactoring/utils";
+import { localStorageUtil, validateData } from "../../refactoring/utils";
 
 const mockProducts: Product[] = [
   {
@@ -402,5 +401,49 @@ describe("advanced > ", () => {
         JSON.parse(localStorage.getItem("cart_item_key")!)?.pop().quantity,
       ).toBe(3);
     });
+  });
+});
+
+describe("validateUtil 테스트", () => {
+  test("유효한 데이터 검사 시 true를 반환한다.", () => {
+    const validProduct = {
+      id: "p1",
+      name: "유효한 상품 🎁",
+      price: 10000,
+      stock: 20,
+      discounts: [{ quantity: 10, rate: 0.1 }],
+    };
+
+    expect(validateData(validProduct)).toBe(true);
+  });
+
+  test("유효하지 않은 데이터 검사 시 false를 반환하고, alert이 뜬다.", () => {
+    const invalidProduct = {
+      id: "",
+      name: "이상한 상품 🤔",
+      price: 10000,
+      stock: -20,
+      discounts: [],
+    };
+
+    const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+    expect(validateData(invalidProduct)).toBe(false);
+    expect(alertMock).toHaveBeenCalledWith(
+      "유효한 값을 입력해주세요. (id, stock, discounts)",
+    );
+  });
+
+  test("검사를 생략할 key를 추가하면 해당 value에 대한 검사를 생략한다.", () => {
+    const product = {
+      id: "p1",
+      name: "할인 없는 상품 😓",
+      price: 10000,
+      stock: 20,
+      discounts: [],
+    };
+
+    expect(validateData(product)).toBe(false);
+    expect(validateData(product, ["discounts"])).toBe(true);
   });
 });
