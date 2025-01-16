@@ -1,7 +1,12 @@
 import { useCart } from "../hooks";
 import { CartList } from "./carts/CartList.tsx";
 import { CartProduct } from "./carts/CartProduct.tsx";
-import { Props } from "./interface/defaultInterface.ts";
+import { Coupon, Product } from "../../types.ts";
+
+interface Props {
+  coupons: Coupon[];
+  products: Product[];
+}
 
 export const CartPage = ({coupons, products}: Props) => {
   const {
@@ -13,10 +18,8 @@ export const CartPage = ({coupons, products}: Props) => {
     applyCoupon,
     addToCart,
     removeFromCart, 
-    updateQuantity, 
-    getAppliedDiscount,
-    getRemainingStock,
-    getMaxDiscount
+    updateQuantity,
+    getRemainingStock
   } = useCart();
 
   return (
@@ -28,11 +31,10 @@ export const CartPage = ({coupons, products}: Props) => {
           <div className="space-y-2">
             {products.map((product) => 
               <CartList 
-                product={product} 
                 key={product.id} 
+                product={product} 
                 addToCart={addToCart} 
                 getRemainingStock={getRemainingStock}
-                getMaxDiscount={getMaxDiscount}
               />
             )}
           </div>
@@ -46,7 +48,6 @@ export const CartPage = ({coupons, products}: Props) => {
                 key={item.product.id} 
                 onUpdateQuantity={updateQuantity}
                 onRemoveFromCart={removeFromCart}
-                onGetAppliedDiscount={getAppliedDiscount}
               />
             )}
           </div>

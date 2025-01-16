@@ -1,13 +1,17 @@
 import { Product } from "../../../types"; 
+import { getMaxDiscount } from "../../utils/discount";
 
 interface Props {
   product: Product;
   addToCart: (product: Product) => void;
   getRemainingStock: (product: Product) => number;
-  getMaxDiscount: (discounts: { quantity: number; rate: number }[]) => number;
 }
 
-export const CartList = ({ product, addToCart, getRemainingStock, getMaxDiscount }: Props) => {
+export const CartList = ({ 
+  product, 
+  addToCart, 
+  getRemainingStock 
+}: Props) => {
   return (
     <div key={product.id} data-testid={`product-${product.id}`} className="bg-white p-3 rounded shadow">
       <div className="flex justify-between items-center mb-2">

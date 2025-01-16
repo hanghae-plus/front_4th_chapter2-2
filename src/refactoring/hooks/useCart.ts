@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { CartItem, Coupon, Product } from "../../types";
-// import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { CartItem, Coupon, Product } from "../../types.ts";
+import { calculateCartTotal, updateCartItemQuantity } from "../utils/cart.ts";
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -31,16 +31,7 @@ export const useCart = () => {
 
   // 카트 물품 업데이트 로직
   const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart(prevCart =>
-      prevCart.map(item => {
-        if (item.product.id === productId) {
-          const maxQuantity = item.product.stock;
-          const updatedQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
-          return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
-        }
-        return item;
-      }).filter((item): item is CartItem => item !== null)
-    );
+    setCart(prevCart => updateCartItemQuantity(prevCart, productId, newQuantity));
   };
 
   const calculateTotal = () => {
@@ -77,33 +68,17 @@ export const useCart = () => {
     };
   }
 
-  const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
-    return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
-  }
-
-  const getRemainingStock = (product: Product) => {
-    const cartItem = cart.find(item => item.product.id === product.id);
-    return product.stock - (cartItem?.quantity || 0);
-  };
-
-  const getAppliedDiscount = (item: CartItem) => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-    let appliedDiscount = 0;
-    for (const discount of discounts) {
-      if (quantity >= discount.quantity) {
-        appliedDiscount = Math.max(appliedDiscount, discount.rate);
-      }
-    }
-    return appliedDiscount;
-  };
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
   // 물품 쿠폰 추가 로직
   const applyCoupon = (coupon: Coupon) => {
     setSelectedCoupon(coupon);
   };
 
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+  const getRemainingStock = (product: Product): number => {
+    const cartItem = cart.find(item => item.product.id === product.id);
+    return product.stock - (cartItem?.quantity || 0);
+  };
 
   return {
     cart,
@@ -116,8 +91,6 @@ export const useCart = () => {
     removeFromCart,
     updateQuantity,
     calculateTotal,
-    getMaxDiscount,
-    getRemainingStock,
-    getAppliedDiscount
+    getRemainingStock
   };
 };

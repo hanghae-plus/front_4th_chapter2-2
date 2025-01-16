@@ -1,13 +1,17 @@
 import { CartItem } from "../../../types.ts";
+import { getAppliedDiscount } from "../../utils/discount.ts";
 
 interface Props {
   item: CartItem;
   onUpdateQuantity: (productId: string, newQuantity: number) => void;
   onRemoveFromCart: (productId: string) => void;
-  onGetAppliedDiscount: (item: CartItem) => number;
 } 
 
-export const CartProduct = ({item, onUpdateQuantity, onRemoveFromCart, onGetAppliedDiscount}: Props) => {
+export const CartProduct = ({
+  item, 
+  onUpdateQuantity, 
+  onRemoveFromCart
+}: Props) => {
   return (
     <div key={item.product.id} className="flex justify-between items-center bg-white p-3 rounded shadow">
       <div>
@@ -16,9 +20,9 @@ export const CartProduct = ({item, onUpdateQuantity, onRemoveFromCart, onGetAppl
         <span className="text-sm text-gray-600">
           {item.product.price}원 x {item.quantity}
 
-          {onGetAppliedDiscount(item) > 0 && (
+          {getAppliedDiscount(item) > 0 && (
             <span className="text-green-600 ml-1">
-              ({(onGetAppliedDiscount(item) * 100).toFixed(0)}% 할인 적용)
+              ({(getAppliedDiscount(item) * 100).toFixed(0)}% 할인 적용)
             </span>
           )}
         </span>

@@ -1,4 +1,4 @@
-import { CartItem, Coupon } from "../../types";
+import { CartItem, Coupon } from "../../types.ts";
 
 export const calculateItemTotal = (item: CartItem) => {
   if (!item) return 0;
@@ -44,8 +44,6 @@ export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null
 ) => {
-  console.log("selectedCoupon", selectedCoupon)
-
   // 요구사항 1: 쿠폰 없이 총액을 올바르게 계산해야 합니다 | reduce
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = cart.reduce(
     (acc, item) => {

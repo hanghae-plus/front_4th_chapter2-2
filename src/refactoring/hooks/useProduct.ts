@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Product } from '../../types.ts';
+import { useEffect, useState } from "react";
+import { Product } from "../../types.ts";
 
 // useProducts : 상품의 엔티티 상태(init/update/add)를 담당하는 커스텀 훅
 export const useProducts = (initialProducts: Product[]) => {
