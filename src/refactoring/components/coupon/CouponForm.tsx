@@ -1,10 +1,9 @@
 import { Coupon } from '@types';
 import { Select } from '../shared/Select';
+import { useState } from 'react';
 
 interface CouponFormProps {
-  newCoupon: Coupon;
-  setNewCoupon: React.Dispatch<React.SetStateAction<Coupon>>;
-  onSubmit: (event: React.FormEvent) => void;
+  onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 const discountTypeOptions = [
@@ -12,11 +11,25 @@ const discountTypeOptions = [
   { value: 'percentage', label: '할인율(%)' },
 ];
 
-export function CouponForm({
-  newCoupon,
-  setNewCoupon,
-  onSubmit,
-}: CouponFormProps) {
+export function CouponForm({ onCouponAdd }: CouponFormProps) {
+  const [newCoupon, setNewCoupon] = useState<Coupon>({
+    name: '',
+    code: '',
+    discountType: 'percentage',
+    discountValue: 0,
+  });
+
+  const handleAddCoupon = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onCouponAdd(newCoupon);
+    setNewCoupon({
+      name: '',
+      code: '',
+      discountType: 'percentage',
+      discountValue: 0,
+    });
+  };
+
   const handleChangeDiscountType = (
     event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
@@ -27,7 +40,7 @@ export function CouponForm({
   };
 
   return (
-    <form className="space-y-2 mb-4" onSubmit={onSubmit}>
+    <form className="space-y-2 mb-4" onSubmit={handleAddCoupon}>
       <input
         type="text"
         placeholder="쿠폰 이름"
