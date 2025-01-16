@@ -16,6 +16,10 @@ export const calculateItemTotal = (item: CartItem) => {
   return totalBeforeDiscount * (1 - discount);
 };
 
+export const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
+  return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
+};
+
 export const getMaxApplicableDiscount = (item: CartItem) => {
   const { discounts } = item.product;
   const { quantity } = item;

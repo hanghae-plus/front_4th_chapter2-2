@@ -1,5 +1,6 @@
 import { Coupon, Product } from '../../types.ts';
-import { useCart, useDiscountCalculator } from "../hooks";
+import { useCart } from "../hooks";
+import { getMaxDiscount } from '../models/cart.ts';
 
 interface Props {
   products: Product[];
@@ -15,13 +16,9 @@ export const CartPage = ({ products, coupons }: Props) => {
     applyCoupon,
     calculateTotal,
     selectedCoupon,
+    getAppliedDiscount,
     getRemainingStock,
   } = useCart();
-
-  const {
-    getMaxDiscount,
-    getAppliedDiscount
-  } = useDiscountCalculator();
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
