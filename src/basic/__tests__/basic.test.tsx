@@ -8,7 +8,7 @@ import { CartPage } from '../../refactoring/pages/CartPage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { useCoupons } from '../../refactoring/features/coupon/hooks/useCoupon';
 import { useProducts } from '../../refactoring/features/product/hooks/useProduct';
-import { useCart } from '../../refactoring/hooks';
+import { useCart } from '../../refactoring/features/cart/hooks/useCart';
 
 const mockProducts: Product[] = [
   {

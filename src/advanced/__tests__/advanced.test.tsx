@@ -6,9 +6,10 @@ import { Coupon, Product } from '../../types';
 import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
-import { formatCouponDiscount } from '../../refactoring/features/product/helpers/index';
+
 import { validateCoupon } from '../../refactoring/features/coupon/helpers';
 import { useForm } from '../../refactoring/hooks/useForm';
+import { formatCouponDiscount } from '../../refactoring/features/product/helpers/\bindex';
 
 const mockProducts: Product[] = [
   {

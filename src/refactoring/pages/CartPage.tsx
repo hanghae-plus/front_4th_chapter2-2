@@ -1,8 +1,8 @@
 import { Product, Coupon, CartItem as CartItemType } from '../../types';
 import { CartItem } from '../features/cart/components/Item';
 import { CouponSelector } from '../features/coupon/components/Selector';
+import { useCart } from '../features/cart/hooks/useCart';
 import { ProductItem } from '../features/product/components/Item';
-import { useCart } from '../hooks';
 
 interface CartPageProps {
   products: Product[];
