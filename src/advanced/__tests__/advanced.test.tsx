@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within, renderHook } from '@testing-library/react';
 import { CartPage } from '@/pages/CartPage/';
 import { AdminPage } from '@/pages/AdminPage/';
 import { Coupon, Product } from '@/shared/types/';
@@ -7,6 +7,7 @@ import { useCartStore } from '@/entities/cart';
 import { useProductsStore } from '@/entities/product/model/';
 import { useCouponStore } from '@/entities/coupon/';
 import { calculateDifference, calculateTotal, addItem } from '@/shared/libs';
+import { useAdminCoupons } from '@/pages/AdminPage/utils';
 
 // mock 데이터
 const mockProducts: Product[] = [
@@ -247,6 +248,45 @@ describe('advanced > ', () => {
         const coupons = useCouponStore.getState().coupons;
         expect(coupons.length).toBe(initialCoupons.length + 1);
         expect(coupons[coupons.length - 1]).toEqual(newCoupon);
+      });
+    });
+
+    describe('훅 테스트 : useAdminCoupons > ', () => {
+      // 각 테스트 실행 전 쿠폰 스토어 초기화
+      beforeEach(() => {
+        useCouponStore.setState({ coupons: [] });
+      });
+
+      test('초기 상태가 올바르게 설정되어야 한다 > ', () => {
+        const { result } = renderHook(() => useAdminCoupons());
+
+        expect(result.current.newCoupon).toEqual({
+          name: '',
+          code: '',
+          discountType: 'percentage',
+          discountValue: 0,
+        });
+        expect(result.current.coupons).toEqual([]);
+      });
+
+      test('setNewCoupon을 통해 newCoupon 상태를 업데이트할 수 있어야 한다 > ', () => {
+        const { result } = renderHook(() => useAdminCoupons());
+
+        act(() => {
+          result.current.setNewCoupon({
+            name: '테스트 쿠폰',
+            code: 'TEST',
+            discountType: 'amount',
+            discountValue: 5000,
+          });
+        });
+
+        expect(result.current.newCoupon).toEqual({
+          name: '테스트 쿠폰',
+          code: 'TEST',
+          discountType: 'amount',
+          discountValue: 5000,
+        });
       });
     });
 
