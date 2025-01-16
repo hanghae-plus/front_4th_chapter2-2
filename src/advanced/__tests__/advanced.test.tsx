@@ -10,6 +10,7 @@ import { CartPage } from '../../refactoring/pages/CartPage';
 import { validateCoupon } from '../../refactoring/features/coupon/helpers';
 import { useForm } from '../../refactoring/hooks/useForm';
 import { formatCouponDiscount } from '../../refactoring/features/product/helpers/\bindex';
+import { SortOption, useSort } from '../../refactoring/hooks/useSort';
 
 const mockProducts: Product[] = [
   {
@@ -475,6 +476,143 @@ describe('advanced > ', () => {
           // Then
           expect(result.current.isValid).toBe(false);
         });
+      });
+    });
+
+    describe('useSort >', () => {
+      interface TestItem {
+        id: string;
+        name: string;
+        price: number;
+        stock: number;
+      }
+
+      const testItems: TestItem[] = [
+        { id: '1', name: 'B상품', price: 2000, stock: 5 },
+        { id: '2', name: 'A상품', price: 1000, stock: 10 },
+        { id: '3', name: 'C상품', price: 3000, stock: 8 },
+      ];
+
+      const sortOptions: SortOption<TestItem>[] = [
+        {
+          value: 'name',
+          label: '이름순',
+          config: {
+            key: 'name' as keyof TestItem,
+            direction: 'asc',
+          },
+        },
+        {
+          value: 'priceAsc',
+          label: '가격 낮은순',
+          config: {
+            key: 'price' as keyof TestItem,
+            direction: 'asc',
+          },
+        },
+        {
+          value: 'priceDesc',
+          label: '가격 높은순',
+          config: {
+            key: 'price' as keyof TestItem,
+            direction: 'desc',
+          },
+        },
+        {
+          value: 'custom',
+          label: '커스텀 정렬',
+          config: {
+            key: 'custom',
+            direction: 'asc',
+            customSort: (a: TestItem, b: TestItem) => a.stock - b.stock,
+          },
+        },
+      ];
+
+      test('초기 정렬이 잘 적용되어야 한다', () => {
+        // given
+        const defaultSort = 'name';
+
+        // when
+        const { result } = renderHook(() => useSort(testItems, sortOptions, defaultSort));
+
+        // then
+        expect(result.current.selectedSort).toBe('name');
+        expect(result.current.sortedItems[0].name).toBe('A상품');
+        expect(result.current.sortedItems[2].name).toBe('C상품');
+      });
+
+      test('문자열 기준 정렬이 잘 동작해야 한다', () => {
+        // given
+        const { result } = renderHook(() => useSort(testItems, sortOptions, 'name'));
+
+        // when
+        act(() => {
+          result.current.setSelectedSort('name');
+        });
+
+        // then
+        expect(result.current.sortedItems[0].name).toBe('A상품');
+        expect(result.current.sortedItems[1].name).toBe('B상품');
+        expect(result.current.sortedItems[2].name).toBe('C상품');
+      });
+
+      test('숫자 오름차순 정렬이 잘 동작해야 한다', () => {
+        // given
+        const { result } = renderHook(() => useSort(testItems, sortOptions, 'name'));
+
+        // when
+        act(() => {
+          result.current.setSelectedSort('priceAsc');
+        });
+
+        // then
+        expect(result.current.sortedItems[0].price).toBe(1000);
+        expect(result.current.sortedItems[1].price).toBe(2000);
+        expect(result.current.sortedItems[2].price).toBe(3000);
+      });
+
+      test('숫자 내림차순 정렬이 잘 동작해야 한다', () => {
+        // given
+        const { result } = renderHook(() => useSort(testItems, sortOptions, 'name'));
+
+        // when
+        act(() => {
+          result.current.setSelectedSort('priceDesc');
+        });
+
+        // then
+        expect(result.current.sortedItems[0].price).toBe(3000);
+        expect(result.current.sortedItems[1].price).toBe(2000);
+        expect(result.current.sortedItems[2].price).toBe(1000);
+      });
+
+      test('커스텀 정렬이 잘 동작해야 한다', () => {
+        // given
+        const { result } = renderHook(() => useSort(testItems, sortOptions, 'name'));
+
+        // when
+        act(() => {
+          result.current.setSelectedSort('custom');
+        });
+
+        // then
+        expect(result.current.sortedItems[0].stock).toBe(5);
+        expect(result.current.sortedItems[1].stock).toBe(8);
+        expect(result.current.sortedItems[2].stock).toBe(10);
+      });
+
+      test('존재하지 않는 정렬 옵션을 선택하면 원본 배열을 반환해야 한다', () => {
+        // given
+        const { result } = renderHook(() => useSort(testItems, sortOptions, 'name'));
+
+        // when
+        act(() => {
+          result.current.setSelectedSort('nonexistent');
+        });
+
+        // then
+        expect(result.current.sortedItems).toEqual(testItems);
       });
     });
 
