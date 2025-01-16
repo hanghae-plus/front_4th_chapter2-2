@@ -1,5 +1,5 @@
-import { CouponManagement } from '@/refactoring/pages/Admin/CouponManagement/CouponManagement';
-import { ProductManagement } from '@/refactoring/pages/Admin/ProductManagement/ProductManagement';
+import { CouponManagement } from '@/refactoring/pages/Admin/features/CouponManagement/CouponManagement';
+import { ProductManagement } from '@/refactoring/pages/Admin/features/ProductManagement/ProductManagement';
 import type { Coupon, Product } from '@/types';
 
 interface Props {

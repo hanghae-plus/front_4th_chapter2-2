@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { InputFieldWithLabel } from '@/refactoring/pages/Admin/ProductManagement/ProductAddForm/ui/InputFieldWithLabel';
-import { Collapsible } from '@/refactoring/pages/Admin/ProductManagement/ui/Collapsible';
+import { Collapsible } from '@/refactoring/pages/Admin/features/ProductManagement/ui/Collapsible';
+import { InputFieldWithLabel } from '@/refactoring/pages/Admin/features/ProductManagement/ui/InputFieldWithLabel';
 import type { Product } from '@/types';
 
 interface ProductAddFormProps {

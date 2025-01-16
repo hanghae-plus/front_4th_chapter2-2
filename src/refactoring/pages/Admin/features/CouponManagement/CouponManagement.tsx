@@ -1,5 +1,5 @@
-import { CouponAddForm } from '@/refactoring/pages/Admin/CouponManagement/CouponAddForm/CouponAddForm';
-import { CouponInfo } from '@/refactoring/pages/Admin/CouponManagement/CouponInfo/CouponInfo';
+import { CouponAddForm } from '@/refactoring/pages/Admin/features/CouponManagement/components/CouponAddForm';
+import { CouponInfo } from '@/refactoring/pages/Admin/features/CouponManagement/components/CouponInfo';
 import type { Coupon } from '@/types';
 
 interface CouponManagementProps {
