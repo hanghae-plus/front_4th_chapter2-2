@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Coupon } from "../../../types.ts";
 import { useCoupons } from "../../hooks";
 import { initialCoupons } from "../../../store/globalStore.ts";
+import CurrentCouponList from "./CurrentCouponList.tsx";
 
 const CouponSection = () => {
   const { coupons, addCoupon } = useCoupons(initialCoupons);
@@ -13,29 +14,6 @@ const CouponSection = () => {
     discountType: "percentage",
     discountValue: 0,
   });
-
-  const CurrentCouponList = () => {
-    return (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">현재 쿠폰 목록</h3>
-        <div className="space-y-2">
-          {coupons.map((coupon, index) => (
-            <div
-              key={index}
-              data-testid={`coupon-${index + 1}`}
-              className="bg-gray-100 p-2 rounded"
-            >
-              {coupon.name} ({coupon.code}):
-              {coupon.discountType === "amount"
-                ? `${coupon.discountValue}원`
-                : `${coupon.discountValue}%`}{" "}
-              할인
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div>
@@ -90,7 +68,7 @@ const CouponSection = () => {
             쿠폰 추가
           </Button>
         </div>
-        <CurrentCouponList />
+        <CurrentCouponList coupons={coupons} />
       </div>
     </div>
   );
