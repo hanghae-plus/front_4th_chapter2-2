@@ -1,6 +1,8 @@
+import { FormEvent, useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
 import { getRemainingStock } from '../models/cart.ts';
+import { useProductSearch } from '../hooks/useProductSearch.ts';
 
 interface Props {
   products: Product[];
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
+  const [searchQuery, setSearchQuery] = useState('');
   const {
     cart,
     addToCart,
@@ -17,6 +20,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     calculateTotal,
     selectedCoupon,
   } = useCart();
+  const searchProduct = useProductSearch(products);
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
@@ -38,14 +42,39 @@ export const CartPage = ({ products, coupons }: Props) => {
     return appliedDiscount;
   };
 
+  const handleProductSearch = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get('search') as string;
+    setSearchQuery(query);
+  };
+
+  const filteredProducts = searchProduct(searchQuery);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">장바구니</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
+          <form onSubmit={handleProductSearch}>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                name="search"
+                placeholder="상품명 검색"
+                className="flex-1 border rounded"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                검색
+              </button>
+            </div>
+          </form>
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
           <div className="space-y-2">
-            {products.map((product) => {
+            {filteredProducts.map((product) => {
               const remainingStock = getRemainingStock(cart, product);
 
               return (
