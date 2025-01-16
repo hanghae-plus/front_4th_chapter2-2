@@ -1,9 +1,11 @@
 // useCart.ts
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { createStorage } from "../hooks";
 
 export const useCart = () => {
+  const { set } = createStorage("cart");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
@@ -65,6 +67,8 @@ export const useCart = () => {
       totalDiscount: Math.round(totalDiscount),
     };
   };
+
+  useEffect(() => set(JSON.stringify(cart)), [cart]);
 
   return {
     cart,
