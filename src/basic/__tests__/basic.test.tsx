@@ -502,7 +502,6 @@ describe("basic > ", () => {
         result.current.applyCoupon(testCoupon);
       });
 
-      // const total = result.current.calculateTotal();
       expect(result.current.totalBeforeDiscount).toBe(200);
       expect(result.current.totalAfterDiscount).toBe(180);
       expect(result.current.totalDiscount).toBe(20);
