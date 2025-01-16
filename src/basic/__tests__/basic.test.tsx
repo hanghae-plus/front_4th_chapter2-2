@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import {
   act,
   fireEvent,
@@ -51,6 +51,27 @@ const mockCoupons: Coupon[] = [
     discountValue: 10,
   },
 ];
+
+const mockStorage = (() => {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: (index: number) => Object.keys(store)[index] || null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  } as Storage;
+})();
 
 const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
@@ -456,6 +477,12 @@ describe("basic > ", () => {
       discountValue: 10,
     };
 
+    beforeEach(() => {
+      Object.defineProperty(window, "localStorage", {
+        value: mockStorage,
+      });
+    });
+
     test("장바구니에 제품을 추가해야 합니다", () => {
       const { result } = renderHook(() => useCart());
 
@@ -486,6 +513,8 @@ describe("basic > ", () => {
 
       act(() => {
         result.current.addToCart(testProduct);
+      });
+      act(() => {
         result.current.updateQuantity(testProduct.id, 5);
       });
 
@@ -507,9 +536,15 @@ describe("basic > ", () => {
 
       act(() => {
         result.current.addToCart(testProduct);
+      });
+      act(() => {
         result.current.updateQuantity(testProduct.id, 2);
+      });
+      act(() => {
         result.current.applyCoupon(testCoupon);
       });
+
+      console.log("result.current.cart => ", result.current.cart);
 
       const total = result.current.calculateTotal();
       expect(total.totalBeforeDiscount).toBe(200);
