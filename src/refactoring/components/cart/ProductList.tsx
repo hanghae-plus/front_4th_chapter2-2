@@ -1,4 +1,5 @@
 import { CartItem, Product } from "../../../types.ts";
+import { formatCurrency } from "../../utils/formatCurrency.ts";
 
 interface Props {
   products: Product[];
@@ -31,7 +32,7 @@ export const ProductList = ({ products, cart, addToCart }: Props) => {
               <div className="flex justify-between items-center mb-2">
                 <span className="font-semibold">{product.name}</span>
                 <span className="text-gray-600">
-                  {product.price.toLocaleString()}원
+                  {formatCurrency(product.price)}
                 </span>
               </div>
               <div className="text-sm text-gray-500 mb-2">
