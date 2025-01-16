@@ -296,3 +296,22 @@ describe('advanced > ', () => {
       });
     });
 
+    test('새로운 hook 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
+      describe('useAppState > ', () => {
+        test('isAdmin 상태를 토글할 수 있어야 한다', () => {
+          const { result } = renderHook(() => useAppState());
+
+          act(() => {
+            result.current.toggleAdmin();
+          });
+          expect(result.current.isAdmin).toBe(true);
+
+          act(() => {
+            result.current.toggleAdmin();
+          });
+          expect(result.current.isAdmin).toBe(false);
+        });
+      });
+    });
+  });
+});
