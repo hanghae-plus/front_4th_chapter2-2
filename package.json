@@ -8,7 +8,7 @@
     "start:refactoring": "vite serve --open ./index.refactoring.html",
     "test": "vitest",
     "test:origin": "vitest src/origin",
-    "test:basic": "vitest src/basic -w",
+    "test:basic": "vitest src/basic",
     "test:advanced": "vitest src/advanced",
     "test:ui": "vitest --ui",
     "build": "tsc -b && vite build",
