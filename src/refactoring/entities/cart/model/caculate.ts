@@ -19,25 +19,30 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
   cart.forEach((item) => {
     const { price } = item.product;
     const { quantity } = item;
-    totalBeforeDiscount += calculateTotal(price, quantity);
+    // 각 항목의 총액 계산
+    const itemTotal = calculateTotal(price, quantity);
+    totalBeforeDiscount += itemTotal;
 
+    // 적용 가능한 할인율 결정
     const discount = item.product.discounts.reduce((maxDiscount, d) => {
       return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
     }, 0);
 
-    totalAfterDiscount += totalBeforeDiscount * calculateDifference(1, discount);
+    // 각 항목에 할인 적용
+    totalAfterDiscount += itemTotal * (1 - discount);
   });
 
-  let totalDiscount = calculateDifference(totalBeforeDiscount, totalAfterDiscount);
+  // 할인 금액 계산
+  let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
 
   // 쿠폰 적용
   if (selectedCoupon) {
     if (selectedCoupon.discountType === 'amount') {
       totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
     } else {
-      totalAfterDiscount *= calculateDifference(1, selectedCoupon.discountValue) / 100;
+      totalAfterDiscount *= (100 - selectedCoupon.discountValue) / 100;
     }
-    totalDiscount = calculateDifference(totalBeforeDiscount, totalAfterDiscount);
+    totalDiscount = totalBeforeDiscount - totalAfterDiscount;
   }
 
   return {
