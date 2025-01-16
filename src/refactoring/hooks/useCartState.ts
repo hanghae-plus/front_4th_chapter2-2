@@ -3,9 +3,14 @@ import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
 
-export const useCartState = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+export const useCartState = (
+  initialCart: CartItem[] = [],
+  initialCoupon: Coupon | null = null,
+) => {
+  const [cart, setCart] = useState<CartItem[]>(initialCart);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(
+    initialCoupon,
+  );
 
   const addToCart = (product: Product) => {
     const cartItem = cart.find((item) => item.product.id === product.id);

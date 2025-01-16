@@ -1,80 +1,37 @@
-import { useEffect, useState } from "react";
-import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal } from "../models/cart";
+import { useEffect } from "react";
+import { useCartState } from "./useCartState";
 
 export const CART_LOCAL_STORAGE_KEY = "shopping-cart";
 export const COUPON_LOCAL_STORAGE_KEY = "shopping-cart-coupon";
 
 export const useCartLocalStorage = () => {
-  const [cart, setCart] = useState<CartItem[]>(() => {
+  const initialCart = (() => {
     const savedCart = localStorage.getItem(CART_LOCAL_STORAGE_KEY);
     return savedCart ? JSON.parse(savedCart) : [];
-  });
+  })();
 
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(() => {
+  const initialCoupon = (() => {
     const savedCoupon = localStorage.getItem(COUPON_LOCAL_STORAGE_KEY);
     return savedCoupon ? JSON.parse(savedCoupon) : null;
-  });
+  })();
 
-  const addToCart = (product: Product, quantity: number = 1) => {
-    setCart((currentCart) => {
-      const existingItemIndex = currentCart.findIndex(
-        (item) => item.product.id === product.id,
-      );
-
-      if (existingItemIndex >= 0) {
-        const updatedCart = [...currentCart];
-        updatedCart[existingItemIndex] = {
-          ...updatedCart[existingItemIndex],
-          quantity: updatedCart[existingItemIndex].quantity + quantity,
-        };
-        return updatedCart;
-      }
-
-      return [...currentCart, { product, quantity }];
-    });
-  };
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    setCart((currentCart) =>
-      currentCart.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item,
-      ),
-    );
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCart((currentCart) =>
-      currentCart.filter((item) => item.product.id !== productId),
-    );
-  };
-
-  const applyCoupon = (coupon: Coupon | null) => {
-    setSelectedCoupon(coupon);
-  };
-
-  const calculateTotal = () => {
-    return calculateCartTotal(cart, selectedCoupon);
-  };
+  const cartState = useCartState(initialCart, initialCoupon);
+  const { cart, selectedCoupon } = cartState;
 
   useEffect(() => {
     localStorage.setItem(CART_LOCAL_STORAGE_KEY, JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem(
-      COUPON_LOCAL_STORAGE_KEY,
-      JSON.stringify(selectedCoupon),
-    );
+    if (selectedCoupon) {
+      localStorage.setItem(
+        COUPON_LOCAL_STORAGE_KEY,
+        JSON.stringify(selectedCoupon),
+      );
+    } else {
+      localStorage.removeItem(COUPON_LOCAL_STORAGE_KEY);
+    }
   }, [selectedCoupon]);
 
-  return {
-    cart,
-    addToCart,
-    updateQuantity,
-    removeFromCart,
-    applyCoupon,
-    calculateTotal,
-    selectedCoupon,
-  };
+  return cartState;
 };
