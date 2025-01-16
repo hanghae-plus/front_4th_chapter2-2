@@ -1,10 +1,13 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { useState } from 'react';
+import { fireEvent, render, renderHook, screen, within } from '@testing-library/react';
+import { act, useState } from 'react';
 import { describe, expect, test } from 'vitest';
 
+import { useForm } from '@/refactoring/hooks/useForm';
 import { AdminPage } from '@/refactoring/pages/Admin/AdminPage';
+import { useCouponForm } from '@/refactoring/pages/Admin/CouponManagement/components/CouponAddForm/hooks/useCouponForm';
+import { useProductForm } from '@/refactoring/pages/Admin/ProductManagement/components/ProductEditor/ProductUpdateForm/hooks/useProductForm';
 import { CartPage } from '@/refactoring/pages/Cart/CartPage';
-import type { Coupon, Product } from '@/types';
+import type { Coupon, Discount, Product } from '@/types';
 
 const mockProducts: Product[] = [
   {
@@ -72,7 +75,7 @@ const TestAdminPage = () => {
 };
 
 describe('advanced > ', () => {
-  describe.only('시나리오 테스트 > ', () => {
+  describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
       render(<CartPage products={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
@@ -219,13 +222,136 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+  describe('useForm > ', () => {
+    test('초기 상태로 주어진 값으로 초기화되어야 합니다', () => {
+      const initialState = { name: 'John', age: 30 };
+      const { result } = renderHook(() => useForm(initialState));
+
+      expect(result.current.value).toEqual(initialState);
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    test('값을 올바르게 업데이트해야 합니다', () => {
+      const initialState = { name: 'John', age: 30 };
+      const { result } = renderHook(() => useForm(initialState));
+
+      act(() => {
+        result.current.updateValue('name', 'Doe');
+      });
+
+      expect(result.current.value).toEqual({ name: 'Doe', age: 30 });
+    });
+
+    test('init이 호출되면 초기 상태로 리셋되어야 합니다', () => {
+      const initialState = { name: 'John', age: 30 };
+      const { result } = renderHook(() => useForm(initialState));
+
+      act(() => {
+        result.current.updateValue('name', 'Doe');
+        result.current.init();
+      });
+
+      expect(result.current.value).toEqual(initialState);
+    });
+  });
+
+  describe('useCouponForm > ', () => {
+    test('기본 값으로 초기화되어야 한다', () => {
+      const { result } = renderHook(() => useCouponForm());
+
+      expect(result.current.editingCoupon).toEqual({
+        name: '',
+        code: '',
+        discountType: 'amount',
+        discountValue: 0
+      });
+    });
+
+    test('이름이 올바르게 업데이트되어야 한다', () => {
+      const { result } = renderHook(() => useCouponForm());
+
+      act(() => {
+        result.current.updateName('New Coupon Name');
+      });
+
+      expect(result.current.editingCoupon.name).toBe('New Coupon Name');
+    });
+
+    test('코드가 올바르게 업데이트되어야 한다', () => {
+      const { result } = renderHook(() => useCouponForm());
+
+      act(() => {
+        result.current.updateCode('NEWCODE123');
+      });
+
+      expect(result.current.editingCoupon.code).toBe('NEWCODE123');
+    });
+
+    test('할인 유형이 올바르게 업데이트되어야 한다', () => {
+      const { result } = renderHook(() => useCouponForm());
+
+      act(() => {
+        result.current.updateDiscountType('percentage');
+      });
+
+      expect(result.current.editingCoupon.discountType).toBe('percentage');
+    });
+
+    test('할인 값이 올바르게 업데이트되어야 한다', () => {
+      const { result } = renderHook(() => useCouponForm());
+
+      act(() => {
+        result.current.updateDiscountValue(50);
+      });
+
+      expect(result.current.editingCoupon.discountValue).toBe(50);
+    });
+  });
+
+  describe('useProductForm > ', () => {
+    const initialProduct: Product = {
+      id: '1',
+      name: 'Test Product',
+      price: 100,
+      stock: 10,
+      discounts: []
+    };
+
+    test('초기 제품 데이터로 올바르게 초기화되어야 한다', () => {
+      const { result } = renderHook(() => useProductForm({ initProduct: initialProduct }));
+      expect(result.current.editingProduct).toEqual(initialProduct);
+    });
+
+    test('제품 이름을 업데이트할 수 있어야 한다', () => {
+      const { result } = renderHook(() => useProductForm({ initProduct: initialProduct }));
+      act(() => {
+        result.current.updateName('Updated Product');
+      });
+      expect(result.current.editingProduct.name).toBe('Updated Product');
+    });
+
+    test('제품 가격을 업데이트할 수 있어야 한다', () => {
+      const { result } = renderHook(() => useProductForm({ initProduct: initialProduct }));
+      act(() => {
+        result.current.updatePrice(200);
+      });
+      expect(result.current.editingProduct.price).toBe(200);
+    });
+
+    test('제품 재고를 업데이트할 수 있어야 한다', () => {
+      const { result } = renderHook(() => useProductForm({ initProduct: initialProduct }));
+      act(() => {
+        result.current.updateStock(20);
+      });
+      expect(result.current.editingProduct.stock).toBe(20);
+    });
+
+    test('제품 할인 정보를 업데이트할 수 있어야 한다', () => {
+      const newDiscounts: Discount[] = [{ quantity: 10, rate: 0.1 }];
+      const { result } = renderHook(() => useProductForm({ initProduct: initialProduct }));
+      act(() => {
+        result.current.updateDiscounts(newDiscounts);
+      });
+      expect(result.current.editingProduct.discounts).toEqual(newDiscounts);
     });
   });
 });
