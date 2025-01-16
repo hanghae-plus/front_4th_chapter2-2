@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { calculateTotal as calculateDiscount } from "../utils/cart-discount-utils";
+import { calculateTotal as calculateDiscount } from "../utils/cartDiscountUtils";
 
 interface CartState {
   cart: Array<CartItem>;

@@ -3,8 +3,8 @@ import { CartItem, Coupon, Product } from "../../types";
 import {
   getLocalStorageItem,
   setLocalStorageItem,
-} from "../utils/storage-utils";
-import { calculateTotal as calculateDiscount } from "../utils/cart-discount-utils";
+} from "../utils/storageUtils";
+import { calculateTotal as calculateDiscount } from "../utils/cartDiscountUtils";
 
 interface CartState {
   cart: Array<CartItem>;

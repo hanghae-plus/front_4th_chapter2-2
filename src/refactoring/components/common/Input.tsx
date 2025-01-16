@@ -1,4 +1,4 @@
-import { combineClassNames } from "../../utils/style-utile";
+import { combineClassNames } from "../../utils/styleUtile";
 
 interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className"> {

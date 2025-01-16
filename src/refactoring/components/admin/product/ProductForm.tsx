@@ -2,10 +2,7 @@ import { Product } from "../../../../types";
 import InputField from "../../common/InputField";
 import Button from "../../common/Button";
 import { useForm } from "../../../hooks";
-import {
-  createValidators,
-  validateField,
-} from "../../../utils/validator-utils";
+import { createValidators, validateField } from "../../../utils/validatorUtils";
 
 interface ProductFormProps {
   onSubmit: (product: Omit<Product, "id">) => void;

@@ -1,4 +1,4 @@
-import { combineClassNames } from "../../utils/style-utile";
+import { combineClassNames } from "../../utils/styleUtile";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "success" | "danger";
