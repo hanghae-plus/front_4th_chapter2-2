@@ -1,6 +1,6 @@
 import { ICartItem, IProduct } from '../../../shared/types';
 import React, { createContext } from 'react';
-import { useCart } from '../model';
+import { useCart } from '../../../entities/cart/model';
 
 export interface ICartContext {
   cart: ICartItem[];

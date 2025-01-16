@@ -1,6 +1,8 @@
 import { SectionTitle } from '../../../shared/ui/typography';
-import { useCartTotalContext } from '../../../pages/cart/ui/CartTotalContextProvider.tsx';
-import { useCartContext } from '../../../pages/cart/model';
+import {
+  useCartContext,
+  useCartTotalContext,
+} from '../../../entities/cart/model';
 
 export function OrderSummary() {
   const { cart } = useCartContext();

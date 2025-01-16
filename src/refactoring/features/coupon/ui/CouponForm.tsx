@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ICoupon } from '../../../shared/types';
+import { Input, Select } from '../../../shared/ui/inputs';
 
 interface CouponFormProps {
   onCouponAdd: (newCoupon: ICoupon) => void;
@@ -25,22 +26,20 @@ export function CouponForm({ onCouponAdd }: CouponFormProps) {
 
   return (
     <div className="space-y-2 mb-4">
-      <input
+      <Input
         type="text"
         placeholder="쿠폰 이름"
         value={newCoupon.name}
         onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
-        className="w-full p-2 border rounded"
       />
-      <input
+      <Input
         type="text"
         placeholder="쿠폰 코드"
         value={newCoupon.code}
         onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
-        className="w-full p-2 border rounded"
       />
       <div className="flex gap-2">
-        <select
+        <Select
           value={newCoupon.discountType}
           onChange={(e) =>
             setNewCoupon({
@@ -48,12 +47,12 @@ export function CouponForm({ onCouponAdd }: CouponFormProps) {
               discountType: e.target.value as 'amount' | 'percentage',
             })
           }
-          className="w-full p-2 border rounded"
-        >
-          <option value="amount">금액(원)</option>
-          <option value="percentage">할인율(%)</option>
-        </select>
-        <input
+          options={[
+            { value: 'amount', text: '금액(원)' },
+            { value: 'percentage', text: '할인율(%)' },
+          ]}
+        />
+        <Input
           type="number"
           placeholder="할인 값"
           value={newCoupon.discountValue}
@@ -63,7 +62,6 @@ export function CouponForm({ onCouponAdd }: CouponFormProps) {
               discountValue: parseInt(e.target.value),
             })
           }
-          className="w-full p-2 border rounded"
         />
       </div>
       <button

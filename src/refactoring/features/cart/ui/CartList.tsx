@@ -1,5 +1,5 @@
 import { CartItem } from './CartItem.tsx';
-import { useCartContext } from '../../../pages/cart/model';
+import { useCartContext } from '../../../entities/cart/model';
 
 export function CartList() {
   const { cart, updateQuantity, removeFromCart } = useCartContext();

@@ -13,11 +13,12 @@ import { CartItem, Coupon, Product } from '../../types';
 import * as cartUtils from '../../refactoring/pages/cart/lib/cart.ts';
 import { useCoupons } from '../../refactoring/widgets/coupon/model';
 import { useProducts } from '../../refactoring/widgets/product/model';
-import { useCart } from '../../refactoring/pages/cart/model';
+import { useCart } from '../../refactoring/entities/cart/model';
 import {
   CouponContextProvider,
   ProductContextProvider,
 } from '../../refactoring/app/providers';
+import { useCartTotal } from '../../refactoring/entities/cart/model/useCartTotal.ts';
 
 const mockCoupons: Coupon[] = [
   {
@@ -460,7 +461,7 @@ describe('basic > ', () => {
     });
 
     test('쿠폰을 적용해야지', () => {
-      const { result } = renderHook(() => useCart());
+      const { result } = renderHook(() => useCartTotal());
 
       act(() => {
         result.current.applyCoupon(testCoupon);
@@ -470,15 +471,16 @@ describe('basic > ', () => {
     });
 
     test('합계를 정확하게 계산해야 합니다', () => {
-      const { result } = renderHook(() => useCart());
+      const { result: result1 } = renderHook(() => useCart());
+      const { result: result2 } = renderHook(() => useCartTotal());
 
       act(() => {
-        result.current.addToCart(testProduct);
-        result.current.updateQuantity(testProduct.id, 2);
-        result.current.applyCoupon(testCoupon);
+        result1.current.addToCart(testProduct);
+        result1.current.updateQuantity(testProduct.id, 2);
+        result2.current.applyCoupon(testCoupon);
       });
 
-      const total = result.current.calculateTotal();
+      const total = result2.current.calculateTotal(result1.current.cart);
       expect(total.totalBeforeDiscount).toBe(200);
       expect(total.totalAfterDiscount).toBe(180);
       expect(total.totalDiscount).toBe(20);

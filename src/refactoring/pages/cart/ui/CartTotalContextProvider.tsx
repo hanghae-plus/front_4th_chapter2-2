@@ -1,6 +1,6 @@
 import { ICartItem, ICoupon } from '../../../shared/types';
-import { createContext, useContext } from 'react';
-import { useCartTotal } from '../model/useCartTotal.ts';
+import { createContext } from 'react';
+import { useCartTotal } from '../../../entities/cart/model/useCartTotal.ts';
 
 export interface ICartTotalContext {
   applyCoupon: (coupon: ICoupon) => void;
@@ -15,16 +15,6 @@ export interface ICartTotalContext {
 export const CartTotalContext = createContext<ICartTotalContext | undefined>(
   undefined,
 );
-
-export const useCartTotalContext = () => {
-  const context = useContext(CartTotalContext);
-  if (!context) {
-    throw new Error(
-      'useCartTotalContext must be used within CartTotalContextProvider',
-    );
-  }
-  return context;
-};
 
 export function CartTotalContextProvider({
   children,
