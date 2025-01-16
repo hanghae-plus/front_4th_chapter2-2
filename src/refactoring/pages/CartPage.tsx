@@ -19,6 +19,7 @@ export const CartPage = ({ products, coupons }: Props) => {
     selectedCoupon,
   } = useCart();
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+
   const getRemainingStock = (product: Product) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
     return product.stock - (cartItem?.quantity || 0);
