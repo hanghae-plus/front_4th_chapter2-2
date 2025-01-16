@@ -14,6 +14,7 @@ export const CouponSelector = ({ coupons, selectedCoupon, onApplyCoupon }: Coupo
       <select
         onChange={(e) => onApplyCoupon(coupons[parseInt(e.target.value)])}
         className="w-full p-2 border rounded mb-2"
+        data-testid="coupon-selector"
       >
         <option value="">쿠폰 선택</option>
         {coupons.map((coupon, index) => (

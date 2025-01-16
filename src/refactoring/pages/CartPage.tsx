@@ -3,6 +3,7 @@ import { CartItem } from '../features/cart/components/Item';
 import { CouponSelector } from '../features/coupon/components/Selector';
 import { useCart } from '../features/cart/hooks/useCart';
 import { ProductItem } from '../features/product/components/Item';
+import { ProductSortType, useProductSort } from '../features/product/hooks/useProductSort';
 
 interface CartPageProps {
   products: Product[];
@@ -16,6 +17,11 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
     const cartItem = cart.find((item) => item.product.id === product.id);
     return product.stock - (cartItem?.quantity || 0);
   };
+
+  const { sortType, setSortType, sortOptions, sortedProducts } = useProductSort({
+    products,
+    getRemaining: getRemainingStock,
+  });
 
   const getAppliedDiscount = (item: CartItemType) => {
     const { discounts } = item.product;
@@ -37,8 +43,19 @@ export const CartPage = ({ products, coupons }: CartPageProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
+          <select
+            value={sortType}
+            onChange={(e) => setSortType(e.target.value as ProductSortType)}
+            className="p-2 border rounded mb-4"
+          >
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <div className="space-y-2">
-            {products.map((product) => (
+            {sortedProducts.map((product) => (
               <ProductItem
                 key={product.id}
                 product={product}
