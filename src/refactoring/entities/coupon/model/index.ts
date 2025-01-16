@@ -1,2 +1,2 @@
 export * from './initialCoupons';
-export { useCouponStore } from './useCouponStore';
+export { useCouponStore } from './couponStore.tsx';
