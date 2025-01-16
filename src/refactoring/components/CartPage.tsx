@@ -25,7 +25,7 @@ export const CartPage = ({ coupons }: Props) => {
     calculateTotal,
     selectedCoupon,
   } = useCart();
-  // coupons context를 만드느냐 마느냐 그것이 문제로다.
+  // coupons context를 만드느냐 마느냐 그것이 문제로다. -> 거슬리지 않아서 ㄱㅊ을듯?
   // useSelectedCoupon으로 분리할 수 없음... calculateTotal 때문에.
 
   return (

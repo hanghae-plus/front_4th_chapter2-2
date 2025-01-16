@@ -1,10 +1,20 @@
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { CartPage } from "../../refactoring/components/CartPage";
 import { AdminPage } from "../../refactoring/components/AdminPage";
-import { Coupon, Product } from "../../types";
+import { CartItem, Coupon, Product } from "../../types";
 import { ProductsProvider } from "../../refactoring/contexts/ProductsContext";
+import { toggleProductInSet } from "../../refactoring/models/product";
+import {
+  calculateCartTotal,
+  calculateItemTotal,
+  getAppliedDiscount,
+  getMaxApplicableDiscount,
+  getMaxDiscount,
+  getRemainingStock,
+  updateCartItemQuantity,
+} from "../../refactoring/models/cart";
 
 const mockProducts: Product[] = [
   {
@@ -29,6 +39,7 @@ const mockProducts: Product[] = [
     discounts: [{ quantity: 10, rate: 0.2 }],
   },
 ];
+
 const mockCoupons: Coupon[] = [
   {
     name: "5000원 할인 쿠폰",
@@ -251,9 +262,310 @@ describe("advanced > ", () => {
     });
   });
 
-  describe("자유롭게 작성해보세요.", () => {
-    test("새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+  describe("유틸함수 테스트 >", () => {
+    describe("toggleProductInSet", () => {
+      it("productId가 Set에 없을 경우 추가한다.", () => {
+        const prevProductIds = new Set<string>(["id1", "id2"]);
+        const productId = "id3";
+
+        const result = toggleProductInSet(prevProductIds, productId);
+
+        expect(result.has(productId)).toBe(true);
+        expect(result.size).toBe(3); // 'id1', 'id2', 'id3'
+      });
+
+      it("productId가 Set에 있을 경우 제거한다.", () => {
+        const prevProductIds = new Set<string>(["id1", "id2"]);
+        const productId = "id2";
+
+        const result = toggleProductInSet(prevProductIds, productId);
+
+        expect(result.has(productId)).toBe(false);
+        expect(result.size).toBe(1); // 'id1'만 남음
+      });
+
+      it("원래 Set이 변경되지 않는다.", () => {
+        const prevProductIds = new Set<string>(["id1", "id2"]);
+        const productId = "id3";
+
+        const result = toggleProductInSet(prevProductIds, productId);
+
+        expect(prevProductIds.has(productId)).toBe(false);
+        expect(prevProductIds.size).toBe(2); // 'id1', 'id2'
+      });
+
+      it("빈 Set에 대해 올바르게 동작한다.", () => {
+        const prevProductIds = new Set<string>();
+        const productId = "id1";
+
+        const result = toggleProductInSet(prevProductIds, productId);
+
+        expect(result.has(productId)).toBe(true);
+        expect(result.size).toBe(1); // 'id1'만 추가됨
+      });
+
+      it("같은 productId를 여러 번 토글할 경우 올바르게 동작한다.", () => {
+        const prevProductIds = new Set<string>(["id1"]);
+        const productId = "id1";
+
+        const firstToggle = toggleProductInSet(prevProductIds, productId);
+        const secondToggle = toggleProductInSet(firstToggle, productId);
+
+        expect(firstToggle.has(productId)).toBe(false); // 첫 번째 토글 후 제거됨
+        expect(secondToggle.has(productId)).toBe(true); // 두 번째 토글 후 다시 추가됨
+      });
+    });
+
+    describe("getMaxApplicableDiscount 함수", () => {
+      it("상품1의 수량 조건(10개 이상)을 만족할 때 최대 할인율을 반환한다.", () => {
+        const item: CartItem = {
+          product: mockProducts[0],
+          quantity: 10,
+        };
+
+        const result = getMaxApplicableDiscount(item);
+        expect(result).toBe(0.1);
+      });
+
+      it("상품2의 수량 조건(10개 이상)을 만족할 때 최대 할인율을 반환한다.", () => {
+        const item: CartItem = {
+          product: mockProducts[1],
+          quantity: 10,
+        };
+
+        const result = getMaxApplicableDiscount(item);
+        expect(result).toBe(0.15);
+      });
+
+      it("상품3의 수량 조건(10개 이상)을 만족하지 못할 때 할인율은 0을 반환한다.", () => {
+        const item: CartItem = {
+          product: mockProducts[2],
+          quantity: 5,
+        };
+
+        const result = getMaxApplicableDiscount(item);
+        expect(result).toBe(0);
+      });
+    });
+
+    describe("getMaxDiscount 함수", () => {
+      it("상품1의 할인율 중 최대 값을 반환한다.", () => {
+        const discounts = mockProducts[0].discounts;
+
+        const result = getMaxDiscount(discounts);
+        expect(result).toBe(0.1);
+      });
+
+      it("상품3의 할인율 중 최대 값을 반환한다.", () => {
+        const discounts = mockProducts[2].discounts;
+
+        const result = getMaxDiscount(discounts);
+        expect(result).toBe(0.2);
+      });
+    });
+
+    describe("calculateItemTotal 함수", () => {
+      it("할인율이 적용된 상품1의 총 금액을 계산한다.", () => {
+        const item: CartItem = {
+          product: mockProducts[0],
+          quantity: 10,
+        };
+
+        const result = calculateItemTotal(item);
+        expect(result).toBe(10000 * 10 * (1 - 0.1));
+      });
+
+      it("할인 조건이 만족되지 않을 경우 상품3의 총 금액을 계산한다.", () => {
+        const item: CartItem = {
+          product: mockProducts[2],
+          quantity: 5,
+        };
+
+        const result = calculateItemTotal(item);
+        expect(result).toBe(30000 * 5);
+      });
+    });
+
+    describe("calculateCartTotal 함수", () => {
+      it("5000원 할인 쿠폰을 적용하여 장바구니 총 금액을 계산한다.", () => {
+        const cart: CartItem[] = [
+          {
+            product: mockProducts[0],
+            quantity: 10,
+          },
+          {
+            product: mockProducts[1],
+            quantity: 10,
+          },
+        ];
+
+        const result = calculateCartTotal(cart, mockCoupons[0]);
+        const totalBeforeDiscount = 10000 * 10 + 20000 * 10;
+        const totalAfterDiscount = totalBeforeDiscount * (1 - 0.1) - 5000; // 할인율 10% + 5000원 쿠폰
+        expect(result.totalBeforeDiscount).toBe(totalBeforeDiscount);
+        expect(result.totalAfterDiscount).toBeGreaterThanOrEqual(0);
+      });
+
+      it("10% 할인 쿠폰을 적용하여 장바구니 총 금액을 계산한다.", () => {
+        const cart: CartItem[] = [
+          {
+            product: mockProducts[0],
+            quantity: 10,
+          },
+          {
+            product: mockProducts[2],
+            quantity: 10,
+          },
+        ];
+
+        const result = calculateCartTotal(cart, mockCoupons[1]);
+        const totalBeforeDiscount = 10000 * 10 + 30000 * 10; // 100000 + 300000 = 400000
+        const totalAfterItemDiscount = 10000 * 10 * 0.9 + 30000 * 10 * 0.8; // 개별 할인율 적용
+        const totalAfterCouponDiscount = totalAfterItemDiscount * 0.9; // 쿠폰 할인 적용
+
+        expect(result.totalBeforeDiscount).toBe(totalBeforeDiscount);
+        expect(result.totalAfterDiscount).toBeCloseTo(
+          totalAfterCouponDiscount,
+          3
+        ); // 297000 예상
+      });
+    });
+
+    describe("updateCartItemQuantity 함수", () => {
+      it("장바구니 아이템 수량을 업데이트 한다.", () => {
+        const prevCart: CartItem[] = [
+          {
+            product: mockProducts[0], // 상품1: 10000원, 20개 재고, 10개 장바구니
+            quantity: 10,
+          },
+          {
+            product: mockProducts[1], // 상품2: 20000원, 20개 재고, 5개 장바구니
+            quantity: 5,
+          },
+        ];
+
+        // 상품1의 수량을 15로 변경
+        const updatedCart = updateCartItemQuantity(prevCart, "p1", 15);
+
+        // 예상되는 장바구니
+        const expectedCart = [
+          {
+            product: mockProducts[0], // 상품1: 수량 15로 변경됨
+            quantity: 15,
+          },
+          {
+            product: mockProducts[1], // 상품2: 수량은 변경되지 않음
+            quantity: 5,
+          },
+        ];
+
+        expect(updatedCart).toEqual(expectedCart);
+      });
+
+      it("수량을 0으로 변경하면 해당 상품은 장바구니에서 제외된다.", () => {
+        const prevCart: CartItem[] = [
+          {
+            product: mockProducts[0], // 상품1: 10000원, 20개 재고, 10개 장바구니
+            quantity: 10,
+          },
+          {
+            product: mockProducts[1], // 상품2: 20000원, 20개 재고, 5개 장바구니
+            quantity: 5,
+          },
+        ];
+
+        // 상품1의 수량을 0으로 변경
+        const updatedCart = updateCartItemQuantity(prevCart, "p1", 0);
+
+        // 예상되는 장바구니 (상품1 제외)
+        const expectedCart = [
+          {
+            product: mockProducts[1], // 상품2: 수량은 변경되지 않음
+            quantity: 5,
+          },
+        ];
+
+        expect(updatedCart).toEqual(expectedCart);
+      });
+
+      it("수량을 재고보다 많으면 재고 한도 내에서 수량을 변경한다.", () => {
+        const prevCart: CartItem[] = [
+          {
+            product: mockProducts[0], // 상품1: 10000원, 20개 재고, 10개 장바구니
+            quantity: 10,
+          },
+        ];
+
+        // 상품1의 수량을 30으로 변경 (재고는 20개이므로 20개로 변경됨)
+        const updatedCart = updateCartItemQuantity(prevCart, "p1", 30);
+
+        // 예상되는 장바구니 (상품1: 수량 20으로 변경)
+        const expectedCart = [
+          {
+            product: mockProducts[0], // 상품1: 수량 20으로 변경됨
+            quantity: 20,
+          },
+        ];
+
+        expect(updatedCart).toEqual(expectedCart);
+      });
+    });
+
+    describe("getRemainingStock 함수", () => {
+      it("남은 재고 수를 계산한다.", () => {
+        const cart: CartItem[] = [
+          {
+            product: mockProducts[0], // 상품1: 10000원, 20개 재고, 10개 장바구니
+            quantity: 10,
+          },
+          {
+            product: mockProducts[1], // 상품2: 20000원, 20개 재고, 5개 장바구니
+            quantity: 5,
+          },
+        ];
+
+        // 상품1의 남은 재고는 20 - 10 = 10
+        const remainingStockForProduct1 = getRemainingStock(
+          mockProducts[0],
+          cart
+        );
+        expect(remainingStockForProduct1).toBe(10);
+
+        // 상품2의 남은 재고는 20 - 5 = 15
+        const remainingStockForProduct2 = getRemainingStock(
+          mockProducts[1],
+          cart
+        );
+        expect(remainingStockForProduct2).toBe(15);
+
+        // 상품3는 장바구니에 없으므로 재고 그대로 20
+        const remainingStockForProduct3 = getRemainingStock(
+          mockProducts[2],
+          cart
+        );
+        expect(remainingStockForProduct3).toBe(20);
+      });
+    });
+
+    it("상품에 적용 가능한 할인율을 반환한다.", () => {
+      const cart: CartItem[] = [
+        {
+          product: mockProducts[0], // 상품1: 10000원, 10개 이상 구매 시 10% 할인
+          quantity: 10,
+        },
+        {
+          product: mockProducts[1], // 상품2: 20000원, 10개 이상 구매 시 15% 할인
+          quantity: 5,
+        },
+      ];
+
+      // 상품1은 10개 이상 구매하므로 10% 할인 적용
+      const appliedDiscountForProduct1 = getAppliedDiscount(cart[0]);
+      expect(appliedDiscountForProduct1).toBe(0.1);
+
+      // 상품2는 10개 이상 구매하지 않으므로 할인 적용 안됨
+      const appliedDiscountForProduct2 = getAppliedDiscount(cart[1]);
+      expect(appliedDiscountForProduct2).toBe(0);
     });
 
     test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
