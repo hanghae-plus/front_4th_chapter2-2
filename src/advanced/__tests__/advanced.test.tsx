@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { describe, expect, test, vi } from 'vitest';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
-import { CouponType, ProductType } from '../../refactoring/types';
+import { CouponType, DiscountType, ProductType } from '../../refactoring/types';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { updateProductField, handleAddOrRemoveDiscount } from '../../refactoring/utils/product';
 
 const mockProductList: ProductType[] = [
   {
@@ -228,13 +229,117 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+  describe('유틸리티 함수 테스트', () => {
+    describe('updateProductField 함수', () => {
+      test('제품 필드를 정상적으로 업데이트한다', () => {
+        const mockProduct: ProductType = {
+          id: 'p1',
+          name: '상품1',
+          price: 10000,
+          stock: 20,
+          discounts: [],
+        };
+        const setEditingProduct = vi.fn();
+
+        updateProductField('p1', 'price', 15000, mockProduct, setEditingProduct);
+
+        expect(setEditingProduct).toHaveBeenCalledWith({ ...mockProduct, price: 15000 });
+      });
+
+      test('제품이 없으면 아무 작업도 하지 않는다', () => {
+        const setEditingProduct = vi.fn();
+
+        updateProductField('p2', 'price', 15000, null, setEditingProduct);
+
+        expect(setEditingProduct).not.toHaveBeenCalled();
+      });
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    describe('handleAddOrRemoveDiscount 함수', () => {
+      test('할인을 정상적으로 추가한다', () => {
+        const mockProductList: ProductType[] = [
+          {
+            id: 'p1',
+            name: '상품1',
+            price: 10000,
+            stock: 20,
+            discounts: [],
+          },
+        ];
+        const mockDiscount: DiscountType = { quantity: 5, rate: 0.1 };
+        const onProductUpdate = vi.fn();
+        const setEditingProduct = vi.fn();
+
+        handleAddOrRemoveDiscount(
+          'p1',
+          mockDiscount,
+          true,
+          mockProductList,
+          onProductUpdate,
+          setEditingProduct,
+        );
+
+        expect(onProductUpdate).toHaveBeenCalledWith({
+          ...mockProductList[0],
+          discounts: [mockDiscount],
+        });
+        expect(setEditingProduct).toHaveBeenCalledWith({
+          ...mockProductList[0],
+          discounts: [mockDiscount],
+        });
+      });
+
+      test('할인을 정상적으로 제거한다', () => {
+        const mockDiscount: DiscountType = { quantity: 5, rate: 0.1 };
+        const mockProductList: ProductType[] = [
+          {
+            id: 'p1',
+            name: '상품1',
+            price: 10000,
+            stock: 20,
+            discounts: [mockDiscount],
+          },
+        ];
+        const onProductUpdate = vi.fn();
+        const setEditingProduct = vi.fn();
+
+        handleAddOrRemoveDiscount(
+          'p1',
+          mockDiscount,
+          false,
+          mockProductList,
+          onProductUpdate,
+          setEditingProduct,
+        );
+
+        expect(onProductUpdate).toHaveBeenCalledWith({
+          ...mockProductList[0],
+          discounts: [],
+        });
+        expect(setEditingProduct).toHaveBeenCalledWith({
+          ...mockProductList[0],
+          discounts: [],
+        });
+      });
+
+      test('제품이 없으면 아무 작업도 하지 않는다', () => {
+        const mockDiscount: DiscountType = { quantity: 5, rate: 0.1 };
+        const mockProductList: ProductType[] = [];
+        const onProductUpdate = vi.fn();
+        const setEditingProduct = vi.fn();
+
+        handleAddOrRemoveDiscount(
+          'p1',
+          mockDiscount,
+          true,
+          mockProductList,
+          onProductUpdate,
+          setEditingProduct,
+        );
+
+        expect(onProductUpdate).not.toHaveBeenCalled();
+        expect(setEditingProduct).not.toHaveBeenCalled();
+      });
     });
   });
 });
