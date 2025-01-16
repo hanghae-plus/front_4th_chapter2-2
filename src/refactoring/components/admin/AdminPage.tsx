@@ -22,7 +22,6 @@ export const AdminPage = ({
   onProductAdd,
   onCouponAdd,
 }: Props) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [showNewProductForm, setShowNewProductForm] = useState(false);
 
   const { newProduct, setNewProduct, handleAddNewProduct } = useAdminProduct({
@@ -31,18 +30,6 @@ export const AdminPage = ({
     onProductAdd,
     onAddSuccess: () => setShowNewProductForm(false),
   });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -70,8 +57,6 @@ export const AdminPage = ({
                 products={products}
                 product={product}
                 index={index}
-                openProductIds={openProductIds}
-                onClickToggleButton={toggleProductAccordion}
                 onProductUpdate={onProductUpdate}
               />
             ))}

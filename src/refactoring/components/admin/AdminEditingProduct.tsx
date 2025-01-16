@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Product } from '../../../types';
 import { useAdminEditingProduct } from '../../hooks';
 import {
@@ -10,8 +11,6 @@ interface Props {
   products: Product[];
   product: Product;
   index: number;
-  openProductIds: Set<string>;
-  onClickToggleButton: (productId: string) => void;
   onProductUpdate: (updatedProduct: Product) => void;
 }
 
@@ -19,10 +18,10 @@ export const AdminEditingProduct = ({
   products,
   product,
   index,
-  openProductIds,
   onProductUpdate,
-  onClickToggleButton,
 }: Props) => {
+  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+
   const {
     editingProduct,
     newDiscount,
@@ -32,6 +31,18 @@ export const AdminEditingProduct = ({
     handleClearProduct,
     handleClearDiscount,
   } = useAdminEditingProduct();
+
+  const toggleProductAccordion = (productId: string) => {
+    setOpenProductIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
 
   // 상품 수정 완료 핸들러 함수
   const handleEditComplete = () => {
@@ -70,7 +81,7 @@ export const AdminEditingProduct = ({
     >
       <button
         data-testid="toggle-button"
-        onClick={() => onClickToggleButton(product.id)}
+        onClick={() => toggleProductAccordion(product.id)}
         className="w-full text-left font-semibold"
       >
         {product.name} - {product.price}원 (재고: {product.stock})
