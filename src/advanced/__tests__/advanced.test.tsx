@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { describe, expect, it, test } from "vitest";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from "@testing-library/react";
 import { CartPage } from "../../refactoring/components/CartPage";
 import { AdminPage } from "../../refactoring/components/AdminPage";
 import { CartItem, Coupon, Product } from "../../types";
@@ -15,6 +22,9 @@ import {
   getRemainingStock,
   updateCartItemQuantity,
 } from "../../refactoring/models/cart";
+import { useOpenProductIds } from "../../refactoring/hooks/useOpenProductIds";
+import { useNewCoupon } from "../../refactoring/hooks/useNewCoupon";
+import { useEditingProduct } from "../../refactoring/hooks/useEditingProduct";
 
 const mockProducts: Product[] = [
   {
@@ -547,29 +557,264 @@ describe("advanced > ", () => {
       });
     });
 
-    it("상품에 적용 가능한 할인율을 반환한다.", () => {
-      const cart: CartItem[] = [
-        {
-          product: mockProducts[0], // 상품1: 10000원, 10개 이상 구매 시 10% 할인
-          quantity: 10,
-        },
-        {
-          product: mockProducts[1], // 상품2: 20000원, 10개 이상 구매 시 15% 할인
-          quantity: 5,
-        },
-      ];
+    describe("getAppliedDiscount 함수", () => {
+      it("상품에 적용 가능한 할인율을 반환한다.", () => {
+        const cart: CartItem[] = [
+          {
+            product: mockProducts[0], // 상품1: 10000원, 10개 이상 구매 시 10% 할인
+            quantity: 10,
+          },
+          {
+            product: mockProducts[1], // 상품2: 20000원, 10개 이상 구매 시 15% 할인
+            quantity: 5,
+          },
+        ];
 
-      // 상품1은 10개 이상 구매하므로 10% 할인 적용
-      const appliedDiscountForProduct1 = getAppliedDiscount(cart[0]);
-      expect(appliedDiscountForProduct1).toBe(0.1);
+        // 상품1은 10개 이상 구매하므로 10% 할인 적용
+        const appliedDiscountForProduct1 = getAppliedDiscount(cart[0]);
+        expect(appliedDiscountForProduct1).toBe(0.1);
 
-      // 상품2는 10개 이상 구매하지 않으므로 할인 적용 안됨
-      const appliedDiscountForProduct2 = getAppliedDiscount(cart[1]);
-      expect(appliedDiscountForProduct2).toBe(0);
+        // 상품2는 10개 이상 구매하지 않으므로 할인 적용 안됨
+        const appliedDiscountForProduct2 = getAppliedDiscount(cart[1]);
+        expect(appliedDiscountForProduct2).toBe(0);
+      });
+    });
+  });
+
+  describe("hook 함수 테스트 >", () => {
+    describe("useOpenProductIds", () => {
+      it("productId를 토글하면 Set에 추가된다", () => {
+        const { result } = renderHook(() => useOpenProductIds());
+
+        // Act: productId를 토글
+        act(() => {
+          result.current.toggleProductAccordion("product-1"); // ! toggleProductInSet 과 같이 내부에서 동작하는 유틸함수를 주입할수 있도록 할 필요가 있나?
+        });
+
+        // Assert: productId가 Set에 추가되었는지 확인
+        expect(result.current.openProductIds.has("product-1")).toBe(true);
+      });
+
+      it("productId를 다시 토글하면 Set에서 제거된다", () => {
+        const { result } = renderHook(() => useOpenProductIds());
+
+        // 먼저 productId를 추가
+        act(() => {
+          result.current.toggleProductAccordion("product-1");
+        });
+
+        // Act: 같은 productId를 다시 토글하여 제거
+        act(() => {
+          result.current.toggleProductAccordion("product-1");
+        });
+
+        // Assert: productId가 Set에서 제거되었는지 확인
+        expect(result.current.openProductIds.has("product-1")).toBe(false);
+      });
     });
 
-    test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+    describe("useNewCoupon", () => {
+      it("초기값이 기본 값으로 설정된다", () => {
+        const { result } = renderHook(() => useNewCoupon());
+
+        // Assert: 기본 값이 올바르게 설정되었는지 확인
+        expect(result.current.newCoupon).toEqual({
+          name: "",
+          code: "",
+          discountType: "percentage",
+          discountValue: 0,
+        });
+      });
+
+      it("setNewCouponName이 name을 올바르게 설정한다", () => {
+        const { result } = renderHook(() => useNewCoupon());
+
+        // Act: setNewCouponName 호출
+        act(() => {
+          result.current.setNewCouponName("New Year Sale");
+        });
+
+        // Assert: name이 업데이트되었는지 확인
+        expect(result.current.newCoupon.name).toBe("New Year Sale");
+      });
+
+      it("setNewCouponCode가 code를 올바르게 설정한다", () => {
+        const { result } = renderHook(() => useNewCoupon());
+
+        // Act: setNewCouponCode 호출
+        act(() => {
+          result.current.setNewCouponCode("NY2025");
+        });
+
+        // Assert: code가 업데이트되었는지 확인
+        expect(result.current.newCoupon.code).toBe("NY2025");
+      });
+
+      it("setNewCouponDiscountType이 discountType을 올바르게 설정한다", () => {
+        const { result } = renderHook(() => useNewCoupon());
+
+        // Act: setNewCouponDiscountType 호출
+        act(() => {
+          result.current.setNewCouponDiscountType("amount");
+        });
+
+        // Assert: discountType이 업데이트되었는지 확인
+        expect(result.current.newCoupon.discountType).toBe("amount");
+      });
+
+      it("setNewCouponDiscountValue가 discountValue를 올바르게 설정한다", () => {
+        const { result } = renderHook(() => useNewCoupon());
+
+        // Act: setNewCouponDiscountValue 호출
+        act(() => {
+          result.current.setNewCouponDiscountValue(20);
+        });
+
+        // Assert: discountValue가 업데이트되었는지 확인
+        expect(result.current.newCoupon.discountValue).toBe(20);
+      });
+
+      it("resetNewCoupon이 값을 기본 값으로 리셋한다", () => {
+        const { result } = renderHook(() => useNewCoupon());
+
+        // Act: 새로운 값을 설정한 후 resetNewCoupon 호출
+        act(() => {
+          result.current.setNewCouponName("Black Friday Sale");
+          result.current.setNewCouponCode("BF2025");
+          result.current.setNewCouponDiscountType("percentage");
+          result.current.setNewCouponDiscountValue(50);
+          result.current.resetNewCoupon();
+        });
+
+        // Assert: 값들이 기본값으로 리셋되었는지 확인
+        expect(result.current.newCoupon).toEqual({
+          name: "",
+          code: "",
+          discountType: "percentage",
+          discountValue: 0,
+        });
+      });
+    });
+
+    describe("useEditingProduct", () => {
+      it("초기 값은 editingProduct가 null로 설정된다", () => {
+        const { result } = renderHook(() => useEditingProduct());
+
+        // Assert: 초기값이 null인지 확인
+        expect(result.current.editingProduct).toBeNull();
+      });
+
+      it("setEditingProduct로 editingProduct를 설정할 수 있다", () => {
+        const { result } = renderHook(() => useEditingProduct());
+
+        const product: Product = {
+          id: "1",
+          name: "Product 1",
+          price: 100,
+          stock: 50,
+          discounts: [],
+        };
+
+        // Act: setEditingProduct 호출
+        act(() => {
+          result.current.setEditingProduct(product);
+        });
+
+        // Assert: editingProduct가 설정되었는지 확인
+        expect(result.current.editingProduct).toEqual(product);
+      });
+
+      it("updateProductName이 product의 name을 업데이트한다", () => {
+        const { result } = renderHook(() => useEditingProduct());
+
+        const product: Product = {
+          id: "1",
+          name: "Product 1",
+          price: 100,
+          stock: 50,
+          discounts: [],
+        };
+        act(() => {
+          result.current.setEditingProduct(product);
+        });
+
+        // Act: updateProductName 호출
+        act(() => {
+          result.current.updateProductName("1", "Updated Product");
+        });
+
+        // Assert: name이 업데이트되었는지 확인
+        expect(result.current.editingProduct?.name).toBe("Updated Product");
+      });
+
+      it("updateProductPrice가 product의 price를 업데이트한다", () => {
+        const { result } = renderHook(() => useEditingProduct());
+
+        const product: Product = {
+          id: "1",
+          name: "Product 1",
+          price: 100,
+          stock: 50,
+          discounts: [],
+        };
+        act(() => {
+          result.current.setEditingProduct(product);
+        });
+
+        // Act: updateProductPrice 호출
+        act(() => {
+          result.current.updateProductPrice("1", 150);
+        });
+
+        // Assert: price가 업데이트되었는지 확인
+        expect(result.current.editingProduct?.price).toBe(150);
+      });
+
+      it("updateProductName은 productId가 일치할 때만 name을 업데이트한다", () => {
+        const { result } = renderHook(() => useEditingProduct());
+
+        const product: Product = {
+          id: "1",
+          name: "Product 1",
+          price: 100,
+          stock: 50,
+          discounts: [],
+        };
+        act(() => {
+          result.current.setEditingProduct(product);
+        });
+
+        // Act: 다른 productId로 updateProductName 호출
+        act(() => {
+          result.current.updateProductName("2", "Updated Product");
+        });
+
+        // Assert: name이 업데이트되지 않았는지 확인
+        expect(result.current.editingProduct?.name).toBe("Product 1");
+      });
+
+      it("completeProductEdit이 editingProduct를 null로 리셋한다", () => {
+        const { result } = renderHook(() => useEditingProduct());
+
+        const product: Product = {
+          id: "1",
+          name: "Product 1",
+          price: 100,
+          stock: 50,
+          discounts: [],
+        };
+        act(() => {
+          result.current.setEditingProduct(product);
+        });
+
+        // Act: completeProductEdit 호출
+        act(() => {
+          result.current.completeProductEdit();
+        });
+
+        // Assert: editingProduct가 null로 리셋되었는지 확인
+        expect(result.current.editingProduct).toBeNull();
+      });
     });
   });
 });

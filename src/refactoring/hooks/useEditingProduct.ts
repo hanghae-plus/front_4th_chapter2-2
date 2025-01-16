@@ -28,7 +28,7 @@ export const useEditingProduct = () => {
 
   return {
     editingProduct,
-    setEditingProduct, // 흠.....
+    setEditingProduct, // 흠.....이게 의미있나?
     updateProductName,
     updateProductPrice,
     completeProductEdit,
