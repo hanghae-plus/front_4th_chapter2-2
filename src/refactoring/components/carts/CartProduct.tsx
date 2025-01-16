@@ -1,17 +1,13 @@
-import { CartItem } from '../../../types.ts';
-import { useCart } from '../../hooks/index.ts'
+import { CartItem } from "../../../types.ts";
 
 interface Props {
   item: CartItem;
+  onUpdateQuantity: (productId: string, newQuantity: number) => void;
+  onRemoveFromCart: (productId: string) => void;
+  onGetAppliedDiscount: (item: CartItem) => number;
 } 
 
-export const CartProduct = ({item}: Props) => {
-  const { 
-    removeFromCart, 
-    updateQuantity,
-    getAppliedDiscount
-  } = useCart();
-    
+export const CartProduct = ({item, onUpdateQuantity, onRemoveFromCart, onGetAppliedDiscount}: Props) => {
   return (
     <div key={item.product.id} className="flex justify-between items-center bg-white p-3 rounded shadow">
       <div>
@@ -20,9 +16,9 @@ export const CartProduct = ({item}: Props) => {
         <span className="text-sm text-gray-600">
           {item.product.price}원 x {item.quantity}
 
-          {getAppliedDiscount(item) > 0 && (
+          {onGetAppliedDiscount(item) > 0 && (
             <span className="text-green-600 ml-1">
-              ({(getAppliedDiscount(item) * 100).toFixed(0)}% 할인 적용)
+              ({(onGetAppliedDiscount(item) * 100).toFixed(0)}% 할인 적용)
             </span>
           )}
         </span>
@@ -30,19 +26,19 @@ export const CartProduct = ({item}: Props) => {
       <div>
         <button
           className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+          onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
         >
           -
         </button>
         <button
           className="bg-gray-300 text-gray-800 px-2 py-1 rounded mr-1 hover:bg-gray-400"
-          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+          onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
         >
           +
         </button>
         <button
           className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-          onClick={() => removeFromCart(item.product.id)}
+          onClick={() => onRemoveFromCart(item.product.id)}
         >
           삭제
         </button>

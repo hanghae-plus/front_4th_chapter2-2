@@ -1,21 +1,23 @@
-import { Coupon, Product } from '../../types.ts';
 import { useCart } from "../hooks";
-import { CartList } from './carts/CartList.tsx';
-import { CartProduct } from './carts/CartProduct.tsx';
+import { CartList } from "./carts/CartList.tsx";
+import { CartProduct } from "./carts/CartProduct.tsx";
+import { Props } from "./interface/defaultInterface.ts";
 
-interface Props {
-  products: Product[];
-  coupons: Coupon[];
-}
-
-export const CartPage = ({ products, coupons }: Props) => {
+export const CartPage = ({coupons, products}: Props) => {
   const {
     cart,
     selectedCoupon,
+    totalBeforeDiscount,
+    totalAfterDiscount,
+    totalDiscount,
     applyCoupon,
-    calculateTotal,
+    addToCart,
+    removeFromCart, 
+    updateQuantity, 
+    getAppliedDiscount,
+    getRemainingStock,
+    getMaxDiscount
   } = useCart();
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
 
   return (
     <div className="container mx-auto p-4">
@@ -25,16 +27,27 @@ export const CartPage = ({ products, coupons }: Props) => {
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
           <div className="space-y-2">
             {products.map((product) => 
-              <CartList product={product} key={product.id} />
+              <CartList 
+                product={product} 
+                key={product.id} 
+                addToCart={addToCart} 
+                getRemainingStock={getRemainingStock}
+                getMaxDiscount={getMaxDiscount}
+              />
             )}
           </div>
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
-
           <div className="space-y-2">
             {cart.map(item => 
-              <CartProduct item={item} key={item.product.id} />
+              <CartProduct 
+                item={item} 
+                key={item.product.id} 
+                onUpdateQuantity={updateQuantity}
+                onRemoveFromCart={removeFromCart}
+                onGetAppliedDiscount={getAppliedDiscount}
+              />
             )}
           </div>
 

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { CartPage } from './components/CartPage.tsx';
 import { AdminPage } from './components/AdminPage.tsx';
-import { useCoupons, useProducts } from "./hooks";
-import { initialCoupons, initialProducts } from './models/datas.ts';
+import { initialCoupons, initialProducts } from "./models/datas.ts";
+import { useCoupons, useProducts} from "./hooks";
 
 const App = () => {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
-  const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { products, addProduct, updateProduct } = useProducts(initialProducts);
+  const { coupons, addCoupon } = useCoupons(initialCoupons);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -24,18 +24,15 @@ const App = () => {
       </nav>
       <main className="container mx-auto mt-6">
         {isAdmin ? (
-          <AdminPage
-            products={products}
-            coupons={coupons}
-            onProductUpdate={updateProduct}
-            onProductAdd={addProduct}
-            onCouponAdd={addCoupon}
-          />
-        ) : (
-          <CartPage 
+          <AdminPage 
             products={products} 
             coupons={coupons}
+            onAddCoupon={addCoupon}
+            onAddProduct={addProduct}
+            onUpdateProduct={updateProduct}
           />
+        ) : (
+          <CartPage products={products} coupons={coupons}/>
         )}
       </main>
     </div>
