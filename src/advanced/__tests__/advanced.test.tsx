@@ -338,8 +338,6 @@ describe('advanced > ', () => {
       expect(result.current.values).toEqual(mockProduct);
     });
 
-    // ㅇㅇㅇㅇ
-
     test('handleChange를 호출하면 Form 상태가 변경 되어야 한다', () => {
       const { result } = renderHook(() =>
         useForm({
