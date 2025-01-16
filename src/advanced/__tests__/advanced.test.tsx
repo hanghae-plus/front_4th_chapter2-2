@@ -1,10 +1,24 @@
 import { useState } from "react";
 import { describe, expect, test } from "vitest";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from "@testing-library/react";
 import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { Coupon, Product } from "../../types";
 import { formatDiscount } from "../../refactoring/utils/formatDicount.ts";
+import { getMaxDiscount } from "../../refactoring/utils/getMaxDiscount.ts";
+import { calculateTotalAfterDiscount } from "../../refactoring/utils/cartUtils.ts";
+import { CartItem } from "../../types";
+import { useProducts } from "../../refactoring/hooks/useProduct.ts";
+import { useCoupons } from "../../refactoring/hooks/useCoupon.ts";
+import { useCart } from "../../refactoring/hooks/useCart.ts";
+import { initialProducts } from "../../store/globalStore.ts";
 
 const mockProducts: Product[] = [
   {
@@ -286,8 +300,114 @@ describe("advanced > ", () => {
       expect(formatDiscount(couponNegative)).toBe("-10%");
     });
 
-    // test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-    //   expect(true).toBe(false);
-    // });
+    test("getMaxDiscount 함수가 최대 할인율을 올바르게 반환해야 한다", () => {
+      const discounts = [
+        { quantity: 2, rate: 10 },
+        { quantity: 3, rate: 20 },
+        { quantity: 3, rate: 30 },
+      ];
+      expect(getMaxDiscount(discounts)).toBe(30);
+    });
+
+    test("getMaxDiscount 함수가 빈 할인 배열에서 0을 반환해야 한다", () => {
+      expect(getMaxDiscount([])).toBe(0);
+    });
+
+    test("getMaxDiscount 함수가 음수 할인 값을 무시하고 최대값을 반환해야 한다", () => {
+      const discounts = [
+        { quantity: 2, rate: -5 },
+        { quantity: 3, rate: 10 },
+        { quantity: 3, rate: 15 },
+      ];
+      expect(getMaxDiscount(discounts)).toBe(15);
+    });
+
+    const mockCart: CartItem[] = [
+      {
+        product: {
+          id: "p1",
+          name: "상품1",
+          price: 10000,
+          stock: 10,
+          discounts: [{ quantity: 2, rate: 0.1 }],
+        },
+        quantity: 1,
+      },
+      {
+        product: {
+          id: "p2",
+          name: "상품2",
+          price: 20000,
+          stock: 20,
+          discounts: [{ quantity: 3, rate: 0.2 }],
+        },
+        quantity: 3,
+      },
+      {
+        product: {
+          id: "p3",
+          name: "상품3",
+          price: 5000,
+          stock: 15,
+          discounts: [{ quantity: 5, rate: 0.3 }],
+        },
+        quantity: 5,
+      },
+    ];
+
+    test("할인이 적용되지 않은 경우 총 가격이 원래 가격과 동일해야 한다", () => {
+      const cartWithoutDiscounts: CartItem[] = mockCart.map((item) => ({
+        ...item,
+        product: { ...item.product, discounts: [] }, // 할인 없는 상태로 변경
+      }));
+      expect(calculateTotalAfterDiscount(cartWithoutDiscounts)).toBe(95000);
+    });
+
+    test("할인 조건을 충족하는 경우 할인율이 적용된 총 가격을 반환해야 한다", () => {
+      expect(calculateTotalAfterDiscount(mockCart)).toBe(
+        10000 * 1 + 20000 * 3 * (1 - 0.2) + 5000 * 5 * (1 - 0.3)
+      );
+    });
+
+    test("장바구니가 비어 있으면 총 가격은 0이어야 한다", () => {
+      expect(calculateTotalAfterDiscount([])).toBe(0);
+    });
+
+    test("상품 수량이 할인 조건보다 적으면 할인이 적용되지 않아야 한다", () => {
+      const cartWithLowQuantity: CartItem[] = [
+        {
+          product: {
+            id: "p1",
+            name: "상품1",
+            price: 10000,
+            stock: 5,
+            discounts: [{ quantity: 5, rate: 0.1 }],
+          },
+          quantity: 2,
+        },
+      ];
+      expect(calculateTotalAfterDiscount(cartWithLowQuantity)).toBe(20000);
+    });
+
+    test("여러 개의 할인율이 있는 경우 가장 높은 할인율이 적용되어야 한다", () => {
+      const cartWithMultipleDiscounts: CartItem[] = [
+        {
+          product: {
+            id: "p1",
+            name: "상품1",
+            price: 10000,
+            stock: 10,
+            discounts: [
+              { quantity: 2, rate: 0.1 },
+              { quantity: 5, rate: 0.2 },
+            ],
+          },
+          quantity: 5,
+        },
+      ];
+      expect(calculateTotalAfterDiscount(cartWithMultipleDiscounts)).toBe(
+        10000 * 5 * (1 - 0.2)
+      );
+    });
   });
 });
