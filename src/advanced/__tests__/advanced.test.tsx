@@ -1,11 +1,13 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AdminPage } from '../../refactoring/domains/admin/AdminPage';
 import { CartPage } from '../../refactoring/domains/cart/CartPage';
+import { useStorage } from '../../refactoring/hooks';
 
 import type { Coupon, Product } from '../../types';
+import type { Mock } from 'vitest';
 
 const mockProducts: Product[] = [
   {
@@ -232,6 +234,92 @@ describe('advanced > ', () => {
 
     test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
       expect(true).toBe(false);
+    });
+  });
+
+  describe('useStorage', () => {
+    const key = 'testKey';
+
+    const mockProduct = {
+      id: 'p1',
+      name: '상품1',
+      price: 10000,
+      stock: 20,
+      discounts: [{ quantity: 10, rate: 0.1 }],
+    };
+
+    beforeEach(() => {
+      vi.stubGlobal('localStorage', {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        clear: vi.fn(),
+      });
+
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    test('VITE_STORAGE_TYPE이 "local"일 때 localStorage 값으로 초기화되어야 한다.', () => {
+      vi.stubEnv('VITE_STORAGE_TYPE', 'local');
+
+      (localStorage.getItem as Mock).mockImplementation((key) =>
+        key === 'testKey' ? JSON.stringify(mockProduct) : null,
+      );
+
+      const { result } = renderHook(() => useStorage(key, mockProduct));
+
+      expect(result.current.item).toEqual(mockProduct);
+    });
+
+    test('VITE_STORAGE_TYPE이 "local"일 때 setItem이 호출되면 localStorage와 state가 업데이트되어야 한다.', () => {
+      vi.stubEnv('VITE_STORAGE_TYPE', 'local');
+
+      const { result } = renderHook(() => useStorage(key, mockProduct));
+
+      act(() => {
+        result.current.setItem({ ...mockProduct, price: 15000 });
+      });
+
+      expect(result.current.item).toEqual({ ...mockProduct, price: 15000 });
+      expect(localStorage.setItem).toHaveBeenCalledWith(key, JSON.stringify({ ...mockProduct, price: 15000 }));
+    });
+
+    test('VITE_STORAGE_TYPE이 "local"일 때 updateItem이 호출되면 기존 상태와 병합된 새로운 값으로 state와 localStorage가 업데이트되어야 한다.', () => {
+      vi.stubEnv('VITE_STORAGE_TYPE', 'local');
+
+      const { result } = renderHook(() => useStorage(key, mockProduct));
+
+      act(() => {
+        result.current.updateItem({ ...mockProduct, price: 15000 });
+      });
+
+      expect(result.current.item).toEqual({ ...mockProduct, price: 15000 });
+      expect(localStorage.setItem).toHaveBeenCalledWith(key, JSON.stringify({ ...mockProduct, price: 15000 }));
+    });
+
+    test('VITE_STORAGE_TYPE이 "state"일 때 localStorage를 사용하지 않아야 한다.', () => {
+      vi.stubEnv('VITE_STORAGE_TYPE', 'state');
+
+      const { result } = renderHook(() => useStorage(key, mockProduct));
+
+      act(() => {
+        result.current.setItem({ ...mockProduct, price: 20000 });
+      });
+
+      expect(localStorage.setItem).not.toHaveBeenCalled();
+      expect(result.current.item).toEqual({ ...mockProduct, price: 20000 });
+    });
+
+    test('VITE_STORAGE_TYPE이 "state"일 때 initialValue로 초기화되어야 한다.', () => {
+      vi.stubEnv('VITE_STORAGE_TYPE', 'state');
+
+      const { result } = renderHook(() => useStorage(key, mockProduct));
+
+      expect(result.current.item).toEqual(mockProduct);
     });
   });
 });
