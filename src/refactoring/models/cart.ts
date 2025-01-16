@@ -3,8 +3,11 @@ import { CartItem, Coupon } from '../../types';
 export const calculateItemTotal = (item: CartItem) => {
   const { product, quantity } = item;
 
-  const price = product.price * quantity * (1 - getMaxApplicableDiscount(item));
-  return price;
+  return product.price * quantity * (1 - getMaxApplicableDiscount(item));
+};
+
+export const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
+  return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0);
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
@@ -14,12 +17,9 @@ export const getMaxApplicableDiscount = (item: CartItem) => {
   } = item;
 
   if (discounts.length === 0) return 0;
+  const avaliableDiscount = discounts.filter((discount) => discount.quantity <= quantity);
 
-  const maxDiscount = discounts
-    .filter((discount) => discount.quantity <= quantity)
-    .reduce((max, discount) => Math.max(max, discount.rate), 0);
-
-  return maxDiscount;
+  return getMaxDiscount(avaliableDiscount);
 };
 
 export const calculateCoupon = (totalBeforeCoupon: number, selectedCoupon: Coupon | null) => {

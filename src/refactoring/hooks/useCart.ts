@@ -14,7 +14,7 @@ export const useCart = () => {
       );
       setCart(newCart);
     } else {
-      setCart((prev) => [{ product, quantity: 1 }, ...prev]);
+      setCart((prev) => [...prev, { product, quantity: 1 }]);
     }
   };
 
