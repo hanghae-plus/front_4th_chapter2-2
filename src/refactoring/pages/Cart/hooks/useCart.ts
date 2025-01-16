@@ -8,25 +8,22 @@ export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
-  // Q. updateCartItemQuantity는 함수로 분리 되어 있는데, addToCart는 분리 안되어 있는 이유는 뭘까..?
   const addToCart = (product: Product) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.product.id === product.id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.product.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) } : item
-        );
-      }
-      return [...prevCart, { product, quantity: 1 }];
-    });
+    const existingItem = cart.find(item => item.product.id === product.id);
+    if (existingItem) {
+      setCart(updateCartItemQuantity(cart, product.id, existingItem.quantity + 1));
+      return;
+    }
+
+    setCart([...cart, { product, quantity: 1 }]);
   };
 
   const removeFromCart = (productId: string) => {
-    setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
+    setCart(cart.filter(item => item.product.id !== productId));
   };
 
   const updateQuantity = (productId: string, newQuantity: number) => {
-    setCart(prevCart => updateCartItemQuantity(prevCart, productId, newQuantity));
+    setCart(updateCartItemQuantity(cart, productId, newQuantity));
   };
 
   const applyCoupon = (coupon: Coupon) => {
