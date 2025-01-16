@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { CartPage } from "../../refactoring/pages/CartPage.tsx";
 import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { Coupon, Product } from "../../types";
+import { formatDiscount } from "../../refactoring/utils/formatDicount.ts";
 
 const mockProducts: Product[] = [
   {
@@ -28,24 +29,9 @@ const mockProducts: Product[] = [
     discounts: [{ quantity: 10, rate: 0.2 }],
   },
 ];
-const mockCoupons: Coupon[] = [
-  {
-    name: "5000원 할인 쿠폰",
-    code: "AMOUNT5000",
-    discountType: "amount",
-    discountValue: 5000,
-  },
-  {
-    name: "10% 할인 쿠폰",
-    code: "PERCENT10",
-    discountType: "percentage",
-    discountValue: 10,
-  },
-];
 
 const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
 
   const handleProductUpdate = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
@@ -57,17 +43,11 @@ const TestAdminPage = () => {
     setProducts((prevProducts) => [...prevProducts, newProduct]);
   };
 
-  const handleCouponAdd = (newCoupon: Coupon) => {
-    setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
-  };
-
   return (
     <AdminPage
       products={products}
-      coupons={coupons}
       onProductUpdate={handleProductUpdate}
       onProductAdd={handleProductAdd}
-      onCouponAdd={handleCouponAdd}
     />
   );
 };
@@ -75,7 +55,7 @@ const TestAdminPage = () => {
 describe("advanced > ", () => {
   describe("시나리오 테스트 > ", () => {
     test("장바구니 페이지 테스트 > ", async () => {
-      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+      render(<CartPage products={mockProducts} />);
       const product1 = screen.getByTestId("product-p1");
       const product2 = screen.getByTestId("product-p2");
       const product3 = screen.getByTestId("product-p3");
@@ -262,12 +242,52 @@ describe("advanced > ", () => {
   });
 
   describe("자유롭게 작성해보세요.", () => {
-    test("새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+    // 새로운 유틸 함수 테스트
+    test("formatDiscount 함수가 올바르게 동작해야 한다", () => {
+      const couponAmount: Coupon = {
+        name: "Test Amount",
+        code: "TEST1",
+        discountType: "amount",
+        discountValue: 5000,
+      };
+      const couponPercentage: Coupon = {
+        name: "Test Percentage",
+        code: "TEST2",
+        discountType: "percentage",
+        discountValue: 15,
+      };
+
+      // 할인 타입이 'amount'일 때
+      expect(formatDiscount(couponAmount)).toBe("5000원");
+
+      // 할인 타입이 'percentage'일 때
+      expect(formatDiscount(couponPercentage)).toBe("15%");
     });
 
-    test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
-      expect(true).toBe(false);
+    // // 에지 케이스 처리
+    test("formatDiscount 함수가 edge case를 올바르게 처리해야 한다", () => {
+      const couponZero: Coupon = {
+        name: "Zero Discount",
+        code: "ZERO",
+        discountType: "amount",
+        discountValue: 0,
+      };
+      const couponNegative: Coupon = {
+        name: "Negative Discount",
+        code: "NEG",
+        discountType: "percentage",
+        discountValue: -10,
+      };
+
+      // 할인 값이 0일 때
+      expect(formatDiscount(couponZero)).toBe("0원");
+
+      // 할인 값이 음수일 때
+      expect(formatDiscount(couponNegative)).toBe("-10%");
     });
+
+    // test("새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요", () => {
+    //   expect(true).toBe(false);
+    // });
   });
 });
