@@ -11,7 +11,7 @@ import { useCoupons } from '../../refactoring/entities/coupon/model/useCoupon.ts
 import { useProducts } from '../../refactoring/features/product/model/useProduct.ts';
 import { useCart } from '../../refactoring/entities/cart/model/useCart.ts';
 import { ProductProvider } from '../../refactoring/entities/product/provider/ProductProvider.tsx';
-import { CouponProvider } from '../../refactoring/entities/coupon/ui/CouponProvider.tsx';
+import { CouponProvider } from '../../refactoring/entities/coupon/provider/CouponProvider.tsx';
 
 const mockProducts: Product[] = [
   {
