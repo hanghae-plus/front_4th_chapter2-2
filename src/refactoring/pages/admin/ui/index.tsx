@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Coupon, Product } from '../../../../types';
 import { TextButton } from '../../../shared/ui';
 import { ProductPanel } from '../../../features/product/ui/ProductPanel';
-import { useProductContext } from '../../../features/product/lib/context';
-import { useCouponContext } from '../../../features/coupon/lib/context';
+import { useProductContext } from '../../../entities/product/model/useProductContext';
+import { useCouponContext } from '../../../entities/coupon/model/useCouponContext';
 
 export function AdminPage() {
   const { products, updateProduct, addProduct } = useProductContext();
@@ -30,7 +30,6 @@ export function AdminPage() {
   // 수정 완료 핸들러 함수 추가
   const handleEditComplete = () => {
     if (editingProduct) {
-      addProduct(editingProduct);
       setEditingProduct(null);
     }
   };

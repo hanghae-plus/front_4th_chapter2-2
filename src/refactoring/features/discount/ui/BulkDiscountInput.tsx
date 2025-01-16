@@ -20,10 +20,10 @@ export function BulkDiscountInput({ onAddDiscount, className = '' }: BulkDiscoun
   };
 
   const handleRateChange = (value: string) => {
-    const rate = parseInt(value, 10) || 0;
+    const rate = Math.round(parseInt(value, 10)) / 100;
     setDiscount((prev) => ({
       ...prev,
-      rate: rate >= 0 && rate <= 100 ? rate / 100 : prev.rate,
+      rate,
     }));
   };
 

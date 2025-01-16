@@ -17,7 +17,7 @@ export const useDiscountEditor = ({ initialDiscounts, onUpdate }: UseDiscountEdi
       return;
     }
 
-    const updatedDiscounts = [...discounts, newDiscount].sort((a, b) => a.quantity - b.quantity);
+    const updatedDiscounts = [...discounts, newDiscount];
 
     if (onUpdate) {
       onUpdate(updatedDiscounts);

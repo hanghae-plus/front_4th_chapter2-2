@@ -1,11 +1,11 @@
 import { CartItem, Product } from '../../../../types';
-import { useCart } from '../../../features/cart/model/useCart';
+import { useCart } from '../../../entities/cart/model/useCart';
 import { TextButton } from '../../../shared/ui';
 import { DiscountCondition } from '../../../entities/discount/ui/DiscountCondition';
 import { ProductDisplay } from '../../../entities/product/ui/ProductDisplay';
 import { formatPrice } from '../../../entities/product/lib';
-import { useProductContext } from '../../../features/product/lib/context';
-import { useCouponContext } from '../../../features/coupon/lib/context';
+import { useProductContext } from '../../../entities/product/model/useProductContext';
+import { useCouponContext } from '../../../entities/coupon/model/useCouponContext';
 
 export function CartPage() {
   const { products } = useProductContext();

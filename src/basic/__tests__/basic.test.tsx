@@ -4,12 +4,14 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 
 import { CartItem, Coupon, Product } from '../../types';
 
-import * as cartUtils from '../../refactoring/features/cart/lib/cart.ts';
+import * as cartUtils from '../../refactoring/entities/cart/lib/cart.ts';
 import { AdminPage } from '../../refactoring/pages/admin/ui';
 import { CartPage } from '../../refactoring/pages/cart/ui';
-import { useCoupons } from '../../refactoring/features/coupon/model/useCoupon.ts';
+import { useCoupons } from '../../refactoring/entities/coupon/model/useCoupon.ts';
 import { useProducts } from '../../refactoring/features/product/model/useProduct.ts';
-import { useCart } from '../../refactoring/features/cart/model/useCart.ts';
+import { useCart } from '../../refactoring/entities/cart/model/useCart.ts';
+import { ProductProvider } from '../../refactoring/entities/product/provider/ProductProvider.tsx';
+import { CouponProvider } from '../../refactoring/entities/coupon/ui/CouponProvider.tsx';
 
 const mockProducts: Product[] = [
   {
@@ -68,20 +70,24 @@ function TestAdminPage() {
   };
 
   return (
-    <AdminPage
-      products={products}
-      coupons={coupons}
-      onProductUpdate={handleProductUpdate}
-      onProductAdd={handleProductAdd}
-      onCouponAdd={handleCouponAdd}
-    />
+    <CouponProvider initialCoupons={mockCoupons}>
+      <ProductProvider initialProducts={mockProducts}>
+        <AdminPage />
+      </ProductProvider>
+    </CouponProvider>
   );
 }
 
 describe('basic > ', () => {
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
-      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+      render(
+        <CouponProvider initialCoupons={mockCoupons}>
+          <ProductProvider initialProducts={mockProducts}>
+            <CartPage />
+          </ProductProvider>
+        </CouponProvider>,
+      );
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -212,16 +218,11 @@ describe('basic > ', () => {
 
       // 할인 추가
       act(() => {
-        fireEvent.change(screen.getByPlaceholderText('수량'), {
-          target: { value: '5' },
-        });
-        fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), {
-          target: { value: '5' },
-        });
+        fireEvent.change(screen.getByPlaceholderText('수량'), { target: { value: '5' } });
+        fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), { target: { value: '5' } });
       });
       fireEvent.click(screen.getByText('할인 추가'));
 
-      console.log('test', screen.queryByText('5개 이상 구매 시 5% 할인'));
       expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
 
       // 할인 삭제

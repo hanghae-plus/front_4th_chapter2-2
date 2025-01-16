@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Coupon, Product } from '../../../types';
-import { ProductProvider } from '../../features/product/lib/context';
-import { CouponProvider } from '../../features/coupon/lib/context';
+import { ProductProvider } from '../../entities/product/provider/ProductProvider';
+import { CouponProvider } from '../../entities/coupon/ui/CouponProvider';
 
 interface AppContainerProps {
   children: ReactNode;

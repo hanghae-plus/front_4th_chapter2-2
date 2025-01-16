@@ -32,7 +32,6 @@ export function ProductPanel({
   };
 
   const handleSubmit = (editingProduct: Product) => {
-    console.log(editingProduct);
     onProductUpdate(editingProduct);
     onEditComplete();
   };
@@ -42,8 +41,9 @@ export function ProductPanel({
       <PanelTrigger onToggle={handleToggle}>
         {product.name} - {product.price}원 (재고: {product.stock})
       </PanelTrigger>
-      <div className={isOpen ? 'block' : 'hidden'}>
-        {isEditing ? (
+      {/* <div className={isOpen ? 'block' : 'hidden'}> */}
+      {isOpen &&
+        (isEditing ? (
           <ProductEditForm product={product} onUpdate={handleSubmit} />
         ) : (
           <div>
@@ -56,8 +56,8 @@ export function ProductPanel({
               className="px-2 py-1"
             />
           </div>
-        )}
-      </div>
+        ))}
+      {/* </div> */}
     </ProductDisplay>
   );
 }

@@ -56,12 +56,12 @@ function App() {
   };
 
   return (
-    <AppContainer initialProducts={initialProducts} initialCoupons={initialCoupons}>
-      <div className="min-h-screen bg-gray-100">
-        <Header isAdmin={isAdmin} onToggleAdmin={toggleAdmin} />
+    <div className="min-h-screen bg-gray-100">
+      <Header isAdmin={isAdmin} onToggleAdmin={toggleAdmin} />
+      <AppContainer initialProducts={initialProducts} initialCoupons={initialCoupons}>
         <main className="container mx-auto mt-6">{isAdmin ? <AdminPage /> : <CartPage />}</main>
-      </div>
-    </AppContainer>
+      </AppContainer>
+    </div>
   );
 }
 
