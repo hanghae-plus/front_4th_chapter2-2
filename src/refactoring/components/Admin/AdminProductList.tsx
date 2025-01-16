@@ -1,7 +1,7 @@
 import AdminProductContent from './AdminProductContent.tsx';
 import { Product } from '../../../types.ts';
 import useProductSet from '../../hooks/useProductSet.ts';
-import useAdmin from '../../hooks/useAdmin.ts';
+import useAdminProductList from '../../hooks/useAdminProductList.ts';
 
 interface AdminProductCardProps {
   productList: Product[];
@@ -9,7 +9,7 @@ interface AdminProductCardProps {
 }
 
 const AdminProductList = ({ productList, onProductUpdate }: AdminProductCardProps) => {
-  const adminProps = useAdmin({
+  const adminProps = useAdminProductList({
     productList,
     onProductUpdate,
   });
