@@ -1,9 +1,16 @@
-import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { ChangeEvent, useState } from 'react';
+import { describe, expect, test, vi } from 'vitest';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/Cart/CartPage.tsx';
 import { AdminPage } from '../../refactoring/components/Admin/AdminPage.tsx';
 import { Coupon, Product } from '../../types';
+import useAdminEditProduct from '../../refactoring/hooks/useAdminEditProduct.ts';
+import useAdminNewDiscount from '../../refactoring/hooks/useAdminNewDiscount.ts';
+import { useCart, useCouponList, useProductList } from '../../refactoring/hooks';
+import { initialNewProduct } from '../../constant.ts';
+import useNewProduct from '../../refactoring/hooks/useNewProduct.ts';
+import useProductSet from '../../refactoring/hooks/useProductSet.ts';
+import useAdminProductList from '../../refactoring/hooks/useAdminProductList.ts';
 
 const mockProducts: Product[] = [
   {
@@ -228,13 +235,387 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      // expect(true).toBe(false);
+  describe('useAdminEditProduct 테스트', () => {
+    const props = {
+      productList: mockProducts,
+      onProductUpdate: vi.fn(),
+    };
+    test('상품 수정 테스트', () => {
+      // given
+      const { result } = renderHook(() => useAdminEditProduct(props));
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      // then
+      expect(result.current.editingProduct).toEqual(mockProducts[0]);
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      // expect(true).toBe(false);
+    test('상품명 수정 테스트', () => {
+      // given
+      const { result } = renderHook(() => useAdminEditProduct(props));
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      act(() => {
+        result.current.handleProductNameUpdate('p1', '상품1 수정');
+      });
+
+      // then
+      expect(result.current.editingProduct).toEqual({
+        ...mockProducts[0],
+        name: '상품1 수정',
+      });
+    });
+
+    test('가격 수정 테스트', () => {
+      // given
+      const { result } = renderHook(() => useAdminEditProduct(props));
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      act(() => {
+        result.current.handlePriceUpdate('p1', 15000);
+      });
+
+      // then
+      expect(result.current.editingProduct).toEqual({
+        ...mockProducts[0],
+        price: 15000,
+      });
+    });
+
+    test('재고 수정 테스트', () => {
+      // given
+      const { result } = renderHook(() => useAdminEditProduct(props));
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      act(() => {
+        result.current.handleStockUpdate('p1', 30);
+      });
+
+      // then
+      expect(result.current.editingProduct).toEqual({
+        ...mockProducts[0],
+        stock: 30,
+      });
+    });
+
+    test('할인 삭제 테스트', () => {
+      // given
+      const { result } = renderHook(() => useAdminEditProduct(props));
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      act(() => {
+        result.current.handleRemoveDiscount('p1', 0);
+      });
+
+      // then
+      expect(result.current.editingProduct).toEqual({
+        ...mockProducts[0],
+        discountList: [],
+      });
+    });
+
+    test('수정 완료 테스트', () => {
+      // given
+      const { result } = renderHook(() => useAdminEditProduct(props));
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      act(() => {
+        result.current.handleEditComplete();
+      });
+
+      // then
+      expect(props.onProductUpdate).toHaveBeenCalledWith(mockProducts[0]);
+      expect(result.current.editingProduct).toBeNull();
+    });
+  });
+  describe('useAdminNewDiscount 테스트', () => {
+    test('수량 변경 테스트', () => {
+      const { result } = renderHook(() => useAdminNewDiscount());
+      const value = { target: { value: '5' } } as unknown as ChangeEvent<HTMLInputElement>;
+
+      act(() => {
+        result.current.handleChangeQuantity(value);
+      });
+
+      expect(result.current.newDiscount).toEqual({ quantity: 5, rate: 0 });
+    });
+    test('할인율 변경 테스트', () => {
+      const { result } = renderHook(() => useAdminNewDiscount());
+      const value = { target: { value: '10' } } as unknown as ChangeEvent<HTMLInputElement>;
+
+      act(() => {
+        result.current.handleChangeRate(value);
+      });
+
+      expect(result.current.newDiscount).toEqual({ quantity: 0, rate: 0.1 });
+    });
+    test('할인율 초기화 테스트', () => {
+      const { result } = renderHook(() => useAdminNewDiscount());
+
+      act(() => {
+        result.current.resetNewDiscount();
+      });
+
+      expect(result.current.newDiscount).toEqual({ quantity: 0, rate: 0 });
+    });
+  });
+  describe('useAdminProductList 테스트', () => {
+    test('handleAddDiscount 테스트', () => {
+      // given
+      const onProductUpdate = vi.fn();
+      const { result } = renderHook(() =>
+        useAdminProductList({ productList: mockProducts, onProductUpdate }),
+      );
+
+      const updatedProduct = {
+        ...mockProducts[0],
+        discountList: [...mockProducts[0].discountList, { quantity: 5, rate: 0.05 }],
+      };
+
+      // when
+      act(() => {
+        result.current.handleEditProduct(mockProducts[0]);
+      });
+
+      act(() => {
+        result.current.handleChangeQuantity({
+          target: { value: '5', type: 'number' },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      act(() => {
+        result.current.handleChangeRate({
+          target: { value: '5', type: 'number' },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      act(() => {
+        result.current.handleAddDiscount('p1');
+      });
+
+      // then
+      expect(onProductUpdate).toHaveBeenCalledWith(updatedProduct);
+    });
+  });
+  describe('useCart 테스트', () => {
+    test('상품 추가 테스트', () => {
+      // given
+      const { result } = renderHook(() => useCart());
+
+      // when
+      act(() => {
+        result.current.addToCart(mockProducts[0]);
+      });
+
+      // then
+      expect(result.current.cart).toEqual([{ product: mockProducts[0], quantity: 1 }]);
+    });
+    test('상품 삭제 테스트', () => {
+      // given
+      const { result } = renderHook(() => useCart());
+
+      // when
+      act(() => {
+        result.current.addToCart(mockProducts[0]);
+        result.current.addToCart(mockProducts[1]);
+        result.current.removeFromCart('p1');
+      });
+
+      // then
+      expect(result.current.cart).toEqual([{ product: mockProducts[1], quantity: 1 }]);
+    });
+    test('수량 변경 테스트', () => {
+      // given
+      const { result } = renderHook(() => useCart());
+
+      // when
+      act(() => {
+        result.current.addToCart(mockProducts[0]);
+        result.current.updateQuantity('p1', 5);
+      });
+
+      // then
+      expect(result.current.cart).toEqual([{ product: mockProducts[0], quantity: 5 }]);
+    });
+    test('쿠폰 변경 테스트', () => {
+      // given
+      const { result } = renderHook(() => useCart());
+
+      // when
+      act(() => {
+        result.current.applyCoupon(mockCoupons[0]);
+      });
+
+      // then
+      expect(result.current.selectedCoupon).toEqual(mockCoupons[0]);
+    });
+  });
+  describe('useCoupon 테스트', () => {
+    test('쿠폰 추가 테스트', () => {
+      // given
+      const { result } = renderHook(() => useCouponList([]));
+
+      // when
+      act(() => {
+        result.current.addCoupon(mockCoupons[0]);
+      });
+
+      // then
+      expect(result.current.couponList).toEqual([mockCoupons[0]]);
+    });
+  });
+  describe('useNewCoupon 테스트', () => {
+    test('쿠폰 변경 테스트', () => {
+      // given
+      const { result } = renderHook(() => useCouponList([]));
+
+      // when
+      act(() => {
+        result.current.addCoupon(mockCoupons[0]);
+      });
+
+      // then
+      expect(result.current.couponList).toEqual([mockCoupons[0]]);
+    });
+  });
+  describe('useNewProduct 테스트', () => {
+    test('상품 추가 테스트', () => {
+      // given
+      const onProductAdd = vi.fn();
+      const { result } = renderHook(() => useNewProduct({ onProductAdd }));
+
+      // when
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      // then
+      expect(onProductAdd).toHaveBeenCalledWith({ ...initialNewProduct, id: expect.any(String) });
+    });
+    test('상품명 변경 테스트', () => {
+      // given
+      const onProductAdd = vi.fn();
+      const { result } = renderHook(() => useNewProduct({ onProductAdd }));
+
+      // when
+      act(() => {
+        result.current.handleChangeProductName({
+          target: { value: '상품1' },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      // then
+      expect(result.current.newProduct).toEqual({ ...initialNewProduct, name: '상품1' });
+    });
+    test('가격 변경 테스트', () => {
+      // given
+      const onProductAdd = vi.fn();
+      const { result } = renderHook(() => useNewProduct({ onProductAdd }));
+
+      // when
+      act(() => {
+        result.current.handleChangeProductPrice({
+          target: { value: '10000', type: 'number' },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      // then
+      expect(result.current.newProduct).toEqual({ ...initialNewProduct, price: 10000 });
+    });
+    test('재고 변경 테스트', () => {
+      // given
+      const onProductAdd = vi.fn();
+      const { result } = renderHook(() => useNewProduct({ onProductAdd }));
+
+      // when
+      act(() => {
+        result.current.handleChangeProductStock({
+          target: { value: '20', type: 'number' },
+        } as ChangeEvent<HTMLInputElement>);
+      });
+
+      // then
+      expect(result.current.newProduct).toEqual({ ...initialNewProduct, stock: 20 });
+    });
+    test('새 상품 폼 토글 테스트', () => {
+      // given
+      const onProductAdd = vi.fn();
+      const { result } = renderHook(() => useNewProduct({ onProductAdd }));
+
+      // when
+      act(() => {
+        result.current.toggleShowNewProductForm();
+      });
+
+      // then
+      expect(result.current.showNewProductForm).toBe(true);
+    });
+  });
+  describe('useProductList 테스트', () => {
+    test('상품 추가 테스트', () => {
+      // given
+      const { result } = renderHook(() => useProductList([]));
+
+      // when
+      act(() => {
+        result.current.addProduct(mockProducts[0]);
+      });
+
+      // then
+      expect(result.current.productList).toEqual([mockProducts[0]]);
+    });
+    test('상품 수정 테스트', () => {
+      // given
+      const { result } = renderHook(() => useProductList(mockProducts));
+
+      // when
+      act(() => {
+        result.current.updateProduct({ ...mockProducts[0], price: 15000 });
+      });
+
+      // then
+      expect(result.current.productList).toEqual([
+        { ...mockProducts[0], price: 15000 },
+        mockProducts[1],
+        mockProducts[2],
+      ]);
+    });
+  });
+  describe('useProductSet 테스트', () => {
+    test('제품 토글 테스트', () => {
+      // given
+      const { result } = renderHook(() => useProductSet());
+
+      // when
+      act(() => {
+        result.current.toggleProductAccordion('p1');
+      });
+
+      // then
+      expect(result.current.openProductIdList).toContain('p1');
     });
   });
 });
