@@ -9,7 +9,7 @@ interface Props {
 
 export const CartProduct = ({
   item, 
-  onUpdateQuantity, 
+  onUpdateQuantity,
   onRemoveFromCart
 }: Props) => {
   return (

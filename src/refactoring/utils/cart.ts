@@ -44,59 +44,47 @@ export const calculateCartTotal = (
   cart: CartItem[],
   selectedCoupon: Coupon | null
 ) => {
-  // 요구사항 1: 쿠폰 없이 총액을 올바르게 계산해야 합니다 | reduce
-  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = cart.reduce(
+  // 기본값을 const로 설정
+  const { totalBeforeDiscount, totalAfterDiscount } = cart.reduce(
     (acc, item) => {
       const { price } = item.product;
       const { quantity } = item;
 
-      // 총액 계산 (할인 전)
       const itemTotal = price * quantity;
-      acc.totalBeforeDiscount += itemTotal;
+      const maxDiscountRate = item.product.discounts.reduce((maxRate, d) =>
+        quantity >= d.quantity && d.rate > maxRate ? d.rate : maxRate, 0
+      );
 
-      // 최대 할인율 적용 (할인 후)
-      const maxDiscountRate = getMaxApplicableDiscount(item); // 최대 할인율을 계산하는 함수
       const discountAmount = itemTotal * maxDiscountRate;
-      acc.totalDiscount += discountAmount;
+      acc.totalBeforeDiscount += itemTotal;
       acc.totalAfterDiscount += itemTotal - discountAmount;
+      acc.totalDiscount += discountAmount;
 
       return acc;
     },
-    {
-      totalBeforeDiscount: 0,
-      totalAfterDiscount: 0,
-      totalDiscount: 0
-    }
+    { totalBeforeDiscount: 0, totalAfterDiscount: 0, totalDiscount: 0 }
   );
 
-  // 쿠폰이 있다면
-  if (selectedCoupon) {
-    const { discountType, discountValue } = selectedCoupon;
-    const couponDiscount = calculateCoupon(totalAfterDiscount, discountType, discountValue);
+  // 쿠폰 적용 로직 개선
+  const finalTotalAfterDiscount = selectedCoupon
+    ? calculateCoupon(totalAfterDiscount, selectedCoupon.discountType, selectedCoupon.discountValue)
+    : totalAfterDiscount;
 
-    return {
-      totalBeforeDiscount,
-      totalAfterDiscount: couponDiscount,
-      totalDiscount: totalBeforeDiscount - couponDiscount
-    };
-  }
+  const finalTotalDiscount = totalBeforeDiscount - finalTotalAfterDiscount;
 
   return {
-    totalBeforeDiscount,
-    totalAfterDiscount,
-    totalDiscount
+    totalBeforeDiscount: Math.round(totalBeforeDiscount),
+    totalAfterDiscount: Math.round(finalTotalAfterDiscount),
+    totalDiscount: Math.round(finalTotalDiscount)
   };
-};
+}
 
 const calculateCoupon = (initValue: number, discountType: 'amount' | 'percentage', discountValue: number): number => {
   // 요구사항 2. 금액쿠폰을 올바르게 적용해야 합니다
   // 요구사항 3. 퍼센트 쿠폰을 올바르게 적용해야 합니다
-  switch (discountType) {
-    case 'amount':
-      return initValue - discountValue;
-    case 'percentage':
-      return initValue * (1 - discountValue / 100);
-  }
+  return discountType === 'amount'
+    ? Math.max(0, initValue - discountValue)
+    : initValue * (1 - discountValue / 100);
 };
 
 export const updateCartItemQuantity = (
