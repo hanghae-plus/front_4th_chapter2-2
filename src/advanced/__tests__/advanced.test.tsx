@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { vi, beforeEach, describe, expect, test } from "vitest";
+import { vi, beforeEach, afterEach, describe, expect, test } from "vitest";
 import {
   act,
   fireEvent,
@@ -491,6 +491,15 @@ describe("advanced > ", () => {
   });
 
   describe("useProductSearch hook 테스트", () => {
+    beforeEach(() => {
+      vi.useFakeTimers(); // 가상 타이머 활성화
+    });
+
+    afterEach(() => {
+      vi.clearAllTimers(); // 타이머 초기화
+      vi.useRealTimers(); // 실제 타이머로 복귀
+    });
+
     test("검색어가 입력되지 않았을 때 모든 제품을 반환 >", () => {
       const { result } = renderHook(() => useProductSearch(mockProducts));
 
@@ -504,6 +513,7 @@ describe("advanced > ", () => {
         result.current.handleSearch({
           target: { value: "상품1" },
         } as ChangeEvent<HTMLInputElement>);
+        vi.advanceTimersByTime(300); // 300ms 후 debounce 실행
       });
 
       expect(result.current.filteredProducts).toEqual([
@@ -524,18 +534,20 @@ describe("advanced > ", () => {
         result.current.handleSearch({
           target: { value: "없는상품" },
         } as ChangeEvent<HTMLInputElement>);
+        vi.advanceTimersByTime(300); // debounce 대기 시간 경과
       });
 
       expect(result.current.filteredProducts).toEqual([]);
     });
 
-    test("대소문자를 구분 하지 않아야 한다 >", () => {
+    test("대소문자를 구분하지 않아야 한다 >", () => {
       const { result } = renderHook(() => useProductSearch(mockProducts));
 
       act(() => {
         result.current.handleSearch({
           target: { value: "상품2" },
         } as ChangeEvent<HTMLInputElement>);
+        vi.advanceTimersByTime(300); // debounce 대기 시간 경과
       });
 
       expect(result.current.filteredProducts).toEqual([
