@@ -1,5 +1,5 @@
 import { Product } from '../../../types';
-import { useAdminEditingProduct } from '../../hooks/useAdminEditingProduct';
+import { useAdminEditingProduct } from '../../hooks';
 import {
   checkProduct,
   removeProductDiscount,
