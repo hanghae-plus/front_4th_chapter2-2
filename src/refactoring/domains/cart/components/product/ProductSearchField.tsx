@@ -10,7 +10,6 @@ export const ProductSearchField = ({ onSearch }: ProductSearchFieldProps) => {
         placeholder="검색어를 입력하세요..."
         onChange={(event) => onSearch(event.target.value)}
       />
-      <button className="w-12 bg-blue-500 rounded text-white hover:bg-blue-600">검색</button>
     </div>
   );
 };
