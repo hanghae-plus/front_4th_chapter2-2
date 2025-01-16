@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Product } from "../../../types.ts";
 import { AddProductForm } from "./AddProductForm.tsx";
-import { EditProductForm } from "./EditProductForm.tsx";
+import { EditProductContainer } from "./EditProductContainer.tsx";
 
 interface Props {
   products: Product[];
@@ -35,7 +35,7 @@ export const ProductManagement = ({
             data-testid={`product-${index + 1}`}
             className="bg-white p-4 rounded shadow"
           >
-            <EditProductForm {...{ product, products, onProductUpdate }} />
+            <EditProductContainer {...{ product, products, onProductUpdate }} />
           </div>
         ))}
       </div>
