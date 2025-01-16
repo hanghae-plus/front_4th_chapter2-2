@@ -7,6 +7,7 @@ import { useLocalStorage } from '../../refactoring/hooks/useLocalStorage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { formatCouponDiscount } from '../../refactoring/features/product/helpers/index';
+import { validateCoupon } from '../../refactoring/features/coupon/helpers';
 
 const mockProducts: Product[] = [
   {
@@ -375,6 +376,82 @@ describe('advanced > ', () => {
 
         expect(formatCouponDiscount(amountCoupon)).toBe('0원');
         expect(formatCouponDiscount(percentageCoupon)).toBe('0%');
+      });
+    });
+
+    describe('validateCoupon', () => {
+      const validCoupon: Coupon = {
+        name: '신규가입 쿠폰',
+        code: 'NEW100',
+        discountType: 'amount',
+        discountValue: 1000,
+      };
+
+      it('유효한 쿠폰은 검증 통과', () => {
+        const result = validateCoupon(validCoupon);
+        expect(result.isValid).toBe(true);
+        expect(result.errors).toHaveLength(0);
+      });
+
+      it('쿠폰 이름이 비어있으면 에러', () => {
+        const result = validateCoupon({ ...validCoupon, name: '' });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('쿠폰 이름은 필수입니다');
+      });
+
+      it('쿠폰 이름이 2글자 미만이면 에러', () => {
+        const result = validateCoupon({ ...validCoupon, name: '쿠' });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('쿠폰 이름은 2글자 이상이어야 합니다');
+      });
+
+      it('쿠폰 코드가 비어있으면 에러', () => {
+        const result = validateCoupon({ ...validCoupon, code: '' });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('쿠폰 코드는 필수입니다');
+      });
+
+      it('쿠폰 코드가 영문 대문자와 숫자가 아니면 에러', () => {
+        const result = validateCoupon({ ...validCoupon, code: 'invalid-code' });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('쿠폰 코드는 영문 대문자와 숫자만 가능합니다');
+      });
+
+      it('할인 값이 음수이면 에러', () => {
+        const result = validateCoupon({ ...validCoupon, discountValue: -1 });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('할인 값은 0 이상이어야 합니다');
+      });
+
+      it('퍼센트 할인이 100%를 초과하면 에러', () => {
+        const result = validateCoupon({
+          ...validCoupon,
+          discountType: 'percentage',
+          discountValue: 101,
+        });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('할인율은 100% 이하여야 합니다');
+      });
+
+      it('금액 할인이 1,000,000원을 초과하면 에러', () => {
+        const result = validateCoupon({
+          ...validCoupon,
+          discountType: 'amount',
+          discountValue: 1000001,
+        });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('할인 금액은 1,000,000원 이하여야 합니다');
+      });
+
+      it('여러 개의 에러를 동시에 검출', () => {
+        const result = validateCoupon({
+          name: '',
+          code: 'invalid-code',
+          discountType: 'percentage',
+          discountValue: 101,
+        });
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toHaveLength(3);
       });
     });
   });
