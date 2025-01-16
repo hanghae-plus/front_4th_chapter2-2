@@ -1,25 +1,26 @@
-// useCart.ts
 import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+// import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
- 
+
   // 카트 물품 추가 로직
   const addToCart = (product: Product) => {
-    if (getRemainingStock(product) <= 0) return;
+    const remainingStock = getRemainingStock(product);
+    if (remainingStock <= 0) return;
 
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.product.id === product.id);
-      if (!existingItem) return [...prevCart, { product, quantity: 1 }];
-
-      return prevCart.map(item =>
-        item.product.id === product.id
-          ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-          : item
-      );
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.product.id === product.id
+            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
+            : item
+        );
+      }
+      return [...prevCart, { product, quantity: 1 }];
     });
   };
 
@@ -40,11 +41,6 @@ export const useCart = () => {
         return item;
       }).filter((item): item is CartItem => item !== null)
     );
-  };
-
-  // 물품 쿠폰 추가 로직
-  const applyCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
   };
 
   const calculateTotal = () => {
@@ -86,8 +82,9 @@ export const useCart = () => {
   }
 
   const getRemainingStock = (product: Product) => {
-    return product.stock - (cart.find(item => item.product.id === product.id)?.quantity || 0);
-  }
+    const cartItem = cart.find(item => item.product.id === product.id);
+    return product.stock - (cartItem?.quantity || 0);
+  };
 
   const getAppliedDiscount = (item: CartItem) => {
     const { discounts } = item.product;
@@ -101,9 +98,19 @@ export const useCart = () => {
     return appliedDiscount;
   };
 
+  // 물품 쿠폰 추가 로직
+  const applyCoupon = (coupon: Coupon) => {
+    setSelectedCoupon(coupon);
+  };
+
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
+
   return {
     cart,
     selectedCoupon,
+    totalBeforeDiscount,
+    totalAfterDiscount,
+    totalDiscount,
     addToCart,
     applyCoupon,
     removeFromCart,
