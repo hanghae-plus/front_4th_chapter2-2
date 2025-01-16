@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
@@ -281,25 +281,23 @@ describe('advanced > ', () => {
       expect(validateCouponData(invalidCoupon4)).toBe(false);
     });
 
-    test('새로고침 후에도 장바구니 데이터가 유지된다', () => {
-      const { unmount } = render(<CartPage products={mockProducts} coupons={mockCoupons} />);
+    describe('useLocalStorage', () => {
+      test('초기값 설정 - 로컬스토리지에 값 없을 때', () => {
+        const { result } = renderHook(() => useLocalStorage('testKey', 'initialValue'));
 
-      const product1 = screen.getByTestId('product-p1');
-      const addToCartButton = within(product1).getByText('장바구니에 추가');
-      fireEvent.click(addToCartButton);
-      fireEvent.click(addToCartButton);
+        expect(result.current.storedValue).toBe('initialValue');
+      });
 
-      // 첫 렌더링의 상태 확인
-      expect(screen.getByText('상품 금액: 20,000원')).toBeInTheDocument();
+      test('업데이트', () => {
+        const { result } = renderHook(() => useLocalStorage('testKey', 'initialValue'));
 
-      // 컴포넌트 언마운트 (새로고침 시뮬레이션)
-      unmount();
+        act(() => {
+          result.current.saveToStorage('newValue');
+        });
 
-      // 컴포넌트 다시 마운트 (새로고침 후)
-      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
-
-      // localStorage에서 데이터가 복원되었는지 확인
-      expect(screen.getByText('상품 금액: 20,000원')).toBeInTheDocument();
+        expect(result.current.storedValue).toBe('newValue');
+        expect(localStorage.getItem('testKey')).toBe(JSON.stringify('newValue'));
+      });
     });
   });
 });
