@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Coupon, Discount, Product } from '../../types.ts';
+import { Coupon, Discount, Product } from '../../../types.ts';
 
 interface Props {
   products: Product[];
@@ -41,7 +41,7 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {
-    setEditingProduct({...product});
+    setEditingProduct({ ...product });
   };
 
   // 새로운 핸들러 함수 추가

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { AdminPage } from "../../refactoring/components/AdminPage/AdminPage";
 import { Coupon, Product } from '../../types';
 
 const mockProducts: Product[] = [
@@ -79,7 +79,7 @@ describe('advanced > ', () => {
 
     test('장바구니 페이지 테스트 > ', async () => {
 
-      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
+      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -157,7 +157,7 @@ describe('advanced > ', () => {
     });
 
     test('관리자 페이지 테스트 > ', async () => {
-      render(<TestAdminPage/>);
+      render(<TestAdminPage />);
 
 
       const $product1 = screen.getByTestId('product-1');
