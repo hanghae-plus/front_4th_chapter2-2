@@ -14,7 +14,7 @@ console.log("Current mode:", import.meta.env.VITE_START_MODE);
 // api-mock 모드일 때만 MSW 시작
 if (isApiMockMode) {
   console.log("Starting MSW in api-mock mode");
-  console.log("Available handlers:", handlers);
+  //   console.log("Available handlers:", handlers);
   worker
     .start({
       onUnhandledRequest: "bypass",
