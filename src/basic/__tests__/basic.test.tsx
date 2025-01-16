@@ -544,8 +544,6 @@ describe("basic > ", () => {
         result.current.applyCoupon(testCoupon);
       });
 
-      console.log("result.current.cart => ", result.current.cart);
-
       const total = result.current.calculateTotal();
       expect(total.totalBeforeDiscount).toBe(200);
       expect(total.totalAfterDiscount).toBe(180);
