@@ -31,21 +31,21 @@ const mockProducts: Product[] = [
     name: '상품1',
     price: 10000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.1 }],
+    discounts: [{ id: '1', quantity: 10, rate: 0.1 }],
   },
   {
     id: 'p2',
     name: '상품2',
     price: 20000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
+    discounts: [{ id: '1', quantity: 10, rate: 0.15 }],
   },
   {
     id: 'p3',
     name: '상품3',
     price: 30000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
+    discounts: [{ id: '1', quantity: 10, rate: 0.2 }],
   },
 ];
 const mockCoupons: Coupon[] = [
@@ -295,9 +295,9 @@ describe('advanced > ', () => {
     describe('calculateMaxDiscount', () => {
       test('가장 높은 할인율 반환', () => {
         const discounts: Discount[] = [
-          { quantity: 5, rate: 0.1 },
-          { quantity: 10, rate: 0.2 },
-          { quantity: 15, rate: 0.15 },
+          { id: '1', quantity: 5, rate: 0.1 },
+          { id: '2', quantity: 10, rate: 0.2 },
+          { id: '3', quantity: 15, rate: 0.15 },
         ];
         const result = calculateMaxDiscount(discounts);
         expect(result).toBe(0.2);
@@ -344,9 +344,9 @@ describe('advanced > ', () => {
 
     describe('getAppliedDiscount', () => {
       const mockDiscounts: Discount[] = [
-        { quantity: 5, rate: 0.1 },
-        { quantity: 10, rate: 0.15 },
-        { quantity: 15, rate: 0.2 },
+        { id: '1', quantity: 5, rate: 0.1 },
+        { id: '2', quantity: 10, rate: 0.15 },
+        { id: '3', quantity: 15, rate: 0.2 },
       ];
 
       const mockCartItem: CartItem = {

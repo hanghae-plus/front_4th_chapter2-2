@@ -15,8 +15,8 @@ const initialProducts: Product[] = [
     price: 10000,
     stock: 20,
     discounts: [
-      { quantity: 10, rate: 0.1 },
-      { quantity: 20, rate: 0.2 },
+      { id: '1', quantity: 10, rate: 0.1 },
+      { id: '2', quantity: 20, rate: 0.2 },
     ],
   },
   {
@@ -24,14 +24,14 @@ const initialProducts: Product[] = [
     name: '상품2',
     price: 20000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
+    discounts: [{ id: '1', quantity: 10, rate: 0.15 }],
   },
   {
     id: 'p3',
     name: '상품3',
     price: 30000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
+    discounts: [{ id: '1', quantity: 10, rate: 0.2 }],
   },
 ];
 

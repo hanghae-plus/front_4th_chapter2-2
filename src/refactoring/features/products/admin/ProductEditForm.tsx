@@ -4,6 +4,7 @@ import { useEditProduct } from '../../../hooks/useEditProduct';
 import { useForm } from '../../../hooks/useForm';
 import Error from '../../../pages/shared/Error';
 import { Product } from '../../../shared/types/types';
+import { getUniqueId } from '../../../pages/shared/lib/getUniqueId';
 
 interface ProductEditFormProps {
   product: Product;
@@ -25,15 +26,16 @@ function ProductEditForm(props: ProductEditFormProps) {
 
   const handleAddDiscount = () => {
     if (tempDiscount.quantity >= 0 && tempDiscount.rate >= 0) {
-      setValue('discounts', [...product.discounts, tempDiscount]);
+      const newDiscount = { ...tempDiscount, id: getUniqueId() };
+      setValue('discounts', [...values.discounts, newDiscount]);
       setTempDiscount({ quantity: 0, rate: 0 });
     }
   };
 
-  const haldleRemoveDiscount = (index: number) => {
+  const haldleRemoveDiscount = (id: string) => {
     setValue(
       'discounts',
-      product.discounts.filter((_, i) => i !== index),
+      values.discounts.filter((discount) => discount.id !== id),
     );
   };
 
@@ -110,7 +112,7 @@ function ProductEditForm(props: ProductEditFormProps) {
                   </span>
                   <button
                     type="button"
-                    onClick={() => haldleRemoveDiscount(index)}
+                    onClick={() => haldleRemoveDiscount(discount.id)}
                     className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                   >
                     삭제

@@ -7,6 +7,7 @@ export interface Product {
 }
 
 export interface Discount {
+  id: string;
   quantity: number;
   rate: number;
 }
