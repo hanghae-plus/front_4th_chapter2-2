@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useForm } from '../../../../hooks';
 
 import type { Product } from '../../../../../types';
 
@@ -15,15 +15,20 @@ interface ProductFormProps {
 }
 
 export const ProductForm = ({ onProductAdd, onToggleShowProductForm }: ProductFormProps) => {
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>(INITIAL_PRODUCT);
-
-  const handleAddNewProduct = () => {
-    const productWithId = { ...newProduct, id: Date.now().toString() };
-
-    onProductAdd(productWithId);
-    setNewProduct(INITIAL_PRODUCT);
-    onToggleShowProductForm();
-  };
+  const {
+    values: newProduct,
+    handleChange,
+    handleSubmit,
+    resetForm,
+  } = useForm<Omit<Product, 'id'>>({
+    initialValues: INITIAL_PRODUCT,
+    onSubmit: (updatedProduct) => {
+      const productWithId = { ...updatedProduct, id: Date.now().toString() };
+      onProductAdd(productWithId);
+      onToggleShowProductForm();
+      resetForm();
+    },
+  });
 
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
@@ -36,7 +41,7 @@ export const ProductForm = ({ onProductAdd, onToggleShowProductForm }: ProductFo
           id="productName"
           type="text"
           value={newProduct.name}
-          onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+          onChange={(e) => handleChange('name', e.target.value)}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -48,7 +53,7 @@ export const ProductForm = ({ onProductAdd, onToggleShowProductForm }: ProductFo
           id="productPrice"
           type="number"
           value={newProduct.price}
-          onChange={(e) => setNewProduct({ ...newProduct, price: parseInt(e.target.value) })}
+          onChange={(e) => handleChange('price', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -60,11 +65,11 @@ export const ProductForm = ({ onProductAdd, onToggleShowProductForm }: ProductFo
           id="productStock"
           type="number"
           value={newProduct.stock}
-          onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })}
+          onChange={(e) => handleChange('stock', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
       </div>
-      <button onClick={handleAddNewProduct} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+      <button onClick={handleSubmit} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
         추가
       </button>
     </div>

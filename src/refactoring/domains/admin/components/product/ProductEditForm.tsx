@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useForm } from '../../../../hooks';
+
 import type { Discount, Product } from '../../../../../types';
 
 const INITIAL_DISCOUNT: Discount = { quantity: 0, rate: 0 };
@@ -12,55 +14,29 @@ interface ProductEditFormProps {
 
 export const ProductEditForm = ({ product, onProductUpdate, onToggleEditForm }: ProductEditFormProps) => {
   const [newDiscount, setNewDiscount] = useState<Discount>(INITIAL_DISCOUNT);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(product);
+
+  const {
+    values: editingProduct,
+    handleChange,
+    handleSubmit,
+  } = useForm<Product>({
+    initialValues: product,
+    onSubmit: (updatedProduct) => {
+      onProductUpdate(updatedProduct);
+      onToggleEditForm();
+    },
+  });
 
   const handleRemoveDiscount = (index: number) => {
-    const newProduct = {
-      ...product,
-      discounts: product.discounts.filter((_, i) => i !== index),
-    };
-    onProductUpdate(newProduct);
-    setEditingProduct(newProduct);
-  };
-
-  const handleEditComplete = () => {
-    if (editingProduct) {
-      onProductUpdate(editingProduct);
-      setEditingProduct(null);
-      onToggleEditForm();
-    }
-  };
-
-  const handleProductNameUpdate = (newName: string) => {
-    if (editingProduct) {
-      const updatedProduct = { ...editingProduct, name: newName };
-      setEditingProduct(updatedProduct);
-    }
+    handleChange(
+      'discounts',
+      editingProduct.discounts.filter((_, i) => i !== index),
+    );
   };
 
   const handleAddDiscount = () => {
-    if (editingProduct) {
-      const newProduct = {
-        ...product,
-        discounts: [...product.discounts, newDiscount],
-      };
-      onProductUpdate(newProduct);
-      setEditingProduct(newProduct);
-      setNewDiscount(INITIAL_DISCOUNT);
-    }
-  };
-
-  const handlePriceUpdate = (newPrice: number) => {
-    if (editingProduct) {
-      const updatedProduct = { ...editingProduct, price: newPrice };
-      setEditingProduct(updatedProduct);
-    }
-  };
-
-  const handleStockUpdate = (newStock: number) => {
-    const newProduct = { ...product, stock: newStock };
-    onProductUpdate(newProduct);
-    setEditingProduct(newProduct);
+    handleChange('discounts', [...editingProduct.discounts, newDiscount]);
+    setNewDiscount(INITIAL_DISCOUNT);
   };
 
   return (
@@ -70,7 +46,7 @@ export const ProductEditForm = ({ product, onProductUpdate, onToggleEditForm }: 
         <input
           type="text"
           value={editingProduct?.name}
-          onChange={(e) => handleProductNameUpdate(e.target.value)}
+          onChange={(e) => handleChange('name', e.target.value)}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -79,7 +55,7 @@ export const ProductEditForm = ({ product, onProductUpdate, onToggleEditForm }: 
         <input
           type="number"
           value={editingProduct?.price}
-          onChange={(e) => handlePriceUpdate(parseInt(e.target.value))}
+          onChange={(e) => handleChange('price', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -88,7 +64,7 @@ export const ProductEditForm = ({ product, onProductUpdate, onToggleEditForm }: 
         <input
           type="number"
           value={editingProduct?.stock}
-          onChange={(e) => handleStockUpdate(parseInt(e.target.value))}
+          onChange={(e) => handleChange('stock', parseInt(e.target.value))}
           className="w-full p-2 border rounded"
         />
       </div>
@@ -128,10 +104,7 @@ export const ProductEditForm = ({ product, onProductUpdate, onToggleEditForm }: 
           </button>
         </div>
       </div>
-      <button
-        onClick={handleEditComplete}
-        className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2"
-      >
+      <button onClick={handleSubmit} className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mt-2">
         수정 완료
       </button>
     </div>
