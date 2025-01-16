@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Coupon, Discount, Product } from '@/shared/types/';
+import { Discount, Product } from '@/shared/types/';
 import { GridContainer, GridItem } from '@/widgets/CartItem';
 import { useProductsStore } from '@/entities/product';
-import { useCouponStore } from '@/entities/coupon';
 import { addItem } from '@/shared/libs';
+import { useAdminCoupons } from '../utils';
 
 export function AdminPage() {
   const { handleProductUpdate, handleProductAdd, products } = useProductsStore();
-  const { coupons, handleCouponAdd } = useCouponStore();
+
+  const { coupons, newCoupon, setNewCoupon, handleAddCoupon } = useAdminCoupons();
 
   // 항상 state가 많으면 의심하게 되는 부분이 굳이 이런 자료가 필요한가이다.
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
@@ -15,12 +16,6 @@ export function AdminPage() {
   const [newDiscount, setNewDiscount] = useState<Discount>({
     quantity: 0,
     rate: 0,
-  });
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
   });
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
@@ -104,16 +99,6 @@ export function AdminPage() {
       handleProductUpdate(newProduct);
       setEditingProduct(newProduct);
     }
-  };
-
-  const handleAddCoupon = () => {
-    handleCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
   };
 
   const handleAddNewProduct = () => {
