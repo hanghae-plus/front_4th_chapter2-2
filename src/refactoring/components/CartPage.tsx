@@ -11,7 +11,15 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
-  const { cart, addToCart, removeFromCart, updateQuantity, calculateTotal } = useCart()
+  const {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    applyCoupon,
+    calculateTotal,
+    selectedCoupon,
+  } = useCart()
 
   const getMaxDiscount = (discounts: { quantity: number; rate: number }[]) => {
     return discounts.reduce((max, discount) => Math.max(max, discount.rate), 0)
@@ -43,11 +51,12 @@ export const CartPage = ({ products, coupons }: Props) => {
         <div>
           <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
           <div className="space-y-2">
-            {products.map((product) => {
+            {products.map((product, index) => {
               const remainingStock = getRemainingStock(product)
               const discountPrice = (getMaxDiscount(product.discounts) * 100).toFixed(0)
               return (
                 <ProductCard
+                  key={index}
                   product={product}
                   remainingStock={remainingStock}
                   discountPrice={discountPrice}
@@ -61,10 +70,11 @@ export const CartPage = ({ products, coupons }: Props) => {
           <h2 className="text-2xl font-semibold mb-4">장바구니 내역</h2>
 
           <div className="space-y-2">
-            {cart.map((item) => {
+            {cart.map((item, index) => {
               const appliedDiscount = getAppliedDiscount(item)
               return (
                 <CartCard
+                  key={index}
                   item={item}
                   appliedDiscount={appliedDiscount}
                   updateQuantity={updateQuantity}
@@ -73,7 +83,11 @@ export const CartPage = ({ products, coupons }: Props) => {
               )
             })}
           </div>
-          <ApplyCoupon coupons={coupons} />
+          <ApplyCoupon
+            coupons={coupons}
+            selectedCoupon={selectedCoupon}
+            applyCoupon={applyCoupon}
+          />
 
           <OrderSummary
             totalDiscount={totalDiscount}
