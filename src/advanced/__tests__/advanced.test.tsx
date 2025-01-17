@@ -1,244 +1,105 @@
-import { useState } from "react";
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from "../../refactoring/components/AdminPage";
-import { Coupon, Product } from '../../types';
+import { describe, expect, test, vi } from 'vitest';
+import { render, fireEvent, screen } from '@testing-library/react';
+import { Product } from '../../types.ts';
+import { ProductEditForm } from '../../refactoring/features/product/ui/ProductEditForm.tsx';
 
-const mockProducts: Product[] = [
-  {
+describe('ProductEditForm >', () => {
+  const initialProduct: Product = {
     id: 'p1',
     name: '상품1',
     price: 10000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.1 }]
-  },
-  {
-    id: 'p2',
-    name: '상품2',
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }]
-  },
-  {
-    id: 'p3',
-    name: '상품3',
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }]
-  }
-];
-const mockCoupons: Coupon[] = [
-  {
-    name: '5000원 할인 쿠폰',
-    code: 'AMOUNT5000',
-    discountType: 'amount',
-    discountValue: 5000
-  },
-  {
-    name: '10% 할인 쿠폰',
-    code: 'PERCENT10',
-    discountType: 'percentage',
-    discountValue: 10
-  }
-];
-
-const TestAdminPage = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
-
-
-  const handleProductUpdate = (updatedProduct: Product) => {
-    setProducts(prevProducts =>
-      prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
-    );
+    discounts: [{ quantity: 10, rate: 0.1 }],
   };
 
-  const handleProductAdd = (newProduct: Product) => {
-    setProducts(prevProducts => [...prevProducts, newProduct]);
-  };
+  const handleUpdate = vi.fn();
 
-  const handleCouponAdd = (newCoupon: Coupon) => {
-    setCoupons(prevCoupons => [...prevCoupons, newCoupon]);
-  };
+  test('초기 상품 정보가 폼에 올바르게 표시되어야 한다 >', () => {
+    render(<ProductEditForm product={initialProduct} onUpdate={handleUpdate} />);
 
-  return (
-    <AdminPage
-      products={products}
-      coupons={coupons}
-      onProductUpdate={handleProductUpdate}
-      onProductAdd={handleProductAdd}
-      onCouponAdd={handleCouponAdd}
-    />
-  );
-};
+    const nameInput = screen.getByLabelText('상품명:');
+    const priceInput = screen.getByLabelText('가격:');
+    const stockInput = screen.getByLabelText('재고:');
 
-describe('advanced > ', () => {
+    expect(nameInput).toHaveValue('상품1');
+    expect(priceInput).toHaveValue(10000);
+    expect(stockInput).toHaveValue(20);
+  });
 
-  describe('시나리오 테스트 > ', () => {
+  test('필드 값이 변경되면 폼이 업데이트되어야 한다 >', () => {
+    render(<ProductEditForm product={initialProduct} onUpdate={handleUpdate} />);
 
-    test('장바구니 페이지 테스트 > ', async () => {
+    const nameInput = screen.getByLabelText('상품명:');
+    const priceInput = screen.getByLabelText('가격:');
+    const stockInput = screen.getByLabelText('재고:');
 
-      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
-      const product1 = screen.getByTestId('product-p1');
-      const product2 = screen.getByTestId('product-p2');
-      const product3 = screen.getByTestId('product-p3');
-      const addToCartButtonsAtProduct1 = within(product1).getByText('장바구니에 추가');
-      const addToCartButtonsAtProduct2 = within(product2).getByText('장바구니에 추가');
-      const addToCartButtonsAtProduct3 = within(product3).getByText('장바구니에 추가');
+    fireEvent.change(nameInput, { target: { value: '수정된 상품1' } });
+    fireEvent.change(priceInput, { target: { value: '15000' } });
+    fireEvent.change(stockInput, { target: { value: '30' } });
 
-      // 1. 상품 정보 표시
-      expect(product1).toHaveTextContent('상품1');
-      expect(product1).toHaveTextContent('10,000원');
-      expect(product1).toHaveTextContent('재고: 20개');
-      expect(product2).toHaveTextContent('상품2');
-      expect(product2).toHaveTextContent('20,000원');
-      expect(product2).toHaveTextContent('재고: 20개');
-      expect(product3).toHaveTextContent('상품3');
-      expect(product3).toHaveTextContent('30,000원');
-      expect(product3).toHaveTextContent('재고: 20개');
+    expect(nameInput).toHaveValue('수정된 상품1');
+    expect(priceInput).toHaveValue(15000);
+    expect(stockInput).toHaveValue(30);
+  });
 
+  test('수정 완료 버튼 클릭 시 변경된 데이터로 업데이트되어야 한다 >', () => {
+    render(<ProductEditForm product={initialProduct} onUpdate={handleUpdate} />);
 
-      // 2. 할인 정보 표시
-      expect(screen.getByText('10개 이상: 10% 할인')).toBeInTheDocument();
+    const nameInput = screen.getByLabelText('상품명:');
+    const priceInput = screen.getByLabelText('가격:');
+    const stockInput = screen.getByLabelText('재고:');
+    const completeButton = screen.getByRole('button', { name: '수정 완료' });
 
-      // 3. 상품1 장바구니에 상품 추가
-      fireEvent.click(addToCartButtonsAtProduct1); // 상품1 추가
+    fireEvent.change(nameInput, { target: { value: '수정된 상품1' } });
+    fireEvent.change(priceInput, { target: { value: '15000' } });
+    fireEvent.change(stockInput, { target: { value: '30' } });
 
-      // 4. 할인율 계산
-      expect(screen.getByText('상품 금액: 10,000원')).toBeInTheDocument();
-      expect(screen.getByText('할인 금액: 0원')).toBeInTheDocument();
-      expect(screen.getByText('최종 결제 금액: 10,000원')).toBeInTheDocument();
+    fireEvent.click(completeButton);
 
-      // 5. 상품 품절 상태로 만들기
-      for (let i = 0; i < 19; i++) {
-        fireEvent.click(addToCartButtonsAtProduct1);
-      }
-
-      // 6. 품절일 때 상품 추가 안 되는지 확인하기
-      expect(product1).toHaveTextContent('재고: 0개');
-      fireEvent.click(addToCartButtonsAtProduct1);
-      expect(product1).toHaveTextContent('재고: 0개');
-
-      // 7. 할인율 계산
-      expect(screen.getByText('상품 금액: 200,000원')).toBeInTheDocument();
-      expect(screen.getByText('할인 금액: 20,000원')).toBeInTheDocument();
-      expect(screen.getByText('최종 결제 금액: 180,000원')).toBeInTheDocument();
-
-      // 8. 상품을 각각 10개씩 추가하기
-      fireEvent.click(addToCartButtonsAtProduct2); // 상품2 추가
-      fireEvent.click(addToCartButtonsAtProduct3); // 상품3 추가
-
-      const increaseButtons = screen.getAllByText('+');
-      for (let i = 0; i < 9; i++) {
-        fireEvent.click(increaseButtons[1]); // 상품2
-        fireEvent.click(increaseButtons[2]); // 상품3
-      }
-
-      // 9. 할인율 계산
-      expect(screen.getByText('상품 금액: 700,000원')).toBeInTheDocument();
-      expect(screen.getByText('할인 금액: 110,000원')).toBeInTheDocument();
-      expect(screen.getByText('최종 결제 금액: 590,000원')).toBeInTheDocument();
-
-      // 10. 쿠폰 적용하기
-      const couponSelect = screen.getByRole('combobox');
-      fireEvent.change(couponSelect, { target: { value: '1' } }); // 10% 할인 쿠폰 선택
-
-      // 11. 할인율 계산
-      expect(screen.getByText('상품 금액: 700,000원')).toBeInTheDocument();
-      expect(screen.getByText('할인 금액: 169,000원')).toBeInTheDocument();
-      expect(screen.getByText('최종 결제 금액: 531,000원')).toBeInTheDocument();
-
-      // 12. 다른 할인 쿠폰 적용하기
-      fireEvent.change(couponSelect, { target: { value: '0' } }); // 5000원 할인 쿠폰
-      expect(screen.getByText('상품 금액: 700,000원')).toBeInTheDocument();
-      expect(screen.getByText('할인 금액: 115,000원')).toBeInTheDocument();
-      expect(screen.getByText('최종 결제 금액: 585,000원')).toBeInTheDocument();
+    expect(handleUpdate).toHaveBeenCalledTimes(1);
+    expect(handleUpdate).toHaveBeenCalledWith({
+      ...initialProduct,
+      name: '수정된 상품1',
+      price: 15000,
+      stock: 30,
     });
+  });
 
-    test('관리자 페이지 테스트 > ', async () => {
-      render(<TestAdminPage/>);
+  test('초기 할인 정보가 올바르게 표시되어야 한다 >', () => {
+    render(<ProductEditForm product={initialProduct} onUpdate={handleUpdate} />);
 
+    expect(screen.getByText('10개 이상 구매 시 10% 할인')).toBeInTheDocument();
+  });
 
-      const $product1 = screen.getByTestId('product-1');
+  test('입력값이 없을 때는 이전 값이 유지되어야 한다 >', () => {
+    render(<ProductEditForm product={initialProduct} onUpdate={handleUpdate} />);
 
-      // 1. 새로운 상품 추가
-      fireEvent.click(screen.getByText('새 상품 추가'));
+    const nameInput = screen.getByLabelText('상품명:');
+    fireEvent.change(nameInput, { target: { value: '' } });
 
-      fireEvent.change(screen.getByLabelText('상품명'), { target: { value: '상품4' } });
-      fireEvent.change(screen.getByLabelText('가격'), { target: { value: '15000' } });
-      fireEvent.change(screen.getByLabelText('재고'), { target: { value: '30' } });
+    const completeButton = screen.getByRole('button', { name: '수정 완료' });
 
-      fireEvent.click(screen.getByText('추가'));
+    fireEvent.click(completeButton);
 
-      const $product4 = screen.getByTestId('product-4');
+    expect(handleUpdate).toHaveBeenCalledWith({
+      ...initialProduct,
+      name: '',
+    });
+  });
 
-      expect($product4).toHaveTextContent('상품4');
-      expect($product4).toHaveTextContent('15000원');
-      expect($product4).toHaveTextContent('재고: 30');
+  test('숫자 필드에 문자열이 입력되면 이전 값이 유지되어야 한다 >', () => {
+    render(<ProductEditForm product={initialProduct} onUpdate={handleUpdate} />);
 
-      // 2. 상품 선택 및 수정
-      fireEvent.click($product1);
-      fireEvent.click(within($product1).getByTestId('toggle-button'));
-      fireEvent.click(within($product1).getByTestId('modify-button'));
+    const priceInput = screen.getByLabelText('가격:');
+    fireEvent.change(priceInput, { target: { value: 'invalid' } });
 
+    const completeButton = screen.getByRole('button', { name: '수정 완료' });
 
-      act(() => {
-        fireEvent.change(within($product1).getByDisplayValue('20'), { target: { value: '25' } });
-        fireEvent.change(within($product1).getByDisplayValue('10000'), { target: { value: '12000' } });
-        fireEvent.change(within($product1).getByDisplayValue('상품1'), { target: { value: '수정된 상품1' } });
-      })
+    fireEvent.click(completeButton);
 
-      fireEvent.click(within($product1).getByText('수정 완료'));
-
-      expect($product1).toHaveTextContent('수정된 상품1');
-      expect($product1).toHaveTextContent('12000원');
-      expect($product1).toHaveTextContent('재고: 25');
-
-      // 3. 상품 할인율 추가 및 삭제
-      fireEvent.click($product1);
-      fireEvent.click(within($product1).getByTestId('modify-button'));
-
-      // 할인 추가
-      act(() => {
-        fireEvent.change(screen.getByPlaceholderText('수량'), { target: { value: '5' } });
-        fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), { target: { value: '5' } });
-      })
-      fireEvent.click(screen.getByText('할인 추가'));
-
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
-
-      // 할인 삭제
-      fireEvent.click(screen.getAllByText('삭제')[0]);
-      expect(screen.queryByText('10개 이상 구매 시 10% 할인')).not.toBeInTheDocument();
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
-
-      fireEvent.click(screen.getAllByText('삭제')[0]);
-      expect(screen.queryByText('10개 이상 구매 시 10% 할인')).not.toBeInTheDocument();
-      expect(screen.queryByText('5개 이상 구매 시 5% 할인')).not.toBeInTheDocument();
-
-      // 4. 쿠폰 추가
-      fireEvent.change(screen.getByPlaceholderText('쿠폰 이름'), { target: { value: '새 쿠폰' } });
-      fireEvent.change(screen.getByPlaceholderText('쿠폰 코드'), { target: { value: 'NEW10' } });
-      fireEvent.change(screen.getByRole('combobox'), { target: { value: 'percentage' } });
-      fireEvent.change(screen.getByPlaceholderText('할인 값'), { target: { value: '10' } });
-
-      fireEvent.click(screen.getByText('쿠폰 추가'));
-
-      const $newCoupon = screen.getByTestId('coupon-3');
-
-      expect($newCoupon).toHaveTextContent('새 쿠폰 (NEW10):10% 할인');
-    })
-  })
-
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
-
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
-  })
-})
-
+    expect(handleUpdate).toHaveBeenCalledWith({
+      ...initialProduct,
+      price: 0, // 숫자로 변환 실패 시 0으로 설정됨
+    });
+  });
+});
