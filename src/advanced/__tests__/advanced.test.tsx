@@ -132,10 +132,9 @@ describe('advanced > ', () => {
       });
       
       fireEvent.click(screen.getByText('추가'));
-      let $product4;
 
       await waitFor(async () => {
-        $product4 = screen.getByTestId('product-4');
+        const $product4 = screen.getByTestId('product-4');
         
         expect($product4).toHaveTextContent('상품4');
         expect($product4).toHaveTextContent('15000원');
@@ -144,12 +143,11 @@ describe('advanced > ', () => {
 
 
       // 2. 상품 선택 및 수정
-      fireEvent.click($product1);
-      fireEvent.click(within($product1).getByTestId('toggle-button'));
-      fireEvent.click(within($product1).getByTestId('modify-button'));
-
+      
       await waitFor(async () => {
-        $product1 = screen.getByTestId('product-1');
+        fireEvent.click($product1);
+        fireEvent.click(within($product1).getByTestId('toggle-button'));
+        fireEvent.click(within($product1).getByTestId('modify-button'));
       });
 
       act(() => {
