@@ -4,6 +4,10 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { CartPage } from '../../refactoring/pages/CartPage'
 import { AdminPage } from '../../refactoring/pages/AdminPage'
 import { Coupon, Product } from '../../types'
+import {
+  formatDiscountPercentage,
+  formatCouponDisplay,
+} from '../../refactoring/utils/formatUtils'
 
 const mockProducts: Product[] = [
   {
@@ -238,13 +242,33 @@ describe('advanced > ', () => {
     })
   })
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false)
+  describe('금액 할인 쿠폰', () => {
+    test('full 표시 형식으로 출력해야 한다', () => {
+      expect(formatCouponDisplay(mockCoupons[0], 'full')).toBe(
+        '5000원 할인 쿠폰 - 5000원'
+      )
     })
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false)
+    test('name 표시 형식으로 출력해야 한다', () => {
+      expect(formatCouponDisplay(mockCoupons[0], 'name')).toBe('5000원 할인 쿠폰')
+    })
+
+    test('value 표시 형식으로 출력해야 한다', () => {
+      expect(formatCouponDisplay(mockCoupons[0], 'value')).toBe('5000원')
+    })
+  })
+
+  describe('비율 할인 쿠폰', () => {
+    test('full 표시 형식으로 출력해야 한다', () => {
+      expect(formatCouponDisplay(mockCoupons[1], 'full')).toBe('10% 할인 쿠폰 - 10%')
+    })
+
+    test('name 표시 형식으로 출력해야 한다', () => {
+      expect(formatCouponDisplay(mockCoupons[1], 'name')).toBe('10% 할인 쿠폰')
+    })
+
+    test('value 표시 형식으로 출력해야 한다', () => {
+      expect(formatCouponDisplay(mockCoupons[1], 'value')).toBe('10%')
     })
   })
 })
