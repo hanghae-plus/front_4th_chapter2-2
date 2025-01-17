@@ -160,9 +160,9 @@ describe('advanced > ', () => {
         fireEvent.change(within($product1).getByDisplayValue('상품1'), {
           target: { value: '수정된 상품1' },
         });
+        fireEvent.click(within($product1).getByText('수정 완료'));
       });
 
-      fireEvent.click(within($product1).getByText('수정 완료'));
 
       await waitFor(async () => {
         $product1 = screen.getByTestId('product-1');
