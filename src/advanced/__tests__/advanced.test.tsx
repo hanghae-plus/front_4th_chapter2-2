@@ -10,7 +10,7 @@ import {
 } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/cart/CartPage';
 import { AdminPage } from '../../refactoring/components/admin/AdminPage';
-import { Coupon, Discount, Product } from '../../types';
+import { CartItem, Coupon, Discount, Product } from '../../types';
 import * as utils from '../../refactoring/models';
 import {
   useAdminCoupon,
@@ -321,32 +321,137 @@ describe('advanced > ', () => {
 
     test('5000원 쿠폰을 적용할 수 있다', () => {
       let price = 6000;
-
-      act(() => {
-        price = utils.getCouponDiscount(testCoupon2, price);
-      });
+      price = utils.getCouponDiscount(testCoupon2, price);
 
       expect(price).toBe(1000);
     });
 
     test('50% 쿠폰을 적용할 수 있다', () => {
       let price = 6000;
-
-      act(() => {
-        price = utils.getCouponDiscount(testCoupon1, price);
-      });
+      price = utils.getCouponDiscount(testCoupon1, price);
 
       expect(price).toBe(3000);
     });
 
     test('금액이 0보다 작아질 수 없다', () => {
       let price = 3000;
-
-      act(() => {
-        price = utils.getCouponDiscount(testCoupon2, price);
-      });
+      price = utils.getCouponDiscount(testCoupon2, price);
 
       expect(price).toBe(0);
+    });
+  });
+
+  describe('cartUtils', () => {
+    const mockProduct: Product = {
+      id: 'test1',
+      name: '테스트 상품',
+      price: 10000,
+      stock: 20,
+      discounts: [{ quantity: 10, rate: 0.1 }],
+    };
+
+    const mockProduct2: Product = {
+      id: 'test2',
+      name: '테스트 상품2',
+      price: 20000,
+      stock: 15,
+      discounts: [{ quantity: 5, rate: 0.2 }],
+    };
+
+    const mockCartItem: CartItem = {
+      product: mockProduct,
+      quantity: 1,
+    };
+
+    describe('checkExistingItem', () => {
+      test('장바구니에 상품이 있는지 확인할 수 있다', () => {
+        const cart = [mockCartItem];
+        const result = utils.checkExistingItem(cart, mockProduct);
+
+        expect(result).toEqual(mockCartItem);
+      });
+
+      test('장바구니에 없는 상품은 undefined를 반환한다', () => {
+        const cart = [mockCartItem];
+        const result = utils.checkExistingItem(cart, mockProduct2);
+
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('updateCartWithNewItem', () => {
+      test('새로운 상품을 장바구니에 추가할 수 있다', () => {
+        const cart: CartItem[] = [];
+        const result = utils.updateCartWithNewItem(cart, mockProduct);
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toEqual({
+          product: mockProduct,
+          quantity: 1,
+        });
+      });
+
+      test('이미 있는 상품의 수량을 증가시킬 수 있다', () => {
+        const cart = [mockCartItem];
+        const result = utils.updateCartWithNewItem(cart, mockProduct);
+
+        expect(result[0].quantity).toBe(2);
+      });
+
+      test('재고보다 많은 수량은 추가되지 않는다', () => {
+        const cart = [
+          {
+            product: mockProduct,
+            quantity: mockProduct.stock,
+          },
+        ];
+        const result = utils.updateCartWithNewItem(cart, mockProduct);
+
+        expect(result[0].quantity).toBe(mockProduct.stock);
+      });
+    });
+
+    describe('filterCartItems', () => {
+      test('특정 상품을 장바구니에서 제거할 수 있다', () => {
+        const cart = [
+          mockCartItem,
+          {
+            product: mockProduct2,
+            quantity: 1,
+          },
+        ];
+        const result = utils.filterCartItems(cart, mockProduct.id);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].product.id).toBe(mockProduct2.id);
+      });
+
+      test('존재하지 않는 상품 ID로 필터링하면 원래 장바구니를 반환한다', () => {
+        const cart = [mockCartItem];
+        const result = utils.filterCartItems(cart, 'non-existent');
+        
+        expect(result).toEqual(cart);
+      });
+    });
+
+    describe('getMaxDiscount', () => {
+      test('최대 할인율을 계산할 수 있다', () => {
+        const discounts = [
+          { quantity: 5, rate: 0.1 },
+          { quantity: 10, rate: 0.2 },
+          { quantity: 15, rate: 0.15 },
+        ];
+        const result = utils.getMaxDiscount(discounts);
+
+        expect(result).toBe(0.2);
+      });
+
+      test('할인이 없는 경우 0을 반환한다', () => {
+        const discounts: { quantity: number; rate: number }[] = [];
+        const result = utils.getMaxDiscount(discounts);
+        
+        expect(result).toBe(0);
+      });
     });
   });
 
