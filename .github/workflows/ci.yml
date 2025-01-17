@@ -24,7 +24,7 @@ jobs:
         run: |
           npm install
           npm run test:basic
-  advacned:
+  advanced:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,3 +38,17 @@ jobs:
         run: |
           npm install
           npm run test:advanced
+  msw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: api-mock-test
+        run: |
+          npm install
+          npm run test:api-mock
