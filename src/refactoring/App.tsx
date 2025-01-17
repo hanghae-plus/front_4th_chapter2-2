@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { CartPage } from './components/CartPage.tsx';
-import { AdminPage } from './components/AdminPage.tsx';
+import { CartPage } from './components/CartPage/index.tsx';
+import { AdminPage } from './components/AdminPage/AdminPage.tsx';
 import { Coupon, Product } from '../types.ts';
 import { useCoupons, useProducts } from "./hooks";
 
@@ -71,7 +71,7 @@ const App = () => {
             onCouponAdd={addCoupon}
           />
         ) : (
-          <CartPage products={products} coupons={coupons}/>
+          <CartPage products={products} coupons={coupons} />
         )}
       </main>
     </div>

@@ -1,33 +1,41 @@
 // useCart.ts
 import { useState } from "react";
 import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { calculateCartTotal, updateCartItemQuantity, 장바구니에서_상품빼기, 장바구니에서_상품추가 } from "../models/cart";
+
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [selectedCoupon, applyCoupon] = useState<Coupon>();
 
-  const addToCart = (product: Product) => {};
+  const calculateTotal = () => calculateCartTotal(cart, selectedCoupon);
 
-  const removeFromCart = (productId: string) => {};
+  const addToCart = (product: Product) => {
+    setCart(prevCart => 장바구니에서_상품추가(prevCart, product));
+  };
 
-  const updateQuantity = (productId: string, newQuantity: number) => {};
+  const removeFromCart = (productId: string) => {
+    setCart((prevCart) => 장바구니에서_상품빼기(prevCart, productId));
+  };
 
-  const applyCoupon = (coupon: Coupon) => {};
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    setCart(cart =>  updateCartItemQuantity(cart, productId, newQuantity));
+  };
 
-  const calculateTotal = () => ({
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
-  });
+  const getRemainingStock = (product: Product) => {
+    const cartItem = cart.find(item => item.product.id === product.id);
+
+    return product.stock - (cartItem?.quantity || 0);
+  };
 
   return {
     cart,
+    selectedCoupon,
+    applyCoupon,
+    calculateTotal,
     addToCart,
     removeFromCart,
     updateQuantity,
-    applyCoupon,
-    calculateTotal,
-    selectedCoupon,
-  };
+    getRemainingStock
+  } as const;
 };

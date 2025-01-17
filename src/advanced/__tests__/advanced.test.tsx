@@ -2,8 +2,9 @@ import { useState } from "react";
 import { describe, expect, test } from 'vitest';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { AdminPage } from "../../refactoring/components/AdminPage/AdminPage";
 import { Coupon, Product } from '../../types';
+import { addDiscountToProduct } from "../../refactoring/models/product";
 
 const mockProducts: Product[] = [
   {
@@ -79,7 +80,7 @@ describe('advanced > ', () => {
 
     test('장바구니 페이지 테스트 > ', async () => {
 
-      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
+      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -157,7 +158,7 @@ describe('advanced > ', () => {
     });
 
     test('관리자 페이지 테스트 > ', async () => {
-      render(<TestAdminPage/>);
+      render(<TestAdminPage />);
 
 
       const $product1 = screen.getByTestId('product-1');
@@ -233,11 +234,54 @@ describe('advanced > ', () => {
 
   describe('자유롭게 작성해보세요.', () => {
     test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      expect(addDiscountToProduct({
+        id: '1',
+        name: '내 상품',
+        price: 1000,
+        stock: 10,
+        discounts: [{
+          quantity: 1,
+          rate: 0.05
+        }],
+      }, {
+        quantity: 5,
+        rate: 0.1,
+      })).toMatchObject(
+        {
+          "discounts": [
+            {
+              "quantity": 1,
+              "rate": 0.05,
+            },
+            {
+              "quantity": 5,
+              "rate": 0.1,
+            },
+          ],
+          "id": "1",
+          "name": "내 상품",
+          "price": 1000,
+          "stock": 10,
+        }
+      )
     })
 
     test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      render(<TestAdminPage />);
+
+      const $product1 = screen.getByTestId('product-1');
+
+      fireEvent.click($product1);
+      fireEvent.click(within($product1).getByTestId('toggle-button'));
+      fireEvent.click(within($product1).getByTestId('modify-button'));
+
+      act(() => {
+        fireEvent.change(within($product1).getByDisplayValue('20'), { target: { value: '25' } });
+      })
+
+      fireEvent.click(within($product1).getByText('수정 완료'));
+
+      expect($product1).toHaveTextContent('재고: 25');
     })
   })
 })
