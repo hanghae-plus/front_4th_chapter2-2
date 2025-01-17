@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
+import { describe, expect, it, test } from 'vitest';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
+import { calcTotalPrice, calculateCartSum, applyCouponDiscount, getMaxDiscount } from '../../refactoring/models/cart';
+import { useAdminState } from '../../refactoring/hooks';
 
 const mockProducts: Product[] = [
   {
@@ -47,11 +49,8 @@ const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
 
-
   const handleProductUpdate = (updatedProduct: Product) => {
-    setProducts(prevProducts =>
-      prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
-    );
+    setProducts(prevProducts => prevProducts.map(p => (p.id === updatedProduct.id ? updatedProduct : p)));
   };
 
   const handleProductAdd = (newProduct: Product) => {
@@ -74,12 +73,9 @@ const TestAdminPage = () => {
 };
 
 describe('advanced > ', () => {
-
   describe('시나리오 테스트 > ', () => {
-
     test('장바구니 페이지 테스트 > ', async () => {
-
-      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
+      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -97,7 +93,6 @@ describe('advanced > ', () => {
       expect(product3).toHaveTextContent('상품3');
       expect(product3).toHaveTextContent('30,000원');
       expect(product3).toHaveTextContent('재고: 20개');
-
 
       // 2. 할인 정보 표시
       expect(screen.getByText('10개 이상: 10% 할인')).toBeInTheDocument();
@@ -157,8 +152,7 @@ describe('advanced > ', () => {
     });
 
     test('관리자 페이지 테스트 > ', async () => {
-      render(<TestAdminPage/>);
-
+      render(<TestAdminPage />);
 
       const $product1 = screen.getByTestId('product-1');
 
@@ -182,12 +176,11 @@ describe('advanced > ', () => {
       fireEvent.click(within($product1).getByTestId('toggle-button'));
       fireEvent.click(within($product1).getByTestId('modify-button'));
 
-
       act(() => {
         fireEvent.change(within($product1).getByDisplayValue('20'), { target: { value: '25' } });
         fireEvent.change(within($product1).getByDisplayValue('10000'), { target: { value: '12000' } });
         fireEvent.change(within($product1).getByDisplayValue('상품1'), { target: { value: '수정된 상품1' } });
-      })
+      });
 
       fireEvent.click(within($product1).getByText('수정 완료'));
 
@@ -203,7 +196,7 @@ describe('advanced > ', () => {
       act(() => {
         fireEvent.change(screen.getByPlaceholderText('수량'), { target: { value: '5' } });
         fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), { target: { value: '5' } });
-      })
+      });
       fireEvent.click(screen.getByText('할인 추가'));
 
       expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
@@ -228,17 +221,110 @@ describe('advanced > ', () => {
       const $newCoupon = screen.getByTestId('coupon-3');
 
       expect($newCoupon).toHaveTextContent('새 쿠폰 (NEW10):10% 할인');
-    })
-  })
+    });
+  });
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+    const testProduct: Product = {
+      id: '1',
+      name: 'Test Product',
+      price: 100,
+      stock: 10,
+      discounts: [
+        { quantity: 2, rate: 0.1 },
+        { quantity: 5, rate: 0.2 }
+      ]
+    };
+    const testCarts = [
+      {
+        product: testProduct,
+        quantity: 3
+      }
+    ];
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
-  })
-})
+    it('calcTotalPrice 테스트', () => {
+      expect(calcTotalPrice(testCarts[0])).toBe(300);
+    });
 
+    it('calculateCartSum 테스트', () => {
+      expect(calculateCartSum(testCarts, item => item.product.price * item.quantity)).toBe(300);
+    });
+
+    it('getMaxDiscount 테스트', () => {
+      const discounts = [
+        { quantity: 1, rate: -0.1 },
+        { quantity: 2, rate: 0.2 },
+        { quantity: 3, rate: -0.05 }
+      ];
+      expect(getMaxDiscount(discounts)).toBe(0.2);
+      expect(getMaxDiscount([])).toBe(0);
+      expect(
+        getMaxDiscount([
+          { quantity: 1, rate: 0 },
+          { quantity: 1, rate: 0 }
+        ])
+      ).toBe(0);
+    });
+
+    it('applyCouponDiscount 함수 테스트', () => {
+      const percentCoupon: Coupon = {
+        name: '10% 할인',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10
+      };
+
+      const amountCoupon: Coupon = {
+        name: '5,000원 할인',
+        code: 'AMOUNT5000',
+        discountType: 'amount',
+        discountValue: 5000
+      };
+
+      expect(applyCouponDiscount(100, null)).toBe(100);
+      expect(applyCouponDiscount(1000, percentCoupon)).toBe(900);
+      expect(applyCouponDiscount(1000, amountCoupon)).toBe(-4000);
+
+      expect(
+        applyCouponDiscount(200, {
+          ...percentCoupon,
+          discountValue: 0
+        })
+      ).toBe(200);
+
+      expect(
+        applyCouponDiscount(100, {
+          ...amountCoupon,
+          discountValue: 0
+        })
+      ).toBe(100);
+
+      expect(
+        applyCouponDiscount(0, {
+          ...percentCoupon,
+          discountValue: 10
+        })
+      ).toBe(0);
+    });
+
+    describe('useAdminState hook 테스트  ', () => {
+      it('초기 상태는 false', () => {
+        const { result } = renderHook(() => useAdminState());
+        expect(result.current.isAdmin).toBe(false);
+      });
+
+      it('토글 함수가 상태를 변경', () => {
+        const { result } = renderHook(() => useAdminState());
+        act(() => {
+          result.current.toggleAdminState();
+        });
+        expect(result.current.isAdmin).toBe(true);
+
+        act(() => {
+          result.current.toggleAdminState();
+        });
+        expect(result.current.isAdmin).toBe(false);
+      });
+    });
+  });
+});
