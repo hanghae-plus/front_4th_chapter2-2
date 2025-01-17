@@ -10,11 +10,16 @@ import {
 } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/cart/CartPage';
 import { AdminPage } from '../../refactoring/components/admin/AdminPage';
-import { Coupon, Product } from '../../types';
+import { Coupon, Discount, Product } from '../../types';
 import * as productUtils from '../../refactoring/models/product';
-import { useAdminCoupon, useAdminProduct } from '../../refactoring/hooks';
+import {
+  useAdminCoupon,
+  useAdminEditingProduct,
+  useAdminProduct,
+} from '../../refactoring/hooks';
 import {
   INITIAL_COUPON_STATE,
+  INITIAL_DISCOUNT_STATE,
   INITIAL_PRODUCT_STATE,
 } from '../../refactoring/data/initialData';
 
@@ -413,6 +418,86 @@ describe('advanced > ', () => {
 
       expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
       expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
+    });
+  });
+
+  describe('useAdminEditingProduct', () => {
+    const mockProduct: Product = {
+      id: 'test1',
+      name: '테스트 상품',
+      price: 10000,
+      stock: 20,
+      discounts: [],
+    };
+
+    test('상품 수정을 시작할 수 있다', () => {
+      const { result } = renderHook(() => useAdminEditingProduct());
+
+      act(() => {
+        result.current.handleEditProduct(mockProduct);
+      });
+
+      expect(result.current.editingProduct).toEqual(mockProduct);
+    });
+
+    test('상품의 필드를 수정할 수 있다', () => {
+      const { result } = renderHook(() => useAdminEditingProduct());
+
+      act(() => {
+        result.current.handleEditProduct(mockProduct);
+      });
+
+      act(() => {
+        result.current.handleFieldUpdate(mockProduct.id, {
+          name: '수정된 상품',
+          price: 15000,
+          stock: 30,
+        });
+      });
+
+      expect(result.current.editingProduct?.name).toBe('수정된 상품');
+      expect(result.current.editingProduct?.price).toBe(15000);
+      expect(result.current.editingProduct?.stock).toBe(30);
+    });
+
+    test('상품의 할인을 수정할 수 있다', () => {
+      const { result } = renderHook(() => useAdminEditingProduct());
+      const newDiscount: Discount = { quantity: 5, rate: 0.1 };
+
+      act(() => {
+        result.current.handleEditDiscount(newDiscount);
+      });
+
+      expect(result.current.newDiscount).toEqual(newDiscount);
+    });
+
+    test('상품 수정을 초기화할 수 있다', () => {
+      const { result } = renderHook(() => useAdminEditingProduct());
+
+      act(() => {
+        result.current.handleEditProduct(mockProduct);
+      });
+
+      act(() => {
+        result.current.handleClearProduct();
+      });
+
+      expect(result.current.editingProduct).toBeNull();
+    });
+
+    test('할인 수정을 초기화할 수 있다', () => {
+      const { result } = renderHook(() => useAdminEditingProduct());
+      const newDiscount: Discount = { quantity: 5, rate: 0.1 };
+
+      act(() => {
+        result.current.handleEditDiscount(newDiscount);
+      });
+
+      act(() => {
+        result.current.handleClearDiscount();
+      });
+
+      expect(result.current.newDiscount).toEqual(INITIAL_DISCOUNT_STATE);
     });
   });
 });
