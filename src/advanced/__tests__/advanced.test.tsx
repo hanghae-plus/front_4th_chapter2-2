@@ -281,375 +281,381 @@ describe('advanced > ', () => {
     });
   });
 
-  describe('productUtils', () => {
-    const testProduct: Product = {
-      id: 'p2',
-      name: 'Test Product',
-      price: 100,
-      stock: 10,
-      discounts: [
-        { quantity: 2, rate: 0.1 },
-        { quantity: 5, rate: 0.2 },
-      ],
-    };
-
-    describe('updateProductList', () => {
-      test('업데이트된 제품 리스트를 반환할 수 있다.', () => {
-        const updatedProductList = utils.updateProductList(
-          mockProducts,
-          testProduct,
-        );
-        expect(updatedProductList[1]).toBe(testProduct);
-      });
-    });
-  });
-
-  describe('couponUtils', () => {
-    const testCoupon1: Coupon = {
-      name: 'Test Coupon',
-      code: 'TEST',
-      discountType: 'percentage',
-      discountValue: 50,
-    };
-
-    const testCoupon2: Coupon = {
-      name: 'Test Coupon',
-      code: 'TEST',
-      discountType: 'amount',
-      discountValue: 5000,
-    };
-
-    test('5000원 쿠폰을 적용할 수 있다', () => {
-      let price = 6000;
-      price = utils.getCouponDiscount(testCoupon2, price);
-
-      expect(price).toBe(1000);
-    });
-
-    test('50% 쿠폰을 적용할 수 있다', () => {
-      let price = 6000;
-      price = utils.getCouponDiscount(testCoupon1, price);
-
-      expect(price).toBe(3000);
-    });
-
-    test('금액이 0보다 작아질 수 없다', () => {
-      let price = 3000;
-      price = utils.getCouponDiscount(testCoupon2, price);
-
-      expect(price).toBe(0);
-    });
-  });
-
-  describe('cartUtils', () => {
-    const mockProduct: Product = {
-      id: 'test1',
-      name: '테스트 상품',
-      price: 10000,
-      stock: 20,
-      discounts: [{ quantity: 10, rate: 0.1 }],
-    };
-
-    const mockProduct2: Product = {
-      id: 'test2',
-      name: '테스트 상품2',
-      price: 20000,
-      stock: 15,
-      discounts: [{ quantity: 5, rate: 0.2 }],
-    };
-
-    const mockCartItem: CartItem = {
-      product: mockProduct,
-      quantity: 1,
-    };
-
-    describe('checkExistingItem', () => {
-      test('장바구니에 상품이 있는지 확인할 수 있다', () => {
-        const cart = [mockCartItem];
-        const result = utils.checkExistingItem(cart, mockProduct);
-
-        expect(result).toEqual(mockCartItem);
-      });
-
-      test('장바구니에 없는 상품은 undefined를 반환한다', () => {
-        const cart = [mockCartItem];
-        const result = utils.checkExistingItem(cart, mockProduct2);
-
-        expect(result).toBeUndefined();
-      });
-    });
-
-    describe('updateCartWithNewItem', () => {
-      test('새로운 상품을 장바구니에 추가할 수 있다', () => {
-        const cart: CartItem[] = [];
-        const result = utils.updateCartWithNewItem(cart, mockProduct);
-
-        expect(result).toHaveLength(1);
-        expect(result[0]).toEqual({
-          product: mockProduct,
-          quantity: 1,
-        });
-      });
-
-      test('이미 있는 상품의 수량을 증가시킬 수 있다', () => {
-        const cart = [mockCartItem];
-        const result = utils.updateCartWithNewItem(cart, mockProduct);
-
-        expect(result[0].quantity).toBe(2);
-      });
-
-      test('재고보다 많은 수량은 추가되지 않는다', () => {
-        const cart = [
-          {
-            product: mockProduct,
-            quantity: mockProduct.stock,
-          },
-        ];
-        const result = utils.updateCartWithNewItem(cart, mockProduct);
-
-        expect(result[0].quantity).toBe(mockProduct.stock);
-      });
-    });
-
-    describe('filterCartItems', () => {
-      test('특정 상품을 장바구니에서 제거할 수 있다', () => {
-        const cart = [
-          mockCartItem,
-          {
-            product: mockProduct2,
-            quantity: 1,
-          },
-        ];
-        const result = utils.filterCartItems(cart, mockProduct.id);
-
-        expect(result).toHaveLength(1);
-        expect(result[0].product.id).toBe(mockProduct2.id);
-      });
-
-      test('존재하지 않는 상품 ID로 필터링하면 원래 장바구니를 반환한다', () => {
-        const cart = [mockCartItem];
-        const result = utils.filterCartItems(cart, 'non-existent');
-        
-        expect(result).toEqual(cart);
-      });
-    });
-
-    describe('getMaxDiscount', () => {
-      test('최대 할인율을 계산할 수 있다', () => {
-        const discounts = [
-          { quantity: 5, rate: 0.1 },
-          { quantity: 10, rate: 0.2 },
-          { quantity: 15, rate: 0.15 },
-        ];
-        const result = utils.getMaxDiscount(discounts);
-
-        expect(result).toBe(0.2);
-      });
-
-      test('할인이 없는 경우 0을 반환한다', () => {
-        const discounts: { quantity: number; rate: number }[] = [];
-        const result = utils.getMaxDiscount(discounts);
-        
-        expect(result).toBe(0);
-      });
-    });
-  });
-
-  describe('useAdminCoupon', () => {
-    const testCoupon: Coupon = {
-      name: 'Test Coupon',
-      code: 'TEST',
-      discountType: 'percentage',
-      discountValue: 10,
-    };
-
-    test('쿠폰을 수정할 수 있다.', () => {
-      const { result } = renderHook(() => useAdminCoupon());
-      act(() => {
-        result.current.handleEditCoupon(testCoupon, { name: '변경된 쿠폰' });
-      });
-      expect(result.current.newCoupon.name).toBe('변경된 쿠폰');
-    });
-
-    test('쿠폰을 초기화 할 수 있다.', () => {
-      const { result } = renderHook(() => useAdminCoupon());
-      act(() => {
-        result.current.handleEditCoupon(testCoupon, { name: '변경된 쿠폰' });
-        result.current.handleClearCoupon();
-      });
-      expect(result.current.newCoupon).toEqual(INITIAL_COUPON_STATE);
-    });
-  });
-
-  describe('useAdminProduct', () => {
-    const mockOnProductAdd = vi.fn();
-    const mockOnAddSuccess = vi.fn();
-
-    const defaultProps = {
-      products: [],
-      onProductAdd: mockOnProductAdd,
-      onProductUpdate: vi.fn(),
-      onAddSuccess: mockOnAddSuccess,
-    };
-
-    beforeEach(() => {
-      mockOnProductAdd.mockClear();
-      mockOnAddSuccess.mockClear();
-    });
-
-    test('새 상품을 추가할 수 있다', () => {
-      const { result } = renderHook(() => useAdminProduct(defaultProps));
-
-      // 새 상품 정보 설정
-      act(() => {
-        result.current.setNewProduct({
-          ...INITIAL_PRODUCT_STATE,
-          name: '테스트 상품',
-          price: 15000,
-          stock: 100,
-        });
-      });
-
-      // 상품 추가 함수 호출
-      act(() => {
-        result.current.handleAddNewProduct();
-      });
-
-      // onProductAdd가 호출되었는지 확인
-      expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
-      // 전달된 상품 데이터 확인
-      const addedProduct = mockOnProductAdd.mock.calls[0][0];
-      expect(addedProduct.name).toBe('테스트 상품');
-      expect(addedProduct.price).toBe(15000);
-      expect(addedProduct.stock).toBe(100);
-    });
-
-    test('상품 추가 후 newProduct가 초기화된다', () => {
-      const { result } = renderHook(() => useAdminProduct(defaultProps));
-
-      // 새 상품 정보 설정
-      act(() => {
-        result.current.setNewProduct({
-          ...INITIAL_PRODUCT_STATE,
-          name: '테스트 상품',
-        });
-      });
-
-      // 상품 추가
-      act(() => {
-        result.current.handleAddNewProduct();
-      });
-
-      // newProduct가 초기 상태로 리셋되었는지 확인
-      expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
-    });
-
-    test('상품 추가 성공 시 onAddSuccess가 호출된다', () => {
-      const { result } = renderHook(() => useAdminProduct(defaultProps));
-
-      act(() => {
-        result.current.handleAddNewProduct();
-      });
-
-      expect(mockOnAddSuccess).toHaveBeenCalledTimes(1);
-    });
-
-    test('onAddSuccess가 없어도 상품 추가가 정상적으로 동작한다', () => {
-      const propsWithoutCallback = {
-        ...defaultProps,
-        onAddSuccess: undefined,
+  describe('utils', () => {
+    describe('productUtils', () => {
+      const testProduct: Product = {
+        id: 'p2',
+        name: 'Test Product',
+        price: 100,
+        stock: 10,
+        discounts: [
+          { quantity: 2, rate: 0.1 },
+          { quantity: 5, rate: 0.2 },
+        ],
       };
 
-      const { result } = renderHook(() =>
-        useAdminProduct(propsWithoutCallback),
-      );
-
-      act(() => {
-        result.current.handleAddNewProduct();
+      describe('updateProductList', () => {
+        test('업데이트된 제품 리스트를 반환할 수 있다.', () => {
+          const updatedProductList = utils.updateProductList(
+            mockProducts,
+            testProduct,
+          );
+          expect(updatedProductList[1]).toBe(testProduct);
+        });
       });
-
-      expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
-      expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
-    });
-  });
-
-  describe('useAdminEditingProduct', () => {
-    const mockProduct: Product = {
-      id: 'test1',
-      name: '테스트 상품',
-      price: 10000,
-      stock: 20,
-      discounts: [],
-    };
-
-    test('상품 수정을 시작할 수 있다', () => {
-      const { result } = renderHook(() => useAdminEditingProduct());
-
-      act(() => {
-        result.current.handleEditProduct(mockProduct);
-      });
-
-      expect(result.current.editingProduct).toEqual(mockProduct);
     });
 
-    test('상품의 필드를 수정할 수 있다', () => {
-      const { result } = renderHook(() => useAdminEditingProduct());
+    describe('couponUtils', () => {
+      describe('getCouponDiscount', () => {
+        const testCoupon1: Coupon = {
+          name: 'Test Coupon',
+          code: 'TEST',
+          discountType: 'percentage',
+          discountValue: 50,
+        };
 
-      act(() => {
-        result.current.handleEditProduct(mockProduct);
+        const testCoupon2: Coupon = {
+          name: 'Test Coupon',
+          code: 'TEST',
+          discountType: 'amount',
+          discountValue: 5000,
+        };
+
+        test('5000원 쿠폰을 적용할 수 있다', () => {
+          let price = 6000;
+          price = utils.getCouponDiscount(testCoupon2, price);
+
+          expect(price).toBe(1000);
+        });
+
+        test('50% 쿠폰을 적용할 수 있다', () => {
+          let price = 6000;
+          price = utils.getCouponDiscount(testCoupon1, price);
+
+          expect(price).toBe(3000);
+        });
+
+        test('금액이 0보다 작아질 수 없다', () => {
+          let price = 3000;
+          price = utils.getCouponDiscount(testCoupon2, price);
+
+          expect(price).toBe(0);
+        });
       });
+    });
 
-      act(() => {
-        result.current.handleFieldUpdate(mockProduct.id, {
-          name: '수정된 상품',
-          price: 15000,
-          stock: 30,
+    describe('cartUtils', () => {
+      const mockProduct: Product = {
+        id: 'test1',
+        name: '테스트 상품',
+        price: 10000,
+        stock: 20,
+        discounts: [{ quantity: 10, rate: 0.1 }],
+      };
+
+      const mockProduct2: Product = {
+        id: 'test2',
+        name: '테스트 상품2',
+        price: 20000,
+        stock: 15,
+        discounts: [{ quantity: 5, rate: 0.2 }],
+      };
+
+      const mockCartItem: CartItem = {
+        product: mockProduct,
+        quantity: 1,
+      };
+
+      describe('checkExistingItem', () => {
+        test('장바구니에 상품이 있는지 확인할 수 있다', () => {
+          const cart = [mockCartItem];
+          const result = utils.checkExistingItem(cart, mockProduct);
+
+          expect(result).toEqual(mockCartItem);
+        });
+
+        test('장바구니에 없는 상품은 undefined를 반환한다', () => {
+          const cart = [mockCartItem];
+          const result = utils.checkExistingItem(cart, mockProduct2);
+
+          expect(result).toBeUndefined();
         });
       });
 
-      expect(result.current.editingProduct?.name).toBe('수정된 상품');
-      expect(result.current.editingProduct?.price).toBe(15000);
-      expect(result.current.editingProduct?.stock).toBe(30);
+      describe('updateCartWithNewItem', () => {
+        test('새로운 상품을 장바구니에 추가할 수 있다', () => {
+          const cart: CartItem[] = [];
+          const result = utils.updateCartWithNewItem(cart, mockProduct);
+
+          expect(result).toHaveLength(1);
+          expect(result[0]).toEqual({
+            product: mockProduct,
+            quantity: 1,
+          });
+        });
+
+        test('이미 있는 상품의 수량을 증가시킬 수 있다', () => {
+          const cart = [mockCartItem];
+          const result = utils.updateCartWithNewItem(cart, mockProduct);
+
+          expect(result[0].quantity).toBe(2);
+        });
+
+        test('재고보다 많은 수량은 추가되지 않는다', () => {
+          const cart = [
+            {
+              product: mockProduct,
+              quantity: mockProduct.stock,
+            },
+          ];
+          const result = utils.updateCartWithNewItem(cart, mockProduct);
+
+          expect(result[0].quantity).toBe(mockProduct.stock);
+        });
+      });
+
+      describe('filterCartItems', () => {
+        test('특정 상품을 장바구니에서 제거할 수 있다', () => {
+          const cart = [
+            mockCartItem,
+            {
+              product: mockProduct2,
+              quantity: 1,
+            },
+          ];
+          const result = utils.filterCartItems(cart, mockProduct.id);
+
+          expect(result).toHaveLength(1);
+          expect(result[0].product.id).toBe(mockProduct2.id);
+        });
+
+        test('존재하지 않는 상품 ID로 필터링하면 원래 장바구니를 반환한다', () => {
+          const cart = [mockCartItem];
+          const result = utils.filterCartItems(cart, 'non-existent');
+
+          expect(result).toEqual(cart);
+        });
+      });
+
+      describe('getMaxDiscount', () => {
+        test('최대 할인율을 계산할 수 있다', () => {
+          const discounts = [
+            { quantity: 5, rate: 0.1 },
+            { quantity: 10, rate: 0.2 },
+            { quantity: 15, rate: 0.15 },
+          ];
+          const result = utils.getMaxDiscount(discounts);
+
+          expect(result).toBe(0.2);
+        });
+
+        test('할인이 없는 경우 0을 반환한다', () => {
+          const discounts: { quantity: number; rate: number }[] = [];
+          const result = utils.getMaxDiscount(discounts);
+
+          expect(result).toBe(0);
+        });
+      });
+    });
+  });
+
+  describe('hooks', () => {
+    describe('useAdminCoupon', () => {
+      const testCoupon: Coupon = {
+        name: 'Test Coupon',
+        code: 'TEST',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+
+      test('쿠폰을 수정할 수 있다.', () => {
+        const { result } = renderHook(() => useAdminCoupon());
+        act(() => {
+          result.current.handleEditCoupon(testCoupon, { name: '변경된 쿠폰' });
+        });
+        expect(result.current.newCoupon.name).toBe('변경된 쿠폰');
+      });
+
+      test('쿠폰을 초기화 할 수 있다.', () => {
+        const { result } = renderHook(() => useAdminCoupon());
+        act(() => {
+          result.current.handleEditCoupon(testCoupon, { name: '변경된 쿠폰' });
+          result.current.handleClearCoupon();
+        });
+        expect(result.current.newCoupon).toEqual(INITIAL_COUPON_STATE);
+      });
     });
 
-    test('상품의 할인을 수정할 수 있다', () => {
-      const { result } = renderHook(() => useAdminEditingProduct());
-      const newDiscount: Discount = { quantity: 5, rate: 0.1 };
+    describe('useAdminProduct', () => {
+      const mockOnProductAdd = vi.fn();
+      const mockOnAddSuccess = vi.fn();
 
-      act(() => {
-        result.current.handleEditDiscount(newDiscount);
+      const defaultProps = {
+        products: [],
+        onProductAdd: mockOnProductAdd,
+        onProductUpdate: vi.fn(),
+        onAddSuccess: mockOnAddSuccess,
+      };
+
+      beforeEach(() => {
+        mockOnProductAdd.mockClear();
+        mockOnAddSuccess.mockClear();
       });
 
-      expect(result.current.newDiscount).toEqual(newDiscount);
+      test('새 상품을 추가할 수 있다', () => {
+        const { result } = renderHook(() => useAdminProduct(defaultProps));
+
+        // 새 상품 정보 설정
+        act(() => {
+          result.current.setNewProduct({
+            ...INITIAL_PRODUCT_STATE,
+            name: '테스트 상품',
+            price: 15000,
+            stock: 100,
+          });
+        });
+
+        // 상품 추가 함수 호출
+        act(() => {
+          result.current.handleAddNewProduct();
+        });
+
+        // onProductAdd가 호출되었는지 확인
+        expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
+        // 전달된 상품 데이터 확인
+        const addedProduct = mockOnProductAdd.mock.calls[0][0];
+        expect(addedProduct.name).toBe('테스트 상품');
+        expect(addedProduct.price).toBe(15000);
+        expect(addedProduct.stock).toBe(100);
+      });
+
+      test('상품 추가 후 newProduct가 초기화된다', () => {
+        const { result } = renderHook(() => useAdminProduct(defaultProps));
+
+        // 새 상품 정보 설정
+        act(() => {
+          result.current.setNewProduct({
+            ...INITIAL_PRODUCT_STATE,
+            name: '테스트 상품',
+          });
+        });
+
+        // 상품 추가
+        act(() => {
+          result.current.handleAddNewProduct();
+        });
+
+        // newProduct가 초기 상태로 리셋되었는지 확인
+        expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
+      });
+
+      test('상품 추가 성공 시 onAddSuccess가 호출된다', () => {
+        const { result } = renderHook(() => useAdminProduct(defaultProps));
+
+        act(() => {
+          result.current.handleAddNewProduct();
+        });
+
+        expect(mockOnAddSuccess).toHaveBeenCalledTimes(1);
+      });
+
+      test('onAddSuccess가 없어도 상품 추가가 정상적으로 동작한다', () => {
+        const propsWithoutCallback = {
+          ...defaultProps,
+          onAddSuccess: undefined,
+        };
+
+        const { result } = renderHook(() =>
+          useAdminProduct(propsWithoutCallback),
+        );
+
+        act(() => {
+          result.current.handleAddNewProduct();
+        });
+
+        expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
+        expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
+      });
     });
 
-    test('상품 수정을 초기화할 수 있다', () => {
-      const { result } = renderHook(() => useAdminEditingProduct());
+    describe('useAdminEditingProduct', () => {
+      const mockProduct: Product = {
+        id: 'test1',
+        name: '테스트 상품',
+        price: 10000,
+        stock: 20,
+        discounts: [],
+      };
 
-      act(() => {
-        result.current.handleEditProduct(mockProduct);
+      test('상품 수정을 시작할 수 있다', () => {
+        const { result } = renderHook(() => useAdminEditingProduct());
+
+        act(() => {
+          result.current.handleEditProduct(mockProduct);
+        });
+
+        expect(result.current.editingProduct).toEqual(mockProduct);
       });
 
-      act(() => {
-        result.current.handleClearProduct();
+      test('상품의 필드를 수정할 수 있다', () => {
+        const { result } = renderHook(() => useAdminEditingProduct());
+
+        act(() => {
+          result.current.handleEditProduct(mockProduct);
+        });
+
+        act(() => {
+          result.current.handleFieldUpdate(mockProduct.id, {
+            name: '수정된 상품',
+            price: 15000,
+            stock: 30,
+          });
+        });
+
+        expect(result.current.editingProduct?.name).toBe('수정된 상품');
+        expect(result.current.editingProduct?.price).toBe(15000);
+        expect(result.current.editingProduct?.stock).toBe(30);
       });
 
-      expect(result.current.editingProduct).toBeNull();
-    });
+      test('상품의 할인을 수정할 수 있다', () => {
+        const { result } = renderHook(() => useAdminEditingProduct());
+        const newDiscount: Discount = { quantity: 5, rate: 0.1 };
 
-    test('할인 수정을 초기화할 수 있다', () => {
-      const { result } = renderHook(() => useAdminEditingProduct());
-      const newDiscount: Discount = { quantity: 5, rate: 0.1 };
+        act(() => {
+          result.current.handleEditDiscount(newDiscount);
+        });
 
-      act(() => {
-        result.current.handleEditDiscount(newDiscount);
+        expect(result.current.newDiscount).toEqual(newDiscount);
       });
 
-      act(() => {
-        result.current.handleClearDiscount();
+      test('상품 수정을 초기화할 수 있다', () => {
+        const { result } = renderHook(() => useAdminEditingProduct());
+
+        act(() => {
+          result.current.handleEditProduct(mockProduct);
+        });
+
+        act(() => {
+          result.current.handleClearProduct();
+        });
+
+        expect(result.current.editingProduct).toBeNull();
       });
 
-      expect(result.current.newDiscount).toEqual(INITIAL_DISCOUNT_STATE);
+      test('할인 수정을 초기화할 수 있다', () => {
+        const { result } = renderHook(() => useAdminEditingProduct());
+        const newDiscount: Discount = { quantity: 5, rate: 0.1 };
+
+        act(() => {
+          result.current.handleEditDiscount(newDiscount);
+        });
+
+        act(() => {
+          result.current.handleClearDiscount();
+        });
+
+        expect(result.current.newDiscount).toEqual(INITIAL_DISCOUNT_STATE);
+      });
     });
   });
 });
