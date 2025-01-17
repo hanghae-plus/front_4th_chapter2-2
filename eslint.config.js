@@ -18,7 +18,11 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        project: ['./tsconfig.json', './tsconfig.app.json', './tsconfig.node.json'],
+        project: [
+          './tsconfig.json',
+          './tsconfig.app.json',
+          './tsconfig.node.json',
+        ],
         sourceType: 'module',
       },
     },
@@ -41,12 +45,14 @@ export default [
         { type: 'entities', pattern: './src/refactoring/entities/*' },
         { type: 'shared', pattern: './src/refactoring/shared/*' },
       ],
+      react: {
+        version: 'detect',
+      },
     },
-
     rules: {
       ...airbnb.rules,
-      'prettier/prettier': 'error',
-      'react/react-in-jsx-scope': 'off', // React 17+ JSX transform 사용
+      'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+      'react/react-in-jsx-scope': 'off',
       'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
       'react/function-component-definition': [
         'error',
@@ -55,7 +61,10 @@ export default [
           unnamedComponents: 'arrow-function',
         },
       ],
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/explicit-function-return-type': 'off',
       'import/prefer-default-export': 'off',
       'react-hooks/rules-of-hooks': 'error',
@@ -66,8 +75,14 @@ export default [
         {
           default: 'disallow',
           rules: [
-            { from: 'app', allow: ['pages', 'widgets', 'features', 'entities', 'shared'] },
-            { from: 'pages', allow: ['widgets', 'features', 'entities', 'shared'] },
+            {
+              from: 'app',
+              allow: ['pages', 'widgets', 'features', 'entities', 'shared'],
+            },
+            {
+              from: 'pages',
+              allow: ['widgets', 'features', 'entities', 'shared'],
+            },
             { from: 'widgets', allow: ['features', 'entities', 'shared'] },
             { from: 'features', allow: ['entities', 'shared'] },
             { from: 'entities', allow: ['shared'] },
