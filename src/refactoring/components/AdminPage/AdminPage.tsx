@@ -5,6 +5,7 @@ import { Section } from '../Section.tsx';
 import { CouponManagement } from './CouponManagement.tsx';
 import { ProductManagement } from './ProductManagement.tsx';
 import { addDiscountToProduct } from '../../models/product.ts';
+import { useProductDetail } from './useProductDetail.ts';
 
 interface Props {
   products: Product[];
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, onCouponAdd }: Props) => {
-  const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
+  const [openProductIds, toggleProductAccordion] = useProductDetail();
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
   const [newCoupon, setNewCoupon] = useState<Coupon>({
@@ -31,18 +32,6 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
     stock: 0,
     discounts: []
   });
-
-  const toggleProductAccordion = (productId: string) => {
-    setOpenProductIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   // handleEditProduct 함수 수정
   const handleEditProduct = (product: Product) => {

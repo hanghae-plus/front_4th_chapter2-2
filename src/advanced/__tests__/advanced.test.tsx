@@ -267,7 +267,21 @@ describe('advanced > ', () => {
     })
 
     test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      render(<TestAdminPage />);
+
+      const $product1 = screen.getByTestId('product-1');
+
+      fireEvent.click($product1);
+      fireEvent.click(within($product1).getByTestId('toggle-button'));
+      fireEvent.click(within($product1).getByTestId('modify-button'));
+
+      act(() => {
+        fireEvent.change(within($product1).getByDisplayValue('20'), { target: { value: '25' } });
+      })
+
+      fireEvent.click(within($product1).getByText('수정 완료'));
+
+      expect($product1).toHaveTextContent('재고: 25');
     })
   })
 })
