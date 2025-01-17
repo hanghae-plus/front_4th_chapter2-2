@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Coupon, Discount, Product } from '../../../types.ts';
-import { Container, Title, Button } from '../Styled.tsx';
+import { Container, Title } from '../Styled.tsx';
 import { Section } from '../Section.tsx';
-import { InputLabel } from './InputLabel.tsx';
 import { CouponManagement } from './CouponManagement.tsx';
 import { ProductManagement } from './ProductManagement.tsx';
 
