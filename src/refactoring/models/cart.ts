@@ -38,7 +38,7 @@ export const updateItemQuantity = (item: CartItem, newQuantity: number): CartIte
   const maxQuantity = item.product.stock;
   const updatedQuantity = Math.max(0, Math.min(newQuantity, maxQuantity));
 
-  return { ...item, quantity: updatedQuantity };
+  return updatedQuantity > 0 ? { ...item, quantity: updatedQuantity } : null;
 };
 
 // 장바구니 내역 업데이트 함수
@@ -110,4 +110,9 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
     totalAfterDiscount,
     totalDiscount: Math.round(totalDiscount),
   };
+};
+
+export const getRemainingStock = (product: Product, cart: CartItem[]) => {
+  const cartItem = cart.find((item) => item.product.id === product.id);
+  return product.stock - (cartItem?.quantity || 0);
 };

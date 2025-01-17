@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
@@ -434,6 +434,15 @@ describe('basic > ', () => {
       discountValue: 10,
     };
 
+    beforeEach(() => {
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => JSON.stringify([]));
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      vi.resetAllMocks();
+    });
+
     test('장바구니에 제품을 추가해야 합니다', () => {
       const { result } = renderHook(() => useCart());
 
@@ -464,6 +473,9 @@ describe('basic > ', () => {
 
       act(() => {
         result.current.addToCart(testProduct);
+      });
+
+      act(() => {
         result.current.updateQuantity(testProduct.id, 5);
       });
 
@@ -485,7 +497,13 @@ describe('basic > ', () => {
 
       act(() => {
         result.current.addToCart(testProduct);
+      });
+
+      act(() => {
         result.current.updateQuantity(testProduct.id, 2);
+      });
+
+      act(() => {
         result.current.applyCoupon(testCoupon);
       });
 
