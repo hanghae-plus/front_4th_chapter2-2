@@ -4,7 +4,7 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 import { CartPage } from '../../refactoring/pages/CartPage';
 import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { Coupon, Product, CartItem } from '../../types';
-import { useAppState, useAdminProduct } from '../../refactoring/hooks';
+import { useAppState, useAdminProduct, useAdminCoupon } from '../../refactoring/hooks';
 import {
   calculateItemMaxDiscount,
   calculateItemTotal,
@@ -362,7 +362,7 @@ describe('advanced > ', () => {
 
           // 새로운 상품이 mockOnProductAdd를 통해 추가되었는지 확인
           expect(mockOnProductAdd).toHaveBeenCalledWith({
-            id: 'p3', // mockProductList의 길이에 따라 ID가 부여됨
+            id: 'p3', // mockProducts의 길이에 따라 ID가 부여됨
             name: '새 상품',
             price: 300,
             stock: 20,
@@ -375,6 +375,71 @@ describe('advanced > ', () => {
             price: 0,
             stock: 0,
             discounts: [],
+          });
+        });
+      });
+
+      describe('useAdminCoupon > ', () => {
+        const mockOnCouponAdd = jest.fn();
+        it('초기값이 올바르게 설정되는지 테스트', () => {
+          const { result } = renderHook(() => useAdminCoupon(mockCoupons, mockOnCouponAdd));
+
+          expect(result.current.newCoupon).toEqual({
+            name: '',
+            code: '',
+            discountType: 'percentage',
+            discountValue: 0,
+          });
+        });
+
+        it('handleInputChange가 newCoupon 상태를 업데이트하는지 테스트', () => {
+          const { result } = renderHook(() => useAdminCoupon(mockCoupons, mockOnCouponAdd));
+
+          act(() => {
+            result.current.handleInputChange('name', '새 쿠폰');
+          });
+          expect(result.current.newCoupon.name).toBe('새 쿠폰');
+
+          act(() => {
+            result.current.handleInputChange('discountValue', 20);
+          });
+          expect(result.current.newCoupon.discountValue).toBe(20);
+        });
+
+        it('handleAddCoupon이 새로운 쿠폰을 추가하고 newCoupon 상태를 초기화하는지 테스트', () => {
+          const { result } = renderHook(() => useAdminCoupon(mockCoupons, mockOnCouponAdd));
+
+          act(() => {
+            result.current.handleInputChange('name', '새로운 쿠폰');
+            result.current.handleInputChange('code', 'NEWCOUPON');
+            result.current.handleInputChange('discountType', 'amount');
+            result.current.handleInputChange('discountValue', 5000);
+          });
+          expect(result.current.newCoupon).toEqual({
+            name: '새로운 쿠폰',
+            code: 'NEWCOUPON',
+            discountType: 'amount',
+            discountValue: 5000,
+          });
+
+          act(() => {
+            result.current.handleAddCoupon();
+          });
+          // onCouponAdd 함수가 호출되었는지 확인
+          expect(mockOnCouponAdd).toHaveBeenCalledWith({
+            id: 'coupon-3', // mockCoupons의 길이에 따라 ID 생성
+            name: '새로운 쿠폰',
+            code: 'NEWCOUPON',
+            discountType: 'amount',
+            discountValue: 5000,
+          });
+
+          // newCoupon 상태가 초기화되었는지 확인
+          expect(result.current.newCoupon).toEqual({
+            name: '',
+            code: '',
+            discountType: 'percentage',
+            discountValue: 0,
           });
         });
       });
