@@ -464,12 +464,7 @@ describe('advanced > ', () => {
         result.current.handleAddCoupon();
       });
 
-      expect(result.current.newCoupon).toEqual({
-        name: '',
-        code: '',
-        discountType: 'percentage',
-        discountValue: 0,
-      });
+      expect(result.current.newCoupon).toEqual(initialNewCoupon);
     });
   });
 
