@@ -17,17 +17,20 @@ export function ProductEditForm({ product, onUpdate }: ProductEditFormProps) {
   return (
     <div>
       <FormInput
+        id="name-input"
         label="상품명: "
         type="text"
         value={editingProduct.name}
         onChange={(value) => handleFieldChange('name', value)}
       />
       <FormInput
+        id="price-input"
         label="가격: "
         value={editingProduct.price}
         onChange={(value) => handleFieldChange('price', value)}
       />
       <FormInput
+        id="stock-input"
         label="재고: "
         value={editingProduct.stock}
         onChange={(value) => handleFieldChange('stock', value)}
