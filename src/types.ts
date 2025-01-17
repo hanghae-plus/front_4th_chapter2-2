@@ -1,9 +1,11 @@
+export type FormElementType = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 export interface Product {
   id: string;
   name: string;
   price: number;
   stock: number;
-  discounts: Discount[];
+  discountList: Discount[];
 }
 
 export interface Discount {
