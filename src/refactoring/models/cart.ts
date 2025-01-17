@@ -9,13 +9,7 @@ export const calculateItemTotal = (item: CartItem) => {
     0,
   );
 
-  let totalAfterDiscount = price * quantity * (1 - discount);
-
-  if (discount > 0) {
-    totalAfterDiscount = Math.round(totalAfterDiscount);
-  }
-
-  return totalAfterDiscount;
+  return calculateDiscountedPrice(price, quantity, discount);
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) =>
@@ -87,4 +81,14 @@ export const addCartItem = (cart: CartItem[], product: Product) => {
     );
   }
   return [...cart, { product, quantity: 1 }];
+};
+
+export const calculateDiscountedPrice = (price: number, quantity: number, discount: number) => {
+  const totalAfterDiscount = price * quantity * (1 - discount);
+
+  if (discount === 0) {
+    return totalAfterDiscount;
+  }
+
+  return Math.round(totalAfterDiscount);
 };
