@@ -1,25 +1,58 @@
-// useCart.ts
-import { useState } from "react";
-import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { useState } from 'react';
+
+import { useLocalStorage } from './useLocalStorage';
+import { CartItem, Coupon, Product } from '../../types';
+import { LOCAL_STORAGE_KEY } from '../constants/localStorage';
+import { calculateCartTotal, getRemainingStock, updateCartItemQuantity } from '../models/cart';
 
 export const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { storedValue: cart, saveToStorage: setCart } = useLocalStorage<CartItem[]>(
+    LOCAL_STORAGE_KEY['CART'],
+    []
+  );
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
-  const addToCart = (product: Product) => {};
+  const addToCart = (product: Product) => {
+    const remainingStock = getRemainingStock(cart, product);
 
-  const removeFromCart = (productId: string) => {};
+    if (remainingStock <= 0) return;
 
-  const updateQuantity = (productId: string, newQuantity: number) => {};
+    const newCart = (() => {
+      const existingItem = cart.find((item) => item.product.id === product.id);
 
-  const applyCoupon = (coupon: Coupon) => {};
+      if (existingItem) {
+        return cart.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
+            : item
+        );
+      }
 
-  const calculateTotal = () => ({
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
-  });
+      return [...cart, { product, quantity: 1 }];
+    })();
+
+    setCart(newCart);
+  };
+
+  const removeFromCart = (productId: string) => {
+    const newCart = cart.filter((item) => item.product.id !== productId);
+
+    setCart(newCart);
+  };
+
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    const updatedCart = updateCartItemQuantity(cart, productId, newQuantity);
+
+    setCart(updatedCart);
+  };
+
+  const applyCoupon = (coupon: Coupon) => {
+    setSelectedCoupon(coupon);
+  };
+
+  const calculateTotal = () => {
+    return calculateCartTotal(cart, selectedCoupon);
+  };
 
   return {
     cart,

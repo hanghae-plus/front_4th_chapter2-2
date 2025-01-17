@@ -1,9 +1,13 @@
-import { useState } from "react";
-import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
+import { afterEach, describe, expect, test } from 'vitest';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
+import { validateCouponData, validateProductData } from '../../refactoring/utils/validateData';
+import { renderHook } from '@testing-library/react';
+import { useLocalStorage } from '../../refactoring/hooks';
+import { useSearch } from '../../refactoring/hooks/useSearch';
 
 const mockProducts: Product[] = [
   {
@@ -11,55 +15,54 @@ const mockProducts: Product[] = [
     name: '상품1',
     price: 10000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.1 }]
+    discounts: [{ quantity: 10, rate: 0.1 }],
   },
   {
     id: 'p2',
     name: '상품2',
     price: 20000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }]
+    discounts: [{ quantity: 10, rate: 0.15 }],
   },
   {
     id: 'p3',
     name: '상품3',
     price: 30000,
     stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }]
-  }
+    discounts: [{ quantity: 10, rate: 0.2 }],
+  },
 ];
 const mockCoupons: Coupon[] = [
   {
     name: '5000원 할인 쿠폰',
     code: 'AMOUNT5000',
     discountType: 'amount',
-    discountValue: 5000
+    discountValue: 5000,
   },
   {
     name: '10% 할인 쿠폰',
     code: 'PERCENT10',
     discountType: 'percentage',
-    discountValue: 10
-  }
+    discountValue: 10,
+  },
 ];
 
 const TestAdminPage = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
 
-
   const handleProductUpdate = (updatedProduct: Product) => {
-    setProducts(prevProducts =>
-      prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p)
+    setProducts((prevProducts) =>
+      prevProducts.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
     );
   };
 
   const handleProductAdd = (newProduct: Product) => {
-    setProducts(prevProducts => [...prevProducts, newProduct]);
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
   };
 
   const handleCouponAdd = (newCoupon: Coupon) => {
-    setCoupons(prevCoupons => [...prevCoupons, newCoupon]);
+    setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
   };
 
   return (
@@ -74,12 +77,9 @@ const TestAdminPage = () => {
 };
 
 describe('advanced > ', () => {
-
   describe('시나리오 테스트 > ', () => {
-
     test('장바구니 페이지 테스트 > ', async () => {
-
-      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
+      render(<CartPage products={mockProducts} coupons={mockCoupons} />);
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
       const product3 = screen.getByTestId('product-p3');
@@ -97,7 +97,6 @@ describe('advanced > ', () => {
       expect(product3).toHaveTextContent('상품3');
       expect(product3).toHaveTextContent('30,000원');
       expect(product3).toHaveTextContent('재고: 20개');
-
 
       // 2. 할인 정보 표시
       expect(screen.getByText('10개 이상: 10% 할인')).toBeInTheDocument();
@@ -157,8 +156,7 @@ describe('advanced > ', () => {
     });
 
     test('관리자 페이지 테스트 > ', async () => {
-      render(<TestAdminPage/>);
-
+      render(<TestAdminPage />);
 
       const $product1 = screen.getByTestId('product-1');
 
@@ -182,12 +180,15 @@ describe('advanced > ', () => {
       fireEvent.click(within($product1).getByTestId('toggle-button'));
       fireEvent.click(within($product1).getByTestId('modify-button'));
 
-
       act(() => {
         fireEvent.change(within($product1).getByDisplayValue('20'), { target: { value: '25' } });
-        fireEvent.change(within($product1).getByDisplayValue('10000'), { target: { value: '12000' } });
-        fireEvent.change(within($product1).getByDisplayValue('상품1'), { target: { value: '수정된 상품1' } });
-      })
+        fireEvent.change(within($product1).getByDisplayValue('10000'), {
+          target: { value: '12000' },
+        });
+        fireEvent.change(within($product1).getByDisplayValue('상품1'), {
+          target: { value: '수정된 상품1' },
+        });
+      });
 
       fireEvent.click(within($product1).getByText('수정 완료'));
 
@@ -203,7 +204,7 @@ describe('advanced > ', () => {
       act(() => {
         fireEvent.change(screen.getByPlaceholderText('수량'), { target: { value: '5' } });
         fireEvent.change(screen.getByPlaceholderText('할인율 (%)'), { target: { value: '5' } });
-      })
+      });
       fireEvent.click(screen.getByText('할인 추가'));
 
       expect(screen.queryByText('5개 이상 구매 시 5% 할인')).toBeInTheDocument();
@@ -228,17 +229,96 @@ describe('advanced > ', () => {
       const $newCoupon = screen.getByTestId('coupon-3');
 
       expect($newCoupon).toHaveTextContent('새 쿠폰 (NEW10):10% 할인');
-    })
-  })
+    });
+  });
 
-  describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+  describe('추가된 테스트 코드', () => {
+    test('validateData 함수로 입력 데이터 검증', () => {
+      const validProduct = { name: '상품1', price: 10000, stock: 10 };
+      const invalidProduct1 = { name: '', price: 10000, stock: 10 };
+      const invalidProduct2 = { name: '상품2', price: -5000, stock: 10 };
+      const invalidProduct3 = { name: '상품3', price: 10000, stock: -5 };
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
-  })
-})
+      expect(validateProductData(validProduct)).toBe(true);
+      expect(validateProductData(invalidProduct1)).toBe(false);
+      expect(validateProductData(invalidProduct2)).toBe(false);
+      expect(validateProductData(invalidProduct3)).toBe(false);
 
+      const validCoupon: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+      const invalidCoupon1: Coupon = {
+        name: '',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+      const invalidCoupon2: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: '',
+        discountType: 'percentage',
+        discountValue: 10,
+      };
+      const invalidCoupon3: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: -5,
+      };
+      const invalidCoupon4: Coupon = {
+        name: '10% 할인 쿠폰',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 110,
+      };
+
+      expect(validateCouponData(validCoupon)).toBe(true);
+      expect(validateCouponData(invalidCoupon1)).toBe(false);
+      expect(validateCouponData(invalidCoupon2)).toBe(false);
+      expect(validateCouponData(invalidCoupon3)).toBe(false);
+      expect(validateCouponData(invalidCoupon4)).toBe(false);
+    });
+
+    describe('useLocalStorage', () => {
+      test('초기값 설정 - 로컬스토리지에 값 없을 때', () => {
+        const { result } = renderHook(() => useLocalStorage('testKey', 'initialValue'));
+
+        expect(result.current.storedValue).toBe('initialValue');
+      });
+
+      test('업데이트', () => {
+        const { result } = renderHook(() => useLocalStorage('testKey', 'initialValue'));
+
+        act(() => {
+          result.current.saveToStorage('newValue');
+        });
+
+        expect(result.current.storedValue).toBe('newValue');
+        expect(localStorage.getItem('testKey')).toBe(JSON.stringify('newValue'));
+      });
+    });
+
+    describe('useSearch', () => {
+      test('초기 상태에서는 모든 상품이 표시', () => {
+        const { result } = renderHook(() => useSearch(mockProducts, ['name']));
+
+        expect(result.current.searchResults).toEqual(mockProducts);
+        expect(result.current.query).toBe('');
+      });
+
+      test('상품명으로 검색', () => {
+        const { result } = renderHook(() => useSearch(mockProducts, ['name']));
+
+        act(() => {
+          result.current.setQuery('상품1');
+        });
+
+        expect(result.current.searchResults).toHaveLength(1);
+        expect(result.current.searchResults[0]).toEqual(mockProducts[0]);
+      });
+    });
+  });
+});
