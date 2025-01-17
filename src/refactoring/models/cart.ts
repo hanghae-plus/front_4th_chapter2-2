@@ -68,3 +68,15 @@ export const applyCouponDiscount = (price: number, selectedCoupon: Coupon | null
   if (selectedCoupon.discountType === 'percentage') return price * (1 - selectedCoupon.discountValue * 0.01);
   return price - selectedCoupon.discountValue;
 };
+export const getAppliedDiscount = (item: CartItem) => {
+  const { discounts } = item.product;
+  const { quantity } = item;
+
+  let appliedDiscount = 0;
+  for (const discount of discounts) {
+    if (quantity >= discount.quantity) {
+      appliedDiscount = Math.max(appliedDiscount, discount.rate);
+    }
+  }
+  return appliedDiscount;
+};

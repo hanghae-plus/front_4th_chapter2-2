@@ -1,6 +1,6 @@
 import { Coupon, Product } from '../../types.ts';
 import { useCart } from '../hooks';
-import { getMaxDiscount, getRemainingStock } from '../models/cart.ts';
+import { getAppliedDiscount, getMaxDiscount, getRemainingStock } from '../models/cart.ts';
 import { formatCouponDescription, getDiscountPercent } from '../models/coupon.ts';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const CartPage = ({ products, coupons }: Props) => {
-  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon, getAppliedDiscount } = useCart();
+  const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart();
 
   const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal();
 
