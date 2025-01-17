@@ -4,7 +4,8 @@ import { act, fireEvent, render, renderHook, screen, within } from '@testing-lib
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
-import useAdminState from '../../refactoring/hooks/useAdminState';
+import { calcTotalPrice, calculateCartSum, applyCouponDiscount, getMaxDiscount } from '../../refactoring/models/cart';
+import { useAdminState } from '../../refactoring/hooks';
 
 const mockProducts: Product[] = [
   {
@@ -224,17 +225,95 @@ describe('advanced > ', () => {
   });
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(true);
+    const testProduct: Product = {
+      id: '1',
+      name: 'Test Product',
+      price: 100,
+      stock: 10,
+      discounts: [
+        { quantity: 2, rate: 0.1 },
+        { quantity: 5, rate: 0.2 }
+      ]
+    };
+    const testCarts = [
+      {
+        product: testProduct,
+        quantity: 3
+      }
+    ];
+
+    it('calcTotalPrice 테스트', () => {
+      expect(calcTotalPrice(testCarts[0])).toBe(300);
     });
 
-    describe('useAdminState hook ', () => {
-      it('초기 상태는 false이다.', () => {
+    it('calculateCartSum 테스트', () => {
+      expect(calculateCartSum(testCarts, item => item.product.price * item.quantity)).toBe(300);
+    });
+
+    it('getMaxDiscount 테스트', () => {
+      const discounts = [
+        { quantity: 1, rate: -0.1 },
+        { quantity: 2, rate: 0.2 },
+        { quantity: 3, rate: -0.05 }
+      ];
+      expect(getMaxDiscount(discounts)).toBe(0.2);
+      expect(getMaxDiscount([])).toBe(0);
+      expect(
+        getMaxDiscount([
+          { quantity: 1, rate: 0 },
+          { quantity: 1, rate: 0 }
+        ])
+      ).toBe(0);
+    });
+
+    it('applyCouponDiscount 함수 테스트', () => {
+      const percentCoupon: Coupon = {
+        name: '10% 할인',
+        code: 'PERCENT10',
+        discountType: 'percentage',
+        discountValue: 10
+      };
+
+      const amountCoupon: Coupon = {
+        name: '5,000원 할인',
+        code: 'AMOUNT5000',
+        discountType: 'amount',
+        discountValue: 5000
+      };
+
+      expect(applyCouponDiscount(100, null)).toBe(100);
+      expect(applyCouponDiscount(1000, percentCoupon)).toBe(900);
+      expect(applyCouponDiscount(1000, amountCoupon)).toBe(-4000);
+
+      expect(
+        applyCouponDiscount(200, {
+          ...percentCoupon,
+          discountValue: 0
+        })
+      ).toBe(200);
+
+      expect(
+        applyCouponDiscount(100, {
+          ...amountCoupon,
+          discountValue: 0
+        })
+      ).toBe(100);
+
+      expect(
+        applyCouponDiscount(0, {
+          ...percentCoupon,
+          discountValue: 10
+        })
+      ).toBe(0);
+    });
+
+    describe('useAdminState hook 테스트  ', () => {
+      it('초기 상태는 false', () => {
         const { result } = renderHook(() => useAdminState());
         expect(result.current.isAdmin).toBe(false);
       });
 
-      it('토글 함수가 상태를 변경한다', () => {
+      it('토글 함수가 상태를 변경', () => {
         const { result } = renderHook(() => useAdminState());
         act(() => {
           result.current.toggleAdminState();
