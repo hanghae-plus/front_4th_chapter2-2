@@ -1,36 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CartPage from './components/CartPage.tsx';
 import AdminPage from './components/AdminPage.tsx';
-import { useCoupons, useProducts } from './hooks';
+import { useCoupons, useProducts } from './hooks/index.ts';
 import { Coupon } from './models/types/Coupon.ts';
-import { Product } from './models/types/Product.ts';
-
-const initialProducts: Product[] = [
-  {
-    id: 'p1',
-    name: '상품1',
-    price: 10000,
-    stock: 20,
-    discounts: [
-      { quantity: 10, rate: 0.1 },
-      { quantity: 20, rate: 0.2 },
-    ],
-  },
-  {
-    id: 'p2',
-    name: '상품2',
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }],
-  },
-  {
-    id: 'p3',
-    name: '상품3',
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }],
-  },
-];
+import { getProducts } from './models/api/getProducts.ts';
 
 const initialCoupons: Coupon[] = [
   {
@@ -48,9 +21,14 @@ const initialCoupons: Coupon[] = [
 ];
 
 function App() {
-  const { products, addProduct, updateProduct } = useProducts(initialProducts);
   const { coupons, addCoupon } = useCoupons(initialCoupons);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { products, setProducts } = useProducts();
+
+  useEffect(() => {
+    if (products.length) return;
+    getProducts().then(setProducts);
+  }, [products, setProducts]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -66,17 +44,12 @@ function App() {
           </button>
         </div>
       </nav>
+
       <main className="container mx-auto mt-6">
         {isAdmin ? (
-          <AdminPage
-            products={products}
-            coupons={coupons}
-            onProductUpdate={updateProduct}
-            onProductAdd={addProduct}
-            onCouponAdd={addCoupon}
-          />
+          <AdminPage coupons={coupons} onCouponAdd={addCoupon} />
         ) : (
-          <CartPage products={products} coupons={coupons} />
+          <CartPage coupons={coupons} />
         )}
       </main>
     </div>
