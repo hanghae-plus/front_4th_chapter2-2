@@ -1,3 +1,4 @@
-export * from "./useCart.ts";
-export * from "./useCoupon.ts";
-export * from "./useProduct.ts";
+export * from './useCart';
+export * from './useCoupon';
+export * from './useProduct';
+export * from './useDiscountCalculator';
