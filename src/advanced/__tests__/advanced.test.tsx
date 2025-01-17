@@ -315,7 +315,7 @@ describe('advanced > ', () => {
 
       describe('useAdminProduct > ', () => {
         const mockOnProductAdd = jest.fn();
-        test('초기값이 올바르게 설정되는지 테스트', () => {
+        it('초기값이 올바르게 설정되는지 테스트', () => {
           const { result } = renderHook(() => useAdminProduct(mockProducts, mockOnProductAdd));
 
           expect(result.current.newProduct).toEqual({
@@ -326,7 +326,7 @@ describe('advanced > ', () => {
           });
         });
 
-        test('handleInputChange가 newProduct를 업데이트하는지 테스트', () => {
+        it('handleInputChange가 newProduct를 업데이트하는지 테스트', () => {
           const { result } = renderHook(() => useAdminProduct(mockProducts, mockOnProductAdd));
 
           act(() => {
@@ -340,7 +340,7 @@ describe('advanced > ', () => {
           expect(result.current.newProduct.price).toBe(150);
         });
 
-        test('handleAddNewProduct가 새로운 상품을 추가하고 newProduct를 초기화하는지 테스트', () => {
+        it('handleAddNewProduct가 새로운 상품을 추가하고 newProduct를 초기화하는지 테스트', () => {
           const { result } = renderHook(() => useAdminProduct(mockProducts, mockOnProductAdd));
 
           act(() => {
