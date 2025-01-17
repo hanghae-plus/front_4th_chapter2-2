@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   act,
   fireEvent,
@@ -12,8 +12,11 @@ import { CartPage } from '../../refactoring/components/cart/CartPage';
 import { AdminPage } from '../../refactoring/components/admin/AdminPage';
 import { Coupon, Product } from '../../types';
 import * as productUtils from '../../refactoring/models/product';
-import { useAdminCoupon } from '../../refactoring/hooks';
-import { INITIAL_COUPON_STATE } from '../../refactoring/data/initialData';
+import { useAdminCoupon, useAdminProduct } from '../../refactoring/hooks';
+import {
+  INITIAL_COUPON_STATE,
+  INITIAL_PRODUCT_STATE,
+} from '../../refactoring/data/initialData';
 
 const mockProducts: Product[] = [
   {
@@ -318,6 +321,98 @@ describe('advanced > ', () => {
         result.current.handleClearCoupon();
       });
       expect(result.current.newCoupon).toEqual(INITIAL_COUPON_STATE);
+    });
+  });
+
+  describe('useAdminProduct', () => {
+    const mockOnProductAdd = vi.fn();
+    const mockOnAddSuccess = vi.fn();
+
+    const defaultProps = {
+      products: [],
+      onProductAdd: mockOnProductAdd,
+      onProductUpdate: vi.fn(),
+      onAddSuccess: mockOnAddSuccess,
+    };
+
+    beforeEach(() => {
+      mockOnProductAdd.mockClear();
+      mockOnAddSuccess.mockClear();
+    });
+
+    test('새 상품을 추가할 수 있다', () => {
+      const { result } = renderHook(() => useAdminProduct(defaultProps));
+
+      // 새 상품 정보 설정
+      act(() => {
+        result.current.setNewProduct({
+          ...INITIAL_PRODUCT_STATE,
+          name: '테스트 상품',
+          price: 15000,
+          stock: 100,
+        });
+      });
+
+      // 상품 추가 함수 호출
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      // onProductAdd가 호출되었는지 확인
+      expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
+      // 전달된 상품 데이터 확인
+      const addedProduct = mockOnProductAdd.mock.calls[0][0];
+      expect(addedProduct.name).toBe('테스트 상품');
+      expect(addedProduct.price).toBe(15000);
+      expect(addedProduct.stock).toBe(100);
+    });
+
+    test('상품 추가 후 newProduct가 초기화된다', () => {
+      const { result } = renderHook(() => useAdminProduct(defaultProps));
+
+      // 새 상품 정보 설정
+      act(() => {
+        result.current.setNewProduct({
+          ...INITIAL_PRODUCT_STATE,
+          name: '테스트 상품',
+        });
+      });
+
+      // 상품 추가
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      // newProduct가 초기 상태로 리셋되었는지 확인
+      expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
+    });
+
+    test('상품 추가 성공 시 onAddSuccess가 호출된다', () => {
+      const { result } = renderHook(() => useAdminProduct(defaultProps));
+
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      expect(mockOnAddSuccess).toHaveBeenCalledTimes(1);
+    });
+
+    test('onAddSuccess가 없어도 상품 추가가 정상적으로 동작한다', () => {
+      const propsWithoutCallback = {
+        ...defaultProps,
+        onAddSuccess: undefined,
+      };
+
+      const { result } = renderHook(() =>
+        useAdminProduct(propsWithoutCallback),
+      );
+
+      act(() => {
+        result.current.handleAddNewProduct();
+      });
+
+      expect(mockOnProductAdd).toHaveBeenCalledTimes(1);
+      expect(result.current.newProduct).toEqual(INITIAL_PRODUCT_STATE);
     });
   });
 });
