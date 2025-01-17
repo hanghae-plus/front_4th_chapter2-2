@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { describe, expect, test, vi } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, test } from 'vitest';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from '../../refactoring/components/AdminPage';
 import { Coupon, Product } from '../../types';
 import { validateCouponData, validateProductData } from '../../refactoring/utils/validateData';
 import { renderHook } from '@testing-library/react';
 import { useLocalStorage } from '../../refactoring/hooks';
+import { useSearch } from '../../refactoring/hooks/useSearch';
 
 const mockProducts: Product[] = [
   {
@@ -297,6 +298,26 @@ describe('advanced > ', () => {
 
         expect(result.current.storedValue).toBe('newValue');
         expect(localStorage.getItem('testKey')).toBe(JSON.stringify('newValue'));
+      });
+    });
+
+    describe('useSearch', () => {
+      test('초기 상태에서는 모든 상품이 표시', () => {
+        const { result } = renderHook(() => useSearch(mockProducts, ['name']));
+
+        expect(result.current.searchResults).toEqual(mockProducts);
+        expect(result.current.query).toBe('');
+      });
+
+      test('상품명으로 검색', () => {
+        const { result } = renderHook(() => useSearch(mockProducts, ['name']));
+
+        act(() => {
+          result.current.setQuery('상품1');
+        });
+
+        expect(result.current.searchResults).toHaveLength(1);
+        expect(result.current.searchResults[0]).toEqual(mockProducts[0]);
       });
     });
   });
