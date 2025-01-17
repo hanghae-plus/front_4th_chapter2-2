@@ -150,7 +150,7 @@ describe('advanced > ', () => {
         fireEvent.click(within($product1).getByTestId('modify-button'));
       });
 
-      act(() => {
+      waitFor(() => {
         fireEvent.change(within($product1).getByDisplayValue('20'), {
           target: { value: '25' },
         });
