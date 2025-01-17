@@ -1,13 +1,11 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-const useAdminState = () => {
+export const useAdminState = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const toggleAdminState = () => {
-    setIsAdmin((prev) => !prev);
+    setIsAdmin(prev => !prev);
   };
 
   return { isAdmin, toggleAdminState };
 };
-
-export default useAdminState;
