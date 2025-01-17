@@ -1,6 +1,5 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest';
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react';
-import { Coupon, Product } from '../../types';
 import { AdminPage } from '@advanced/pages/admin';
 import { CartPage } from '@advanced/pages/cart';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -26,17 +25,13 @@ const wrapper = ({ children }: PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
-
-
 describe('advanced > ', () => {
 
   describe('시나리오 테스트 > ', () => {
     test('장바구니 페이지 테스트 > ', async () => {
-
       await act(async () => {
         render(<CartPage />, {wrapper});
       });
-
 
       const product1 = screen.getByTestId('product-p1');
       const product2 = screen.getByTestId('product-p2');
