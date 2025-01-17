@@ -1,7 +1,7 @@
 // useCart.ts
 import { useState } from 'react';
 import { CartItem, Coupon, Product } from '../../types';
-import { calculateCartTotal, updateCartItemQuantity } from '../models/cart';
+import { addCartItem, calculateCartTotal, updateCartItemQuantity } from '../models/cart';
 import { getRemainingStock } from '../utils/cart';
 
 export const useCart = () => {
@@ -12,17 +12,7 @@ export const useCart = () => {
     const remainingStock = getRemainingStock(product, cart);
     if (remainingStock <= 0) return;
 
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.product.id === product.id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
-            : item,
-        );
-      }
-      return [...prevCart, { product, quantity: 1 }];
-    });
+    setCart((cart) => addCartItem(cart, product));
   };
 
   const removeFromCart = (productId: string) => {
