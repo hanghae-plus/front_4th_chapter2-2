@@ -1,33 +1,51 @@
 // useCart.ts
-import { useState } from "react";
-import { CartItem, Coupon, Product } from "../../types";
-import { calculateCartTotal, updateCartItemQuantity } from "../models/cart";
+import { useState } from 'react';
+import { CartItem, Product } from '../../types';
+import {
+  checkExistingItem,
+  calculateCartTotal,
+  filterCartItems,
+  updateCartWithNewItem,
+  updateCartItemQuantity,
+} from '../models';
+import { useCoupons } from './useCoupon';
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const { selectedCoupon, applyCoupon } = useCoupons([]);
 
-  const addToCart = (product: Product) => {};
+  const addToCart = (product: Product) => {
+    const remainingStock = getRemainingStock(product);
+    if (remainingStock <= 0) return;
 
-  const removeFromCart = (productId: string) => {};
+    setCart((prevCart) => updateCartWithNewItem(prevCart, product));
+  };
 
-  const updateQuantity = (productId: string, newQuantity: number) => {};
+  const getRemainingStock = (product: Product) => {
+    const cartItem = checkExistingItem(cart, product);
+    return product.stock - (cartItem?.quantity || 0);
+  };
 
-  const applyCoupon = (coupon: Coupon) => {};
+  const removeFromCart = (productId: string) => {
+    setCart((prevCart) => filterCartItems(prevCart, productId));
+  };
 
-  const calculateTotal = () => ({
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
-  });
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    setCart((prevCart) =>
+      updateCartItemQuantity(prevCart, productId, newQuantity),
+    );
+  };
+
+  const calculateTotal = () => calculateCartTotal(cart, selectedCoupon);
 
   return {
-    cart,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    applyCoupon,
-    calculateTotal,
-    selectedCoupon,
+    cart: cart,
+    addToCart: addToCart,
+    getRemainingStock: getRemainingStock,
+    removeFromCart: removeFromCart,
+    updateQuantity: updateQuantity,
+    applyCoupon: applyCoupon,
+    calculateTotal: calculateTotal,
+    selectedCoupon: selectedCoupon,
   };
 };
