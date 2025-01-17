@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useAdminCoupon } from '../../hooks';
 import { Coupon } from 'src/types';
 
 interface CouponFormProps {
@@ -7,18 +7,7 @@ interface CouponFormProps {
 }
 
 export const CouponForm = ({ couponList, onCouponAdd }: CouponFormProps) => {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
-
-  const handleAddCoupon = () => {
-    const couponWithId = { ...newCoupon, id: `coupon-${couponList.length + 1}` };
-    onCouponAdd(couponWithId);
-    setNewCoupon({ name: '', code: '', discountType: 'percentage', discountValue: 0 });
-  };
+  const { newCoupon, handleInputChange, handleAddCoupon } = useAdminCoupon(couponList, onCouponAdd);
 
   return (
     <div className='space-y-2 mb-4'>
@@ -26,22 +15,20 @@ export const CouponForm = ({ couponList, onCouponAdd }: CouponFormProps) => {
         type='text'
         placeholder='쿠폰 이름'
         value={newCoupon.name}
-        onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
+        onChange={(e) => handleInputChange('name', e.target.value)}
         className='w-full p-2 border rounded'
       />
       <input
         type='text'
         placeholder='쿠폰 코드'
         value={newCoupon.code}
-        onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
+        onChange={(e) => handleInputChange('code', e.target.value)}
         className='w-full p-2 border rounded'
       />
       <div className='flex gap-2'>
         <select
           value={newCoupon.discountType}
-          onChange={(e) =>
-            setNewCoupon({ ...newCoupon, discountType: e.target.value as 'amount' | 'percentage' })
-          }
+          onChange={(e) => handleInputChange('discountType', e.target.value)}
           className='w-full p-2 border rounded'
         >
           <option value='amount'>금액(원)</option>
@@ -51,7 +38,7 @@ export const CouponForm = ({ couponList, onCouponAdd }: CouponFormProps) => {
           type='number'
           placeholder='할인 값'
           value={newCoupon.discountValue}
-          onChange={(e) => setNewCoupon({ ...newCoupon, discountValue: parseInt(e.target.value) })}
+          onChange={(e) => handleInputChange('discountValue', parseInt(e.target.value, 10))}
           className='w-full p-2 border rounded'
         />
       </div>
