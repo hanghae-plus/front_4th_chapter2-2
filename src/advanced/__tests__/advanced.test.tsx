@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from "../../refactoring/components/AdminPage/AdminPage";
 import { Coupon, Product } from '../../types';
+import { addDiscountToProduct } from "../../refactoring/models/product";
 
 const mockProducts: Product[] = [
   {
@@ -233,7 +234,36 @@ describe('advanced > ', () => {
 
   describe('자유롭게 작성해보세요.', () => {
     test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      expect(addDiscountToProduct({
+        id: '1',
+        name: '내 상품',
+        price: 1000,
+        stock: 10,
+        discounts: [{
+          quantity: 1,
+          rate: 0.05
+        }],
+      }, {
+        quantity: 5,
+        rate: 0.1,
+      })).toMatchObject(
+        {
+          "discounts": [
+            {
+              "quantity": 1,
+              "rate": 0.05,
+            },
+            {
+              "quantity": 5,
+              "rate": 0.1,
+            },
+          ],
+          "id": "1",
+          "name": "내 상품",
+          "price": 1000,
+          "stock": 10,
+        }
+      )
     })
 
     test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {

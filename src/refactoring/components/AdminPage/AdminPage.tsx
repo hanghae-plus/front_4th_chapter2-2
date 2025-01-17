@@ -4,6 +4,7 @@ import { Container, Title } from '../Styled.tsx';
 import { Section } from '../Section.tsx';
 import { CouponManagement } from './CouponManagement.tsx';
 import { ProductManagement } from './ProductManagement.tsx';
+import { addDiscountToProduct } from '../../models/product.ts';
 
 interface Props {
   products: Product[];
@@ -84,10 +85,8 @@ export const AdminPage = ({ products, coupons, onProductUpdate, onProductAdd, on
   const handleAddDiscount = (productId: string) => {
     const updatedProduct = products.find(p => p.id === productId);
     if (updatedProduct && editingProduct) {
-      const newProduct = {
-        ...updatedProduct,
-        discounts: [...updatedProduct.discounts, newDiscount]
-      };
+      const newProduct = addDiscountToProduct(updatedProduct, newDiscount);
+
       onProductUpdate(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
