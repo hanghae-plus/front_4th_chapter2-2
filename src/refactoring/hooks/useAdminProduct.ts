@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Product } from 'src/types';
+import { initializeNewProduct } from '../models/admin';
 
 interface UseAdminProductProps {
   newProduct: Omit<Product, 'id'>;
@@ -11,12 +12,7 @@ export const useAdminProduct = (
   productList: Product[],
   onProductAdd: (newProduct: Product) => void,
 ): UseAdminProductProps => {
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    price: 0,
-    stock: 0,
-    discounts: [],
-  });
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>(initializeNewProduct());
 
   const handleInputChange = (field: keyof Omit<Product, 'id'>, value: string | number) => {
     setNewProduct((prev) => ({ ...prev, [field]: value }));
@@ -25,7 +21,7 @@ export const useAdminProduct = (
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: `p${productList.length + 1}` };
     onProductAdd(productWithId);
-    setNewProduct({ name: '', price: 0, stock: 0, discounts: [] });
+    setNewProduct(initializeNewProduct());
   };
 
   return { newProduct, handleInputChange, handleAddNewProduct };
