@@ -5,8 +5,6 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import a11y from 'eslint-plugin-jsx-a11y';
 import vitest from 'eslint-plugin-vitest';
 import prettier from 'eslint-plugin-prettier';
-import airbnb from 'eslint-config-airbnb-typescript';
-import boundaries from 'eslint-plugin-boundaries';
 import importPlugin from 'eslint-plugin-import';
 
 export default [
@@ -18,11 +16,7 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        project: [
-          './tsconfig.json',
-          './tsconfig.app.json',
-          './tsconfig.node.json',
-        ],
+        project: ['./tsconfig.json'],
         sourceType: 'module',
       },
     },
@@ -34,23 +28,13 @@ export default [
       vitest,
       prettier,
       import: importPlugin,
-      boundaries,
     },
     settings: {
-      'boundaries/elements': [
-        { type: 'app', pattern: './src/refactoring/app/*' },
-        { type: 'pages', pattern: './src/refactoring/pages/*' },
-        { type: 'widgets', pattern: './src/refactoring/widgets/*' },
-        { type: 'features', pattern: './src/refactoring/features/*' },
-        { type: 'entities', pattern: './src/refactoring/entities/*' },
-        { type: 'shared', pattern: './src/refactoring/shared/*' },
-      ],
       react: {
         version: 'detect',
       },
     },
     rules: {
-      ...airbnb.rules,
       'prettier/prettier': ['error', {}, { usePrettierrc: true }],
       'react/react-in-jsx-scope': 'off',
       'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
@@ -70,26 +54,6 @@ export default [
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'jsx-a11y/anchor-is-valid': 'off',
-      'boundaries/element-types': [
-        'error',
-        {
-          default: 'disallow',
-          rules: [
-            {
-              from: 'app',
-              allow: ['pages', 'widgets', 'features', 'entities', 'shared'],
-            },
-            {
-              from: 'pages',
-              allow: ['widgets', 'features', 'entities', 'shared'],
-            },
-            { from: 'widgets', allow: ['features', 'entities', 'shared'] },
-            { from: 'features', allow: ['entities', 'shared'] },
-            { from: 'entities', allow: ['shared'] },
-            { from: 'shared', allow: ['shared'] },
-          ],
-        },
-      ],
     },
   },
   {
