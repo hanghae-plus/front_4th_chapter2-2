@@ -11,7 +11,7 @@ import {
 import { CartPage } from '../../refactoring/components/cart/CartPage';
 import { AdminPage } from '../../refactoring/components/admin/AdminPage';
 import { Coupon, Discount, Product } from '../../types';
-import * as productUtils from '../../refactoring/models/product';
+import * as utils from '../../refactoring/models';
 import {
   useAdminCoupon,
   useAdminEditingProduct,
@@ -295,12 +295,58 @@ describe('advanced > ', () => {
 
     describe('updateProductList', () => {
       test('업데이트된 제품 리스트를 반환할 수 있다.', () => {
-        const updatedProductList = productUtils.updateProductList(
+        const updatedProductList = utils.updateProductList(
           mockProducts,
           testProduct,
         );
         expect(updatedProductList[1]).toBe(testProduct);
       });
+    });
+  });
+
+  describe('couponUtils', () => {
+    const testCoupon1: Coupon = {
+      name: 'Test Coupon',
+      code: 'TEST',
+      discountType: 'percentage',
+      discountValue: 50,
+    };
+
+    const testCoupon2: Coupon = {
+      name: 'Test Coupon',
+      code: 'TEST',
+      discountType: 'amount',
+      discountValue: 5000,
+    };
+
+    test('5000원 쿠폰을 적용할 수 있다', () => {
+      let price = 6000;
+
+      act(() => {
+        price = utils.getCouponDiscount(testCoupon2, price);
+      });
+
+      expect(price).toBe(1000);
+    });
+
+    test('50% 쿠폰을 적용할 수 있다', () => {
+      let price = 6000;
+
+      act(() => {
+        price = utils.getCouponDiscount(testCoupon1, price);
+      });
+
+      expect(price).toBe(3000);
+    });
+
+    test('금액이 0보다 작아질 수 없다', () => {
+      let price = 3000;
+
+      act(() => {
+        price = utils.getCouponDiscount(testCoupon2, price);
+      });
+
+      expect(price).toBe(0);
     });
   });
 
@@ -319,6 +365,7 @@ describe('advanced > ', () => {
       });
       expect(result.current.newCoupon.name).toBe('변경된 쿠폰');
     });
+
     test('쿠폰을 초기화 할 수 있다.', () => {
       const { result } = renderHook(() => useAdminCoupon());
       act(() => {
