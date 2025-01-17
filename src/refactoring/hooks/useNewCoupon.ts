@@ -1,26 +1,17 @@
 import { useState } from 'react';
 import { Coupon } from '../../types';
+import { initialNewCoupon } from '../data/initData';
 
 interface NewCouponProps {
   onCouponAdd: (newCoupon: Coupon) => void;
 }
 
 export const useNewCoupon = ({ onCouponAdd }: NewCouponProps) => {
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
+  const [newCoupon, setNewCoupon] = useState<Coupon>(initialNewCoupon);
 
   const handleAddCoupon = () => {
     onCouponAdd(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
+    setNewCoupon(initialNewCoupon);
   };
 
   const handleAddNewCouponName = (e: React.ChangeEvent<HTMLInputElement>) => {

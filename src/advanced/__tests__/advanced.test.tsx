@@ -13,6 +13,7 @@ import { useOpenProductIds } from '../../refactoring/hooks/useOpenProductIds';
 import { useNewProduct } from '../../refactoring/hooks/useNewProduct';
 import { useProducts } from '../../refactoring/hooks';
 import { useNewCoupon } from '../../refactoring/hooks/useNewCoupon';
+import { initialNewCoupon } from '../../refactoring/data/initData';
 
 const mockProducts: Product[] = [
   {
@@ -403,12 +404,7 @@ describe('advanced > ', () => {
     it('초기 상태 확인', () => {
       const { result } = setup();
 
-      expect(result.current.newCoupon).toEqual({
-        name: '',
-        code: '',
-        discountType: 'percentage',
-        discountValue: 0,
-      });
+      expect(result.current.newCoupon).toEqual(initialNewCoupon);
     });
 
     it('쿠폰명 입력 확인', () => {

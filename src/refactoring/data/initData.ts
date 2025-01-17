@@ -41,3 +41,10 @@ export const initialCouponList: Coupon[] = [
     discountValue: 10,
   },
 ];
+
+export const initialNewCoupon: Coupon = {
+  name: '',
+  code: '',
+  discountType: 'percentage',
+  discountValue: 0,
+};
