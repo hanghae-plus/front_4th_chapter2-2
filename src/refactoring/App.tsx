@@ -1,81 +1,42 @@
-import { useState } from 'react';
-import { CartPage } from './components/CartPage.tsx';
-import { AdminPage } from './components/AdminPage.tsx';
-import { Coupon, Product } from '../types.ts';
-import { useCoupons, useProducts } from "./hooks";
-
-const initialProducts: Product[] = [
-  {
-    id: 'p1',
-    name: '상품1',
-    price: 10000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.1 }, { quantity: 20, rate: 0.2 }]
-  },
-  {
-    id: 'p2',
-    name: '상품2',
-    price: 20000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.15 }]
-  },
-  {
-    id: 'p3',
-    name: '상품3',
-    price: 30000,
-    stock: 20,
-    discounts: [{ quantity: 10, rate: 0.2 }]
-  }
-];
-
-const initialCoupons: Coupon[] = [
-  {
-    name: '5000원 할인 쿠폰',
-    code: 'AMOUNT5000',
-    discountType: 'amount',
-    discountValue: 5000
-  },
-  {
-    name: '10% 할인 쿠폰',
-    code: 'PERCENT10',
-    discountType: 'percentage',
-    discountValue: 10
-  }
-];
+import { CartPage } from "./components/CartPage.tsx";
+import { AdminPage } from "./components/AdminPage.tsx";
+import { useCoupons } from "./hooks";
+import { initialProducts } from "./entity/products.ts";
+import { initialCoupons } from "./entity/coupons.ts";
+import { Navigation } from "./components/Navigation.tsx";
+import { useAdmin } from "./hooks/useAdmin.ts";
+import { ProductsProvider } from "./contexts/ProductsContext.tsx";
 
 const App = () => {
-  const { products, updateProduct, addProduct } = useProducts(initialProducts);
+  // App의 관심사: products, coupons, isAdmin을 통해 모든 ui를 관리하면서 렌더링한다.
   const { coupons, addCoupon } = useCoupons(initialCoupons);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin, changeRole } = useAdmin();
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <nav className="bg-blue-600 text-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">쇼핑몰 관리 시스템</h1>
-          <button
-            onClick={() => setIsAdmin(!isAdmin)}
-            className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-blue-100"
-          >
-            {isAdmin ? '장바구니 페이지로' : '관리자 페이지로'}
-          </button>
-        </div>
-      </nav>
+      <Navigation isAdmin={isAdmin} onRoleChange={changeRole} />
       <main className="container mx-auto mt-6">
-        {isAdmin ? (
-          <AdminPage
-            products={products}
-            coupons={coupons}
-            onProductUpdate={updateProduct}
-            onProductAdd={addProduct}
-            onCouponAdd={addCoupon}
-          />
-        ) : (
-          <CartPage products={products} coupons={coupons}/>
-        )}
+        <ProductsProvider initialProducts={initialProducts}>
+          {isAdmin ? (
+            <AdminPage coupons={coupons} onCouponAdd={addCoupon} />
+          ) : (
+            <CartPage coupons={coupons} />
+          )}
+        </ProductsProvider>
       </main>
     </div>
   );
 };
 
 export default App;
+
+// Todo: 1. AdminPage 컨텍스트로 분리 -> 테스트에서 실패나네.. 어쩔 수 없는 과정이려나.
+// Todo: 2. CartPage 리팩토링
+// Todo: 3. Discount도 context로 분리해야하려나?
+// ! 이게 계층적으로 잘 분리된 코드인지 잘 모르겠음...
+// ! 행동(부수효과) 계산 데이터의 측면으로 보자면... -> 괜찮은지도?
+// ! 관심사의 분리 측면(이것도 사실 추상화의 일종인듯? 행동(부수효과) 계산 데이터 단위의 추상화와 features 단위의 추상화...)으로 보자면... -> 괜찮은지도?
+// ! 언제든지 다른 걸로 바꿔끼워넣을 수 있나? -> 나쁘지 않은지도? 다만 자유롭게 ui를 조합해서 만들 수 있도록 한다면 더 괜찮을지도?
+// ! selectedCoupon을 따로 뺄수도.
+// ! 더 잘게 엔티티로....
+// ! 재사용가능한 ui. (shadcn/ui 처럼.)
