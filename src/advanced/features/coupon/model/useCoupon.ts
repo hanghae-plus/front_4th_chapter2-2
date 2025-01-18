@@ -1,27 +1,33 @@
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
-import { addCoupon, Coupon, getCoupons } from '@advanced/entities/coupon';
+import { useState } from 'react';
+import { Coupon } from '@advanced/entities/coupon';
+import { useAddCouponMutation } from './useAddCouponMutation';
 
-export const useGetCouponQuery = () => {
-  return useSuspenseQuery({
-    queryKey: ['/api/coupons'],
-    queryFn: () => getCoupons(),
+export const useCoupon = () => {
+  const { mutate: addCouponMutate } = useAddCouponMutation();
+  const [newCoupon, setNewCoupon] = useState<Coupon>({
+    name: '',
+    code: '',
+    discountType: 'percentage',
+    discountValue: 0,
   });
-};
 
-export const useAddCouponMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationKey: ['/api/coupons'],
-    mutationFn: (Coupon: Coupon) => addCoupon(Coupon),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['/api/coupons'],
-        exact: false,
-      });
-    },
-  });
+  const changeCoupon = (newCoupon: Partial<Coupon>) => {
+    setNewCoupon((prev) => ({ ...prev, ...newCoupon }));
+  };
+
+  const addCoupon = (newCoupon: Coupon) => {
+    addCouponMutate(newCoupon);
+    setNewCoupon({
+      name: '',
+      code: '',
+      discountType: 'percentage',
+      discountValue: 0,
+    });
+  };
+
+  return {
+    newCoupon,
+    changeCoupon,
+    addCoupon,
+  };
 };

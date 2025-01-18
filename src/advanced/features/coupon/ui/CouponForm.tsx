@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { Coupon } from '@advanced/entities/coupon';
 import { Input, Select } from '@advanced/shared/ui';
-import { useAddCouponMutation } from '../model';
+import { useCoupon } from '../model';
 
 const discountTypeOptions = [
   { value: 'amount', label: '금액(원)' },
@@ -9,63 +7,46 @@ const discountTypeOptions = [
 ];
 
 export function CouponForm() {
-  const { mutate: addCoupon } = useAddCouponMutation();
-  const [newCoupon, setNewCoupon] = useState<Coupon>({
-    name: '',
-    code: '',
-    discountType: 'percentage',
-    discountValue: 0,
-  });
-
-  const handleAddCoupon = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    addCoupon(newCoupon);
-    setNewCoupon({
-      name: '',
-      code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-    });
-  };
-
-  const handleChangeDiscountType = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setNewCoupon({
-      ...newCoupon,
-      discountType: event.target.value as 'amount' | 'percentage',
-    });
-  };
+  const { newCoupon, changeCoupon, addCoupon } = useCoupon();
 
   return (
-    <form className="space-y-2 mb-4" onSubmit={handleAddCoupon}>
+    <form
+      className="space-y-2 mb-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        addCoupon(newCoupon);
+      }}
+    >
       <Input
         type="text"
         placeholder="쿠폰 이름"
         value={newCoupon.name}
-        onChange={(e) => setNewCoupon({ ...newCoupon, name: e.target.value })}
+        onChange={(e) => changeCoupon({ name: e.target.value })}
       />
       <Input
         type="text"
         placeholder="쿠폰 코드"
         value={newCoupon.code}
-        onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
+        onChange={(e) => changeCoupon({ code: e.target.value })}
       />
       <div className="flex gap-2">
         <Select
           options={discountTypeOptions}
-          onChange={handleChangeDiscountType}
+          onChange={(e) =>
+            changeCoupon({
+              discountType: e.target.value as 'amount' | 'percentage',
+            })
+          }
         />
         <Input
           type="number"
           placeholder="할인 값"
           value={newCoupon.discountValue}
-          onChange={(e) =>
-            setNewCoupon({
-              ...newCoupon,
+          onChange={(e) => {
+            changeCoupon({
               discountValue: parseInt(e.target.value),
-            })
-          }
+            });
+          }}
         />
       </div>
       <button className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
