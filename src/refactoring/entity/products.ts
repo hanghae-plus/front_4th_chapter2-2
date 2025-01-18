@@ -1,5 +1,6 @@
 import { Product } from "../../types";
 
+// 얘를 어디다 두어야하나..??
 export const initialProducts: Product[] = [
   {
     id: "p1",
