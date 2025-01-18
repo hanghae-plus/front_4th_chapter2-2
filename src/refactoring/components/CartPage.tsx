@@ -11,12 +11,7 @@ interface Props {
 
 export const CartPage = ({ products, coupons }: Props) => {
   const { cart, addToCart, removeFromCart, updateQuantity, applyCoupon, calculateTotal, selectedCoupon } = useCart()
-
-  const {
-    totalBeforeDiscount, //
-    totalAfterDiscount,
-    totalDiscount,
-  } = calculateTotal()
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateTotal()
 
   return (
     <div className="container mx-auto p-4">
