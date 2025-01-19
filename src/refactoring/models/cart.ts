@@ -35,10 +35,10 @@ export const applyCoupon = (totalAfterDiscount: number, selectedCoupon: Coupon |
 // 장바구니 전체 금액 및 할인 계산
 export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
   const totalBeforeDiscount = calculateTotalBeforeDiscount(cart);
-  let totalAfterDiscount = calculateTotalAfterDiscount(cart);
+  // let totalAfterDiscount = calculateTotalAfterDiscount(cart);
 
   // 쿠폰 적용
-  totalAfterDiscount = applyCoupon(totalAfterDiscount, selectedCoupon);
+  const totalAfterDiscount = applyCoupon(calculateTotalAfterDiscount(cart), selectedCoupon);
 
   // 총 할인 금액 계산
   let totalDiscount = totalBeforeDiscount - totalAfterDiscount;
