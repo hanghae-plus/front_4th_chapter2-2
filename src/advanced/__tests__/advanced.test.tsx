@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { describe, expect, test } from 'vitest';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, within } from '@testing-library/react';
 import { CartPage } from '../../refactoring/components/CartPage';
 import { AdminPage } from "../../refactoring/components/AdminPage";
 import { Coupon, Product } from '../../types';
+import { useCart } from "../../refactoring/hooks";
 
 const mockProducts: Product[] = [
   {
@@ -232,12 +233,75 @@ describe('advanced > ', () => {
   })
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
-    })
+    test('장바구니 테스트', () => {
+      const product: Product = {
+        id: "1",
+        name: "Product 1",
+        price: 100,
+        stock: 10,
+        discounts: [],
+      };
+      const { result } = renderHook(() => useCart());
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+      // 처음에는 재고가 10이어야 함
+      expect(result.current.getRemainingStock(product)).toBe(10);
+
+      // 카트에 상품 추가
+      act(() => {
+        result.current.addToCart(product);
+      });
+
+      // 카트에 1개 추가된 후 재고는 9여야 함
+      expect(result.current.getRemainingStock(product)).toBe(9);
+
+      // 카트에 상품 1개 더 추가
+      act(() => {
+        result.current.addToCart(product);
+      });
+
+      // 카트에 2개 추가된 후 재고는 8이어야 함
+      expect(result.current.getRemainingStock(product)).toBe(8);
+    }); 
+
+    test('검색기능 테스트', async () => {
+      render(<CartPage products={mockProducts} coupons={mockCoupons}/>);
+
+      // 1. 검색 입력창 가져오기
+      const searchInput = await screen.getByTestId('search-bar');
+
+      // 2. 기본 상태에서 상품 목록이 모두 표시되는지 확인
+
+      expect(await screen.findByTestId('product-p1')).toBeInTheDocument();
+      expect(await screen.findByTestId('product-p2')).toBeInTheDocument();
+      expect(await screen.findByTestId('product-p3')).toBeInTheDocument();
+
+      // 3. 검색어 입력 후 필터링 결과 확인
+      await act(async () => {
+        fireEvent.change(searchInput, { target: { value: '상품1' } }); // 검색어 입력: "상품1"
+      });
+      
+      expect(await screen.findByTestId('product-p1')).toBeInTheDocument();
+      expect(screen.queryByTestId('product-p2')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('product-p3')).not.toBeInTheDocument();
+
+      // 4. 검색어 변경 후 필터링 결과 확인
+      await act(async () => {
+        fireEvent.change(searchInput, { target: { value: '' } }); // 검색어 초기화
+        fireEvent.change(searchInput, { target: { value: '상품2' } }); // 검색어 입력: "상품2"
+      });
+
+      expect(screen.queryByTestId('product-p1')).not.toBeInTheDocument();
+      expect(await screen.findByTestId('product-p2')).toBeInTheDocument();
+      expect(screen.queryByTestId('product-p3')).not.toBeInTheDocument();
+
+      // 5. 검색어가 없을 때 전체 목록이 다시 표시되는지 확인
+      await act(async () => {
+        fireEvent.change(searchInput, { target: { value: '' } }); // 검색어 초기화
+      });
+
+      expect(await screen.findByTestId('product-p1')).toBeInTheDocument();
+      expect(await screen.findByTestId('product-p2')).toBeInTheDocument();
+      expect(await screen.findByTestId('product-p3')).toBeInTheDocument();
     })
   })
 })
