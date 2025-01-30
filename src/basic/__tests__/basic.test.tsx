@@ -8,8 +8,8 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { CartPage } from "../../refactoring/components/CartPage";
-import { AdminPage } from "../../refactoring/components/AdminPage";
+import { CartPage } from "../../refactoring/pages/CartPage.tsx";
+import { AdminPage } from "../../refactoring/pages/AdminPage.tsx";
 import { CartItem, Coupon, Product } from "../../types";
 import { useCart, useCoupons, useProducts } from "../../refactoring/hooks";
 import * as cartUtils from "../../refactoring/models/cart";
@@ -73,9 +73,9 @@ const TestAdminPage = () => {
   return (
     <AdminPage
       products={products}
-      coupons={coupons}
       onProductUpdate={handleProductUpdate}
       onProductAdd={handleProductAdd}
+      coupons={coupons}
       onCouponAdd={handleCouponAdd}
     />
   );
@@ -509,10 +509,9 @@ describe("basic > ", () => {
         result.current.applyCoupon(testCoupon);
       });
 
-      const total = result.current.calculateTotal();
-      expect(total.totalBeforeDiscount).toBe(200);
-      expect(total.totalAfterDiscount).toBe(180);
-      expect(total.totalDiscount).toBe(20);
+      expect(result.current.totalBeforeDiscount).toBe(200);
+      expect(result.current.totalAfterDiscount).toBe(180);
+      expect(result.current.totalDiscount).toBe(20);
     });
   });
 });
